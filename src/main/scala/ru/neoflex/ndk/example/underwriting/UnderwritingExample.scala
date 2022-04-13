@@ -22,11 +22,11 @@ object UnderwritingExample extends App {
             },
 
             gateway("age") {
-              when { in.age < 39 } run {
+              when(in.age < 39) andThen {
                 out.scoring += 13
-              } and when { in.age >= 30 && in.age <= 39 } run {
+              } and when(in.age >= 30 && in.age <= 39) andThen {
                 out.scoring += 17
-              } and when { in.age >= 40 && in.age <= 49 } run {
+              } and when(in.age >= 40 && in.age <= 49) andThen {
                 out.scoring += 23
               } otherwise {
                 out.scoring += 23
@@ -34,13 +34,13 @@ object UnderwritingExample extends App {
             },
 
             gateway("maritalStatus") {
-              when { in.maritalStatus == "MARRIED" } run {
+              when(in.maritalStatus == "MARRIED") andThen {
                 out.scoring += 27
-              } and when { in.maritalStatus == "REMARRIAGE" } run {
+              } and when(in.maritalStatus == "REMARRIAGE") andThen {
                 out.scoring += 22
-              } and when { in.maritalStatus == "WIDOWHOOD" } run {
+              } and when(in.maritalStatus == "WIDOWHOOD") andThen {
                 out.scoring += 20
-              } and when { in.maritalStatus == "DIVORCED" } run {
+              } and when(in.maritalStatus == "DIVORCED") andThen {
                 out.scoring += 10
               } otherwise {
                 out.scoring += 0
@@ -48,13 +48,13 @@ object UnderwritingExample extends App {
             },
 
             gateway("childrenQty") {
-              when { in.childrenQty == 0 } run {
+              when(in.childrenQty == 0) andThen {
                 out.scoring += 0
-              } and when { in.childrenQty == 1 } run {
+              } and when(in.childrenQty == 1) andThen {
                 out.scoring += 6
-              } and when { in.childrenQty == 2 } run {
+              } and when(in.childrenQty == 2) andThen {
                 out.scoring += 13
-              } and when { in.childrenQty == 3 } run {
+              } and when(in.childrenQty == 3) andThen {
                 out.scoring += 6
               } otherwise {
                 out.scoring += 0
@@ -62,19 +62,19 @@ object UnderwritingExample extends App {
             },
 
             gateway("education") {
-              when { in.education == "BASIC GENERAL" } run {
+              when(in.education == "BASIC GENERAL") andThen {
                 out.scoring += 0
-              } and when { in.education == "SECONDARY GENERAL" } run {
+              } and when(in.education == "SECONDARY GENERAL") andThen {
                 out.scoring += 0
-              } and when { in.education == "PRIMARY PROFESSIONAL" } run {
+              } and when(in.education == "PRIMARY PROFESSIONAL") andThen {
                 out.scoring += 2
-              } and when { in.education == "SECONDARY PROFESSIONAL" } run {
+              } and when(in.education == "SECONDARY PROFESSIONAL") andThen {
                 out.scoring += 2
-              } and when { in.education == "INCOMPLETE HIGHER EDUCATION" } run {
+              } and when(in.education == "INCOMPLETE HIGHER EDUCATION") andThen {
                 out.scoring += 7
-              } and when { in.education == "HIGHER EDUCATION" } run {
+              } and when(in.education == "HIGHER EDUCATION") andThen {
                 out.scoring += 10
-              } and when { in.education == "MORE THAN ONE HIGHER EDUCATION" } run {
+              } and when(in.education == "MORE THAN ONE HIGHER EDUCATION") andThen {
                 out.scoring += 15
               } otherwise {
                 out.scoring += 15
@@ -82,9 +82,9 @@ object UnderwritingExample extends App {
             },
 
             gateway("workExperience") {
-              when { in.workExperience == "3-" } run {
+              when(in.workExperience == "3-") andThen {
                 out.scoring += 0
-              } and when { in.workExperience == "3-5" } run {
+              } and when(in.workExperience == "3-5") andThen {
                 out.scoring += 6
               } otherwise {
                 out.scoring += 15
@@ -136,9 +136,9 @@ object UnderwritingExample extends App {
           },
 
           gateway("Risk level gateway") {
-            when("Level 1") { out.riskLevel == 1 } run {
+            when("Level 1") { out.riskLevel == 1 } andThen {
               out.underwritingRequired = false
-            } and when("Level 3") { out.riskLevel == 3 } run {
+            } and when("Level 3") { out.riskLevel == 3 } andThen {
               out.underwritingRequired = true
               out.underwritingLevel = Some(2)
             } otherwise ScoringFlow(in.person, out)

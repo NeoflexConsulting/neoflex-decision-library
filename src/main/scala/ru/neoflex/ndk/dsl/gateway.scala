@@ -23,7 +23,7 @@ object Gateway {
       this
     }
 
-    def run(f: => Unit): SealedWhens = {
+    def andThen(f: => Unit): SealedWhens = {
       action = Action(() => f)
       SealedWhens(whens :+ toWhen)
     }

@@ -45,15 +45,15 @@ object Example {
       gateway("Income level based scoring") {
         when("200000") {
           in.income > 200000
-        } run {
+        } andThen {
           out.value += 42
         } and when("100000") {
           in.income > 100000
-        } run {
+        } andThen {
           out.value += 27
         } and when("50000") {
           in.income > 50000
-        } run {
+        } andThen {
           out.value += 5
         } otherwise {
           out.value -= 1
