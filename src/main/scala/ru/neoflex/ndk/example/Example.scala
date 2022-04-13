@@ -1,8 +1,8 @@
-package ru.neoflex.ndk
+package ru.neoflex.ndk.example
 
-import ru.neoflex.ndk.dsl.{Flow, Rule, Table}
-import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
+import ru.neoflex.ndk.dsl.syntax._
+import ru.neoflex.ndk.dsl.{Flow, Rule, Table}
 
 object Example {
 

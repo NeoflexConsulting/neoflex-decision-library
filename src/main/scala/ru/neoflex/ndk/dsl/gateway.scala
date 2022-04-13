@@ -1,7 +1,7 @@
 package ru.neoflex.ndk.dsl
 import ru.neoflex.ndk.dsl.Gateway.When
 
-final case class Gateway(name: String, whens: Seq[When], otherwise: () => Unit) extends GatewayOp
+final case class Gateway(name: String, whens: Seq[When], otherwise: FlowOp) extends GatewayOp
 
 object Gateway {
   final case class SealedWhens(whens: Seq[When]) {
@@ -9,11 +9,14 @@ object Gateway {
       wb.whens = whens
       wb
     }
-    def otherwise(f: => Unit): Gateway = Gateway("", whens, () => f)
+
+    def otherwise(f: => Unit): Gateway = Gateway("", whens, Action(() => f))
+
+    def otherwise(op: FlowOp): Gateway = Gateway("", whens, op)
   }
   final case class WhenBuilder(name: String, var whens: Seq[When]) {
     private var exprValue: () => Boolean = _
-    private var action: () => Unit       = _
+    private var action: FlowOp       = _
 
     def apply(expr: => Boolean): WhenBuilder = {
       exprValue = () => expr
@@ -21,14 +24,19 @@ object Gateway {
     }
 
     def run(f: => Unit): SealedWhens = {
-      action = () => f
+      action = Action(() => f)
+      SealedWhens(whens :+ toWhen)
+    }
+
+    def run(op: FlowOp): SealedWhens = {
+      action = op
       SealedWhens(whens :+ toWhen)
     }
 
     def toWhen: When = When(name, exprValue, action)
   }
 
-  final case class When(name: String, cond: () => Boolean, run: () => Unit)
+  final case class When(name: String, cond: () => Boolean, op: FlowOp)
 }
 
 trait GatewaySyntax {

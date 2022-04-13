@@ -5,6 +5,9 @@ import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
 
 sealed trait FlowOp
 
+final case class Action(f: () => Unit) extends (() => Unit) with FlowOp {
+  override def apply(): Unit = f()
+}
 final case class Rule(name: String, body: Condition) extends FlowOp
 
 abstract class Flow(val name: String, val ops: Seq[FlowOp]) extends FlowOp
@@ -21,7 +24,7 @@ trait TableOp   extends FlowOp {
 trait GatewayOp extends FlowOp {
   val name: String
   val whens: Seq[When]
-  val otherwise: () => Unit
+  val otherwise: FlowOp
 }
 
 final case class Condition(
