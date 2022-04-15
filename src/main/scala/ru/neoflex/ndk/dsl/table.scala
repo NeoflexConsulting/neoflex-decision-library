@@ -6,16 +6,16 @@ import scala.reflect.ClassTag
 abstract class Table(val name: String, initializer: => TableBuilder) extends TableOp {
   private val t = initializer
 
-  val expressions: Seq[Expression]     = t.expressionsList
-  val actions: List[ActionDef]         = t.actionsList
-  val conditions: Seq[Table.Condition] = t.conditionsList
+  val expressions: List[Expression]     = t.expressionsList
+  val actions: List[ActionDef]          = t.actionsList
+  val conditions: List[Table.Condition] = t.conditionsList
 }
 
 final case class SealedTable(
   override val name: String,
-  override val expressions: Seq[Expression],
+  override val expressions: List[Expression],
   override val actions: List[ActionDef],
-  override val conditions: Seq[Table.Condition])
+  override val conditions: List[Table.Condition])
     extends Table(name, TableBuilder(expressions, actions, conditions))
 
 object Table {
@@ -23,37 +23,63 @@ object Table {
 
   sealed trait ActionDef {
     def name: String
+    def argsCount: Int
   }
-  final case class Action0(name: String, f: () => Unit)                                            extends ActionDef
-  final case class Action1(name: String, f: Any => Unit)                                           extends ActionDef
-  final case class Action2(name: String, f: (Any, Any) => Unit)                                    extends ActionDef
-  final case class Action3(name: String, f: (Any, Any, Any) => Unit)                               extends ActionDef
-  final case class Action4(name: String, f: (Any, Any, Any, Any) => Unit)                          extends ActionDef
-  final case class Action5(name: String, f: (Any, Any, Any, Any, Any) => Unit)                     extends ActionDef
-  final case class Action6(name: String, f: (Any, Any, Any, Any, Any, Any) => Unit)                extends ActionDef
-  final case class Action7(name: String, f: (Any, Any, Any, Any, Any, Any, Any) => Unit)           extends ActionDef
-  final case class Action8(name: String, f: (Any, Any, Any, Any, Any, Any, Any, Any) => Unit)      extends ActionDef
-  final case class Action9(name: String, f: (Any, Any, Any, Any, Any, Any, Any, Any, Any) => Unit) extends ActionDef
+  final case class Action0(name: String, f: () => Unit) extends ActionDef {
+    override def argsCount: Int = 0
+  }
+  final case class Action1(name: String, f: Any => Unit) extends ActionDef {
+    override def argsCount: Int = 1
+  }
+  final case class Action2(name: String, f: (Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 2
+  }
+  final case class Action3(name: String, f: (Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 3
+  }
+  final case class Action4(name: String, f: (Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 4
+  }
+  final case class Action5(name: String, f: (Any, Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 5
+  }
+  final case class Action6(name: String, f: (Any, Any, Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 6
+  }
+  final case class Action7(name: String, f: (Any, Any, Any, Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 7
+  }
+  final case class Action8(name: String, f: (Any, Any, Any, Any, Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 8
+  }
+  final case class Action9(name: String, f: (Any, Any, Any, Any, Any, Any, Any, Any, Any) => Unit) extends ActionDef {
+    override def argsCount: Int = 9
+  }
   final case class Action10(name: String, f: (Any, Any, Any, Any, Any, Any, Any, Any, Any, Any) => Unit)
-      extends ActionDef
+      extends ActionDef {
+    override def argsCount: Int = 10
+  }
 
-  final case class Args(value: List[Any])
+  final case class Args(value: List[Any]) {
+    def count: Int = value.length
+    def apply(index: Int): Any = value(index)
+  }
 
   sealed trait CallableAction
   final case class ActionRef(name: String, args: Args)            extends CallableAction
   final case class SealedAction(f: () => Unit, name: String = "") extends CallableAction
-  sealed trait Operator extends (Any => Boolean)
+  sealed trait Operator                                           extends (Any => Boolean)
   final case class Condition(operators: Seq[Operator], callableAction: CallableAction)
 
   final case class TableBuilder(
-    expressionsList: Seq[Expression],
+    expressionsList: List[Expression],
     actionsList: List[ActionDef],
-    conditionsList: Seq[Condition]) {
-    def apply(exprs: Expression*): TableBuilder = copy(expressionsList = exprs)
+    conditionsList: List[Condition]) {
+    def apply(exprs: Expression*): TableBuilder = copy(expressionsList = exprs.toList)
 
     def withActions(actions: ActionDef*): TableBuilder = copy(actionsList = actions.toList)
 
-    def andConditions(conditions: Condition*): TableBuilder = copy(conditionsList = conditions)
+    def andConditions(conditions: Condition*): TableBuilder = copy(conditionsList = conditions.toList)
   }
 
   trait Operators {
@@ -68,25 +94,25 @@ object Table {
     case class neq[T](v: T) extends Operator {
       override def apply(o: Any): Boolean = o != v
     }
-    case class gt[T: Ordering: ClassTag](v: T)  extends Operator with OrderingOperator {
+    case class gt[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.gt)
     }
     case class gte[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.gteq)
     }
-    case class lt[T: Ordering: ClassTag](v: T)  extends Operator with OrderingOperator {
+    case class lt[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.lt)
     }
     case class lte[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.lteq)
     }
-    case class empty()      extends Operator {
+    case class empty() extends Operator {
       override def apply(v: Any): Boolean = true
     }
-    case class nonEmpty()   extends Operator {
+    case class nonEmpty() extends Operator {
       override def apply(v: Any): Boolean = true
     }
-    case class any()        extends Operator {
+    case class any() extends Operator {
       override def apply(v: Any): Boolean = true
     }
   }
@@ -98,7 +124,7 @@ trait TableSyntax extends Operators {
     SealedTable(name, tb.expressionsList, tb.actionsList, tb.conditionsList)
   }
 
-  def expressions: TableBuilder = TableBuilder(Seq.empty, List.empty, Seq.empty)
+  def expressions: TableBuilder = TableBuilder(List.empty, List.empty, List.empty)
 
   def row(operators: Operator*): CallableAction => Table.Condition = action => Table.Condition(operators, action)
 }

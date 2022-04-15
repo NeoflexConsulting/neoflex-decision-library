@@ -17,9 +17,9 @@ final case class SealedFlow(override val name: String, override val ops: Seq[Flo
 
 trait TableOp   extends FlowOp {
   val name: String
-  val expressions: Seq[Expression]
+  val expressions: List[Expression]
   val actions: List[ActionDef]
-  val conditions: Seq[Table.Condition]
+  val conditions: List[Table.Condition]
 }
 trait GatewayOp extends FlowOp {
   val name: String
@@ -31,10 +31,13 @@ final case class Condition(
   expr: () => Boolean,
   leftBranch: () => Unit = () => (),
   rightBranch: () => Unit = () => ()) {
+}
 
-  def andThen(left: => Unit): Condition = copy(leftBranch = () => left)
-
-  def otherwise(right: => Unit): Condition = copy(rightBranch = () => right)
+trait ConditionImplicits {
+  implicit class ConditionOps(c: Condition) {
+    def andThen(left: => Unit): Condition = c.copy(leftBranch = () => left)
+    def otherwise(right: => Unit): Condition = c.copy(rightBranch = () => right)
+  }
 }
 
 trait RuleSyntax {

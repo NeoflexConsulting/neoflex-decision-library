@@ -1,9 +1,10 @@
 package ru.neoflex.ndk.example.underwriting
 
-import ru.neoflex.ndk.TestExecutor
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
+import ru.neoflex.ndk.endine.FlowExecutionEngine
+import ru.neoflex.ndk.error.NdkError
 
 object UnderwritingExample extends App {
 
@@ -147,12 +148,14 @@ object UnderwritingExample extends App {
       )
 
   val response = ApplicationResponse()
-  TestExecutor.execute(
+  val engine = new FlowExecutionEngine[Either[NdkError, *]]()
+  val executionResult = engine.execute(
     UnderwritingFlow(
       Client("LOAN2", "STREET", Person("MEN", 29, "MARRIED", 0, "HIGHER EDUCATION", "5+", 3)),
       response
     )
   )
+  println(executionResult)
   println(response)
 }
 
