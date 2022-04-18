@@ -19,7 +19,7 @@ lazy val core = Project(id = "neoflex-decision-kit", base = file("core"))
   )
 
 
-lazy val underwritingExample = (project in file("underwriting-example"))
+lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(
     name := "underwriting-example",
     version := "0.0.1-SNAPSHOT",
