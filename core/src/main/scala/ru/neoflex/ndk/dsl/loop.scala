@@ -16,7 +16,7 @@ trait ForEachSyntax {
       name,
       () => collection,
       x =>
-        Action { () =>
+        SealedAction { () =>
           body.asInstanceOf[Any => Unit](x)
         }
     )

@@ -6,9 +6,15 @@ import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 
 sealed trait FlowOp
 
-final case class Action(f: () => Unit, name: Option[String] = None) extends (() => Unit) with FlowOp {
+abstract class Action(val f: () => Unit, val name: Option[String] = None) extends (() => Unit) with FlowOp {
+  def this(f: => Unit) {
+    this(() => f)
+  }
   override def apply(): Unit = f()
 }
+final case class SealedAction(override val f: () => Unit, override val name: Option[String] = None)
+    extends Action(f, name)
+
 final case class Rule(name: String, body: Condition) extends FlowOp
 
 abstract class Flow(val name: String, val ops: Seq[FlowOp]) extends FlowOp
@@ -67,6 +73,6 @@ trait FlowSyntax {
 }
 
 trait ActionSyntax {
-  def action(f: => Unit): Action               = Action(() => f)
-  def action(name: String)(f: => Unit): Action = Action(() => f, name.some)
+  def action(f: => Unit): SealedAction               = SealedAction(() => f)
+  def action(name: String)(f: => Unit): SealedAction = SealedAction(() => f, name.some)
 }

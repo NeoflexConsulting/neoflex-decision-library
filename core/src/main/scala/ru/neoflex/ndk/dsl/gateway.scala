@@ -10,7 +10,7 @@ object Gateway {
       wb
     }
 
-    def otherwise(f: => Unit): Gateway = Gateway("", whens, Action(() => f))
+    def otherwise(f: => Unit): Gateway = Gateway("", whens, SealedAction(() => f))
 
     def otherwise(op: FlowOp): Gateway = Gateway("", whens, op)
   }
@@ -24,7 +24,7 @@ object Gateway {
     }
 
     def andThen(f: => Unit): SealedWhens = {
-      action = Action(() => f)
+      action = SealedAction(() => f)
       SealedWhens(whens :+ toWhen)
     }
 
