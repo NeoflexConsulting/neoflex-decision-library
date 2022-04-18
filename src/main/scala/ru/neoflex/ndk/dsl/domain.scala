@@ -26,6 +26,11 @@ trait GatewayOp extends FlowOp {
   val whens: Seq[When]
   val otherwise: FlowOp
 }
+trait WhileOp extends FlowOp {
+  def name: String
+  def condition: () => Boolean
+  def body: FlowOp
+}
 
 final case class Condition(
   expr: () => Boolean,
@@ -53,4 +58,8 @@ trait RuleSyntax {
 trait FlowSyntax {
   def flow(name: String): SealedFlow     = SealedFlow(name, Seq.empty)
   def flow(ops: FlowOp*): Seq[FlowOp] = ops
+}
+
+trait ActionSyntax {
+  def action(f: => Unit): Action = Action(() => f)
 }

@@ -31,7 +31,21 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
     case rule: Rule         => executeRule(rule).map(Either.right)
     case table: TableOp     => executeTable(table).map(Either.right)
     case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
+    case op: WhileOp        => executeWhile(op).map(Either.right)
     case flow: Flow         => execute(flow).map(Either.right)
+  }
+
+  protected def executeWhile(op: WhileOp): F[Unit] = {
+    logger.debug("Executing while loop: {}", op.name)
+    monadError.tailRecM(op) {
+      case While(name, condition, body) =>
+        logger.trace("Executing while loop[{}] condition", op.name)
+        execute(condition, op, name).flatMap { conditionResult =>
+          if (conditionResult) {
+            executeOperator(body).map(_ => Either.left(op))
+          } else monadError.pure(Either.right(()))
+        }
+    }
   }
 
   protected def executeTable(table: TableOp): F[Unit] = {

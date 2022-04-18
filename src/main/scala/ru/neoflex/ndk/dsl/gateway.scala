@@ -28,7 +28,7 @@ object Gateway {
       SealedWhens(whens :+ toWhen)
     }
 
-    def run(op: FlowOp): SealedWhens = {
+    def andThen(op: FlowOp): SealedWhens = {
       action = op
       SealedWhens(whens :+ toWhen)
     }
