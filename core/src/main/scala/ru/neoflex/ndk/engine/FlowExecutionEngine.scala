@@ -1,4 +1,4 @@
-package ru.neoflex.ndk.endine
+package ru.neoflex.ndk.engine
 
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.tools.Logging
@@ -27,12 +27,18 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
   }
 
   final protected def executeOperator(flowOp: FlowOp): F[Unit] = monadError.tailRecM(flowOp) {
-    case action: Action     => execute(action, action).map(Either.right)
+    case action: Action     => executeAction(action).map(Either.right)
     case rule: Rule         => executeRule(rule).map(Either.right)
     case table: TableOp     => executeTable(table).map(Either.right)
     case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
     case op: WhileOp        => executeWhile(op).map(Either.right)
+    case op: IterateOp      => executeIterate(op).map(Either.right)
     case flow: Flow         => execute(flow).map(Either.right)
+  }
+
+  protected def executeAction(action: Action): F[Unit] = {
+    logger.debug("Executing action: {}", action.name)
+    execute(action, action, action.name)
   }
 
   protected def executeWhile(op: WhileOp): F[Unit] = {
@@ -46,6 +52,11 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
           } else monadError.pure(Either.right(()))
         }
     }
+  }
+
+  protected def executeIterate(op: IterateOp): F[Unit] = {
+    logger.debug("Executing iterate loop: {}", op.name)
+    executeOperator(op.body)
   }
 
   protected def executeTable(table: TableOp): F[Unit] = {

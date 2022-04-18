@@ -1,11 +1,11 @@
 package ru.neoflex.ndk.dsl
 
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
+import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 
 sealed trait FlowOp
 
-final case class Action(f: () => Unit) extends (() => Unit) with FlowOp {
+final case class Action(f: () => Unit, name: String = "noname") extends (() => Unit) with FlowOp {
   override def apply(): Unit = f()
 }
 final case class Rule(name: String, body: Condition) extends FlowOp
@@ -15,32 +15,35 @@ final case class SealedFlow(override val name: String, override val ops: Seq[Flo
   def apply(ops: FlowOp*): SealedFlow = copy(ops = ops)
 }
 
-trait TableOp   extends FlowOp {
+trait TableOp extends FlowOp {
   val name: String
   val expressions: List[Expression]
   val actions: List[ActionDef]
   val conditions: List[Table.Condition]
 }
+
 trait GatewayOp extends FlowOp {
   val name: String
   val whens: Seq[When]
   val otherwise: FlowOp
 }
+
 trait WhileOp extends FlowOp {
   def name: String
   def condition: () => Boolean
   def body: FlowOp
 }
 
-final case class Condition(
-  expr: () => Boolean,
-  leftBranch: () => Unit = () => (),
-  rightBranch: () => Unit = () => ()) {
+trait IterateOp extends FlowOp {
+  def name: String
+  def body: FlowOp
 }
+
+final case class Condition(expr: () => Boolean, leftBranch: () => Unit = () => (), rightBranch: () => Unit = () => ()) {}
 
 trait ConditionImplicits {
   implicit class ConditionOps(c: Condition) {
-    def andThen(left: => Unit): Condition = c.copy(leftBranch = () => left)
+    def andThen(left: => Unit): Condition    = c.copy(leftBranch = () => left)
     def otherwise(right: => Unit): Condition = c.copy(rightBranch = () => right)
   }
 }
@@ -57,9 +60,11 @@ trait RuleSyntax {
 
 trait FlowSyntax {
   def flow(name: String): SealedFlow     = SealedFlow(name, Seq.empty)
-  def flow(ops: FlowOp*): Seq[FlowOp] = ops
+  def flow(ops: FlowOp*): SealedFlow     = SealedFlow("", ops)
+  def flowOps(ops: FlowOp*): Seq[FlowOp] = ops
 }
 
 trait ActionSyntax {
-  def action(f: => Unit): Action = Action(() => f)
+  def action(f: => Unit): Action               = Action(() => f)
+  def action(name: String)(f: => Unit): Action = Action(() => f, name)
 }
