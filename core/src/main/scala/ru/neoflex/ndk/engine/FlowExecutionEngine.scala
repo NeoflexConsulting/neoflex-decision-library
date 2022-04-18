@@ -32,12 +32,12 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
     case table: TableOp     => executeTable(table).map(Either.right)
     case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
     case op: WhileOp        => executeWhile(op).map(Either.right)
-    case op: IterateOp      => executeIterate(op).map(Either.right)
+    case op: ForEachOp      => executeForEach(op).map(Either.right)
     case flow: Flow         => execute(flow).map(Either.right)
   }
 
   protected def executeAction(action: Action): F[Unit] = {
-    logger.debug("Executing action: {}", action.name)
+    action.name.foreach(logger.debug("Executing action: {}", _))
     execute(action, action, action.name)
   }
 
@@ -54,9 +54,11 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
     }
   }
 
-  protected def executeIterate(op: IterateOp): F[Unit] = {
-    logger.debug("Executing iterate loop: {}", op.name)
-    executeOperator(op.body)
+  protected def executeForEach(op: ForEachOp): F[Unit] = {
+    logger.debug("Executing forEach loop: {}", op.name)
+    op.collection().foldLeft(().pure) { (r, v) =>
+      r.flatMap(_ => executeOperator(op.body(v)))
+    }
   }
 
   protected def executeTable(table: TableOp): F[Unit] = {

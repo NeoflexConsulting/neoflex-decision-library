@@ -1,11 +1,12 @@
 package ru.neoflex.ndk.dsl
 
+import cats.syntax.option._
 import ru.neoflex.ndk.dsl.Gateway.When
 import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 
 sealed trait FlowOp
 
-final case class Action(f: () => Unit, name: String = "noname") extends (() => Unit) with FlowOp {
+final case class Action(f: () => Unit, name: Option[String] = None) extends (() => Unit) with FlowOp {
   override def apply(): Unit = f()
 }
 final case class Rule(name: String, body: Condition) extends FlowOp
@@ -34,9 +35,10 @@ trait WhileOp extends FlowOp {
   def body: FlowOp
 }
 
-trait IterateOp extends FlowOp {
+trait ForEachOp extends FlowOp {
   def name: String
-  def body: FlowOp
+  def collection: () => Iterable[Any]
+  def body: Any => FlowOp
 }
 
 final case class Condition(expr: () => Boolean, leftBranch: () => Unit = () => (), rightBranch: () => Unit = () => ()) {}
@@ -66,5 +68,5 @@ trait FlowSyntax {
 
 trait ActionSyntax {
   def action(f: => Unit): Action               = Action(() => f)
-  def action(name: String)(f: => Unit): Action = Action(() => f, name)
+  def action(name: String)(f: => Unit): Action = Action(() => f, name.some)
 }

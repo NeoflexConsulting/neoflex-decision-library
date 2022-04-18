@@ -9,5 +9,5 @@ object syntax
     with FlowSyntax
     with WhileSyntax
     with ActionSyntax
-    with IterateSyntax
+    with ForEachSyntax
     with ErrorSyntax
