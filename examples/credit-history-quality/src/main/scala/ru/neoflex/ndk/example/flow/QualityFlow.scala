@@ -28,7 +28,7 @@ case class QualityFlow(
         },
 
         action("Set output parameters") {
-          chQuality.amountOfPayment += values.amountOfPayment
+          chQuality.amountOfPayment = values.amountOfPayment
           chQuality.totalSumCRE = values.totalSumCRE
           chQuality.maxDelinquencyOverallHistory = applicant.externalCheck.loansOverview.worstStatusEver
           chQuality.ratioPastDueOverTotalAmount = values.totalDelqBalance / values.totalSumCRE
