@@ -17,7 +17,11 @@ final case class SealedAction(override val f: () => Unit, override val name: Opt
 
 final case class Rule(name: String, body: Condition) extends FlowOp
 
-abstract class Flow(val name: String, val ops: Seq[FlowOp]) extends FlowOp
+abstract class Flow(val name: String, val ops: Seq[FlowOp]) extends FlowOp {
+  def this(name: String, op: FlowOp) {
+    this(name, Seq(op))
+  }
+}
 final case class SealedFlow(override val name: String, override val ops: Seq[FlowOp]) extends Flow(name, ops) {
   def apply(ops: FlowOp*): SealedFlow = copy(ops = ops)
 }
