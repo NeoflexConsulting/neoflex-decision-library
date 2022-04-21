@@ -1,7 +1,8 @@
 package ru.neoflex.ndk.dsl
 import ru.neoflex.ndk.dsl.Gateway.When
+import ru.neoflex.ndk.dsl.syntax.NoId
 
-final case class Gateway(name: String, whens: Seq[When], otherwise: FlowOp) extends GatewayOp
+final case class Gateway(override val id: String, override val name: Option[String], whens: Seq[When], otherwise: FlowOp) extends GatewayOp
 
 object Gateway {
   final case class SealedWhens(whens: Seq[When]) {
@@ -10,9 +11,9 @@ object Gateway {
       wb
     }
 
-    def otherwise(f: => Unit): Gateway = Gateway("", whens, SealedAction(() => f))
+    def otherwise(f: => Unit): Gateway = Gateway(NoId, None, whens, SealedAction(() => f))
 
-    def otherwise(op: FlowOp): Gateway = Gateway("", whens, op)
+    def otherwise(op: FlowOp): Gateway = Gateway(NoId, None, whens, op)
   }
   final case class WhenBuilder(name: String, var whens: Seq[When]) {
     private var exprValue: () => Boolean = _
@@ -40,7 +41,7 @@ object Gateway {
 }
 
 trait GatewaySyntax {
-  def gateway(name: String)(build: => Gateway): Gateway = build.copy(name = name)
+  def gateway(id: String, name: Option[String] = None)(build: => Gateway): Gateway = build.copy(id = id, name = name)
 
   def when(name: String): Gateway.WhenBuilder = Gateway.WhenBuilder(name, Seq.empty)
 

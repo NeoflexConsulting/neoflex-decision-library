@@ -1,18 +1,34 @@
 package ru.neoflex.ndk.dsl
 
-final case class While(name: String, condition: () => Boolean, body: FlowOp)                 extends WhileOp
-final case class ForEach(name: String, collection: () => Iterable[Any], body: Any => FlowOp) extends ForEachOp
+import ru.neoflex.ndk.dsl.syntax.NoId
+
+final case class While(
+  override val id: String,
+  override val name: Option[String],
+  condition: () => Boolean,
+  body: FlowOp)
+    extends WhileOp
+
+final case class ForEach(
+  override val id: String,
+  override val name: Option[String],
+  collection: () => Iterable[Any],
+  body: Any => FlowOp)
+    extends ForEachOp
 
 trait WhileSyntax {
-  def whileLoop(name: String, condition: => Boolean)(body: FlowOp): While = While(name, () => condition, body)
-  def whileLoop(condition: => Boolean)(body: FlowOp): While               = While("", () => condition, body)
+  def whileLoop(condition: => Boolean)(body: FlowOp): While             = While(NoId, None, () => condition, body)
+  def whileLoop(id: String, condition: => Boolean)(body: FlowOp): While = whileLoop(id, None, condition)(body)
+  def whileLoop(id: String, name: Option[String], condition: => Boolean)(body: FlowOp): While =
+    While(id, name, () => condition, body)
 }
 
 trait ForEachSyntax {
-  def forEach[A](collection: => Iterable[A])(body: A => Unit): ForEach = forEach("noname", collection)(body)
-
-  def forEach[A](name: String, collection: => Iterable[A])(body: A => Unit): ForEach =
+  def forEach[A](collection: => Iterable[A])(body: A => Unit): ForEach             = forEach(NoId, collection)(body)
+  def forEach[A](id: String, collection: => Iterable[A])(body: A => Unit): ForEach = forEach(id, None, collection)(body)
+  def forEach[A](id: String, name: Option[String], collection: => Iterable[A])(body: A => Unit): ForEach =
     ForEach(
+      id,
       name,
       () => collection,
       x =>
@@ -21,9 +37,12 @@ trait ForEachSyntax {
         }
     )
 
-  def forEachOp[A](collection: => Iterable[A])(body: A => FlowOp): ForEach = forEachOp("noname", collection)(body)
+  def forEachOp[A](collection: => Iterable[A])(body: A => FlowOp): ForEach = forEachOp(NoId, None, collection)(body)
+  def forEachOp[A](id: String, collection: => Iterable[A])(body: A => FlowOp): ForEach =
+    forEachOp(id, None, collection)(body)
 
-  def forEachOp[A](name: String, collection: => Iterable[A])(body: A => FlowOp): ForEach = ForEach(
+  def forEachOp[A](id: String, name: Option[String], collection: => Iterable[A])(body: A => FlowOp): ForEach = ForEach(
+    id,
     name,
     () => collection,
     body.asInstanceOf[Any => FlowOp]

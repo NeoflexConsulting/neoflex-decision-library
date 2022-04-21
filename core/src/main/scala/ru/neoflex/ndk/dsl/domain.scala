@@ -1,52 +1,77 @@
 package ru.neoflex.ndk.dsl
 
-import cats.syntax.option._
 import ru.neoflex.ndk.dsl.Gateway.When
 import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
+import syntax.NoId
 
-sealed trait FlowOp
+trait Constants {
+  val NoId   = "NoId"
+  val NoName = "NoName"
+}
 
-abstract class Action(val f: () => Unit, val name: Option[String] = None) extends (() => Unit) with FlowOp {
-  def this(f: => Unit) {
-    this(() => f)
+sealed trait FlowOp {
+  def id: String           = NoId
+  def name: Option[String] = None
+}
+
+abstract class Action(override val id: String, val f: () => Unit, override val name: Option[String] = None)
+    extends (() => Unit)
+    with FlowOp {
+  def this(f: => Unit) = {
+    this(NoId, () => f)
   }
+
+  def this(id: String, f: => Unit) = {
+    this(id, () => f)
+  }
+
   override def apply(): Unit = f()
 }
-final case class SealedAction(override val f: () => Unit, override val name: Option[String] = None)
-    extends Action(f, name)
+final case class SealedAction(
+  override val f: () => Unit,
+  override val id: String = NoId,
+  override val name: Option[String] = None)
+    extends Action(id, f, name)
 
-final case class Rule(name: String, body: Condition) extends FlowOp
+final case class Rule(override val id: String, override val name: Option[String], body: Condition) extends FlowOp
 
-abstract class Flow(val name: String, val ops: Seq[FlowOp]) extends FlowOp {
-  def this(name: String, op: FlowOp) {
-    this(name, Seq(op))
+abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val name: Option[String] = None)
+    extends FlowOp {
+  def this(id: String, op: FlowOp) = {
+    this(id, Seq(op))
+  }
+
+  def this(id: String, name: Option[String], op: FlowOp) = {
+    this(id, Seq(op), name)
+  }
+
+  def this(id: String, name: Option[String], ops: Seq[FlowOp]) = {
+    this(id, ops, name)
   }
 }
-final case class SealedFlow(override val name: String, override val ops: Seq[FlowOp]) extends Flow(name, ops) {
+final case class SealedFlow(override val id: String, override val name: Option[String], override val ops: Seq[FlowOp])
+    extends Flow(id, name, ops) {
   def apply(ops: FlowOp*): SealedFlow = copy(ops = ops)
 }
 
 trait TableOp extends FlowOp {
-  val name: String
   val expressions: List[Expression]
   val actions: List[ActionDef]
   val conditions: List[Table.Condition]
+  val actionsByName: Map[String, ActionDef]
 }
 
 trait GatewayOp extends FlowOp {
-  val name: String
   val whens: Seq[When]
   val otherwise: FlowOp
 }
 
 trait WhileOp extends FlowOp {
-  def name: String
   def condition: () => Boolean
   def body: FlowOp
 }
 
 trait ForEachOp extends FlowOp {
-  def name: String
   def collection: () => Iterable[Any]
   def body: Any => FlowOp
 }
@@ -61,8 +86,8 @@ trait ConditionImplicits {
 }
 
 trait RuleSyntax {
-  def rule(name: String)(body: => Condition): Rule = {
-    Rule(name, body)
+  def rule(id: String = NoId, name: Option[String] = None)(body: => Condition): Rule = {
+    Rule(id, name, body)
   }
 
   def condition(expr: => Boolean): Condition = {
@@ -71,12 +96,12 @@ trait RuleSyntax {
 }
 
 trait FlowSyntax {
-  def flow(name: String): SealedFlow     = SealedFlow(name, Seq.empty)
-  def flow(ops: FlowOp*): SealedFlow     = SealedFlow("", ops)
-  def flowOps(ops: FlowOp*): Seq[FlowOp] = ops
+  def flow: SealedFlow                                          = SealedFlow(NoId, None, Seq.empty)
+  def flow(id: String, name: Option[String] = None): SealedFlow = SealedFlow(id, name, Seq.empty)
+  def flowOps(ops: FlowOp*): Seq[FlowOp]                        = ops
 }
 
 trait ActionSyntax {
-  def action(f: => Unit): SealedAction               = SealedAction(() => f)
-  def action(name: String)(f: => Unit): SealedAction = SealedAction(() => f, name.some)
+  def action(f: => Unit): SealedAction                                                 = SealedAction(() => f)
+  def action(id: String = NoId, name: Option[String] = None)(f: => Unit): SealedAction = SealedAction(() => f, id, name)
 }

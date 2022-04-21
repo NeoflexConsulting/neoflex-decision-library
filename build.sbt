@@ -1,7 +1,7 @@
 import sbt.Keys.libraryDependencies
 
 ThisBuild / organization := "ru.neoflex.ndk"
-ThisBuild / scalaVersion := "2.13.1"
+ThisBuild / scalaVersion := "2.13.2"
 
 lazy val root = (project in file("."))
   .settings(
@@ -21,7 +21,10 @@ lazy val core = Project(id = "neoflex-decision-kit", base = file("core"))
 lazy val testKit = (project in file("ndk-test-kit"))
   .settings(
     name := "ndk-test-kit",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11"
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11",
+    tpolecatCiModeOptions ~= { options =>
+      options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
+    }
   )
   .dependsOn(core)
 

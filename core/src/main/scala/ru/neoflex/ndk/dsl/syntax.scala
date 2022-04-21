@@ -11,3 +11,4 @@ object syntax
     with ActionSyntax
     with ForEachSyntax
     with ErrorSyntax
+    with Constants

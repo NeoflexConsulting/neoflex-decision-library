@@ -1,150 +1,89 @@
 package ru.neoflex.ndk.engine
 
-import ru.neoflex.ndk.dsl._
-import ru.neoflex.ndk.tools.Logging
 import cats.MonadError
 import cats.implicits.toTraverseOps
-import cats.syntax.functor._
-import cats.syntax.flatMap._
 import cats.syntax.applicative._
 import cats.syntax.either._
-import ru.neoflex.ndk.dsl.Table.{ ActionDef, CallableAction }
-import ru.neoflex.ndk.error.{
-  ActionArgumentsMatchError,
-  ExpressionsAndConditionsNumberMatchError,
-  NdkError,
-  OperatorExecutionError,
-  TableActionNotFound
-}
+import cats.syntax.flatMap._
+import cats.syntax.functor._
+import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.error.{ NdkError, OperatorExecutionError }
+import ru.neoflex.ndk.tools.Logging
 
 import scala.util.Try
 
-class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) extends FlowExecutor[F] with Logging {
+class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit monadError: MonadError[F, NdkError])
+    extends FlowExecutor[F]
+    with Logging {
 
-  override def execute(flow: Flow): F[Unit] = {
-    logger.debug("Executing flow: {}", flow.name)
-    flow.ops.map(executeOperator).toList.sequence.map(_ => ())
-  }
+  override def execute(operator: FlowOp): F[Unit] = executeOperator(operator)
 
-  final protected def executeOperator(flowOp: FlowOp): F[Unit] = monadError.tailRecM(flowOp) {
+  final protected def executeOperator(flowOp: FlowOp): F[Unit] = flowOp.tailRecM {
     case action: Action     => executeAction(action).map(Either.right)
     case rule: Rule         => executeRule(rule).map(Either.right)
     case table: TableOp     => executeTable(table).map(Either.right)
     case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
     case op: WhileOp        => executeWhile(op).map(Either.right)
     case op: ForEachOp      => executeForEach(op).map(Either.right)
-    case flow: Flow         => execute(flow).map(Either.right)
+    case flow: Flow         => executeFlow(flow).map(Either.right)
+  }
+
+  private def observeExecution[O <: FlowOp](
+    op: O,
+    start: O => F[O],
+    finish: O => F[Unit]
+  )(
+    exec: O => F[Unit]
+  ): F[Unit] = {
+    for {
+      tweakedOp <- start(op)
+      result    = exec(tweakedOp)
+      _         <- finish(tweakedOp)
+    } yield result
+  }.flatten
+
+  protected def executeFlow(flow: Flow): F[Unit] = {
+    logger.debug("Executing flow: ({}, {})", flow.id, flow.name)
+    observeExecution(flow, observer.flowStarted, observer.flowFinished) {
+      _.ops.map(executeOperator).sequence.map(_ => ())
+    }
   }
 
   protected def executeAction(action: Action): F[Unit] = {
-    action.name.foreach(logger.debug("Executing action: {}", _))
-    execute(action, action, action.name)
+    logger.debug("Executing action: ({}, {})", action.id, action.name)
+    observeExecution(action, observer.actionStarted, observer.actionFinished) { tweakedAction =>
+      execute(tweakedAction, tweakedAction, tweakedAction.name)
+    }
   }
 
   protected def executeWhile(op: WhileOp): F[Unit] = {
-    logger.debug("Executing while loop: {}", op.name)
-    monadError.tailRecM(op) {
-      case While(name, condition, body) =>
-        logger.trace("Executing while loop[{}] condition", op.name)
-        execute(condition, op, name).flatMap { conditionResult =>
-          if (conditionResult) {
-            executeOperator(body).map(_ => Either.left(op))
-          } else monadError.pure(Either.right(()))
-        }
+    logger.debug("Executing while loop: ({}, {})", op.id, op.name)
+    observeExecution(op, observer.whileStarted, observer.whileFinished) { tweakedWhile =>
+      tweakedWhile.tailRecM {
+        case While(id, name, condition, body) =>
+          logger.trace("Executing while loop[{}, {}] condition", id, name)
+          execute(condition, tweakedWhile, name)
+            .ifM(
+              executeOperator(body).map(_ => Either.left(tweakedWhile)),
+              monadError.pure(Either.right(()))
+            )
+      }
     }
   }
 
   protected def executeForEach(op: ForEachOp): F[Unit] = {
-    logger.debug("Executing forEach loop: {}", op.name)
-    op.collection().foldLeft(().pure) { (r, v) =>
-      r.flatMap(_ => executeOperator(op.body(v)))
+    logger.debug("Executing forEach loop: ({}, {})", op.id, op.name)
+    observeExecution(op, observer.forEachStarted, observer.forEachFinished) { tweakedForEach =>
+      tweakedForEach.collection().foldLeft(().pure) { (r, v) =>
+        r.flatMap(_ => executeOperator(tweakedForEach.body(v)))
+      }
     }
   }
 
-  protected def executeTable(table: TableOp): F[Unit] = {
-    logger.debug(s"Executing table: ${table.name}")
-
-    val tableActionDefs = table.actions.map(a => (a.name, a)).toMap
-
-    def executeExpressions(expressions: Seq[Table.Expression]) =
-      expressions.map { expr =>
-        execute(expr.f, table, expr.name).map((expr.name, _))
-      }.toList.sequence
-
-    def executeActionDef(action: ActionDef, args: Table.Args) = {
-      val function = action match {
-        case Table.Action0(_, f) => f
-        case Table.Action1(_, f) => () => f(args(0))
-        case Table.Action2(_, f) => () => f(args(0), args(1))
-        case Table.Action3(_, f) => () => f(args(0), args(1), args(2))
-        case Table.Action4(_, f) => () => f(args(0), args(1), args(2), args(3))
-        case Table.Action5(_, f) => () => f(args(0), args(1), args(2), args(3), args(4))
-        case Table.Action6(_, f) => () => f(args(0), args(1), args(2), args(3), args(4), args(5))
-        case Table.Action7(_, f) => () => f(args(0), args(1), args(2), args(3), args(4), args(5), args(6))
-        case Table.Action8(_, f) => () => f(args(0), args(1), args(2), args(3), args(4), args(5), args(6), args(7))
-        case Table.Action9(_, f) =>
-          () => f(args(0), args(1), args(2), args(3), args(4), args(5), args(6), args(7), args(8))
-        case Table.Action10(_, f) =>
-          () => f(args(0), args(1), args(2), args(3), args(4), args(5), args(6), args(7), args(8), args(9))
-      }
-      logger.debug("Executing table[{}] action def: {}", table.name, action.name)
-      execute(function, table, action, args)
-    }
-
-    def executeAction(action: CallableAction): F[Unit] = action match {
-      case Table.ActionRef(name, args) =>
-        for {
-          actionDef <- monadError.fromOption(tableActionDefs.get(name), TableActionNotFound(table, name))
-          _ <- if (actionDef.argsCount != args.count) {
-                monadError.raiseError(ActionArgumentsMatchError(table, actionDef, args))
-              } else {
-                ().pure
-              }
-          _ <- executeActionDef(actionDef, args)
-        } yield ()
-      case Table.SealedAction(f, name) =>
-        logger.debug("Executing table[{}] action: {}", table.name, name)
-        execute(f, table, name)
-    }
-
-    def executeActionIf(conditionResult: Boolean, condition: Table.Condition) = {
-      if (conditionResult) {
-        executeAction(condition.callableAction)
-      } else {
-        ().pure
-      }
-    }
-
-    def checkCondition(expressionResults: List[(String, Any)], condition: Table.Condition) = {
-      expressionResults
-        .zip(condition.operators)
-        .map {
-          case ((exprName, exprValue), operator) =>
-            execute(() => operator(exprValue), table, exprName, operator)
-        }
-        .sequence
-        .map(_.forall(x => x))
-    }
-
-    def checkExpressionsAndConditionsNumber() = {
-      table.conditions
-        .map(c => (c.operators.length == table.expressions.length, c))
-        .foldLeft(().pure) {
-          case (finalResult, (result, c)) =>
-            monadError.ensure(finalResult)(ExpressionsAndConditionsNumberMatchError(table, c))(_ => result)
-        }
-    }
-
-    for {
-      _                 <- checkExpressionsAndConditionsNumber()
-      expressionResults <- executeExpressions(table.expressions)
-      conditionsResults <- table.conditions.map(c => checkCondition(expressionResults, c).map((_, c))).sequence
-      _                 <- conditionsResults.map { case (result, condition) => executeActionIf(result, condition) }.sequence
-    } yield ()
-  }
+  protected def executeTable(tableIn: TableOp): F[Unit] = new TableExecutor(tableIn, this, observer).execute()
 
   protected def findGatewayOperator(gateway: GatewayOp): F[FlowOp] = {
-    logger.debug("Executing gateway: {}", gateway.name)
+    logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
     val conditionsAndExecutionResult = gateway.whens.map(c => Try((c.cond(), c))).toList.sequence
     val foundOperator = for {
       conditionResultAndConditions <- conditionsAndExecutionResult
@@ -152,33 +91,41 @@ class FlowExecutionEngine[F[_]](implicit monadError: MonadError[F, NdkError]) ex
       foundTrueCondition           = foundResultAndCondition.map { case (_, condition) => condition }
     } yield foundTrueCondition match {
       case Some(when) =>
-        logger.debug(s"Found first true 'when' within gateway[${gateway.name}] to execute: {}", when.name)
+        logger.debug(
+          "Found first true 'when' within gateway[{}, {}] to execute: {}",
+          gateway.id,
+          gateway.name,
+          when.name
+        )
         when.op
       case None =>
         logger.debug(
-          s"No 'when' branches were found within gateway[${gateway.name}], the 'otherwise' branch will be selected"
+          "No 'when' branches were found within gateway[{}, {}], the 'otherwise' branch will be selected",
+          gateway.id,
+          gateway.name
         )
         gateway.otherwise
     }
     pureFromTry(foundOperator, gateway)
   }
 
-  protected def executeRule(rule: Rule): F[Unit] = {
-    val Rule(name, body) = rule
-    logger.debug("Executing rule: {}", name)
+  protected def executeRule(rule: Rule): F[Unit] = observeExecution(rule, observer.ruleStarted, observer.ruleFinished) {
+    tweakedRule =>
+      val Rule(id, name, body) = tweakedRule
+      logger.debug("Executing rule: ({}, {})", id, name)
 
-    execute(body.expr, rule).flatMap { conditionResult =>
-      if (conditionResult) {
-        logger.trace("Executing left branch of the rule: {}", name)
-        execute(body.leftBranch, rule)
-      } else {
-        logger.trace("Executing right branch of the rule: {}", name)
-        execute(body.rightBranch, rule)
+      def executeBranch(f: () => Unit, branchName: String) = {
+        logger.trace("Executing {} branch of the rule: ({}, {})", branchName, id, name)
+        execute(f, tweakedRule, branchName)
       }
-    }
+
+      execute(body.expr, tweakedRule).ifM(
+        executeBranch(body.leftBranch, "left"),
+        executeBranch(body.rightBranch, "right")
+      )
   }
 
-  private def execute[T](action: () => T, operator: FlowOp, details: Any*): F[T] = {
+  private[engine] def execute[T](action: () => T, operator: FlowOp, details: Any*): F[T] = {
     pureFromTry(Try(action()), operator, details: _*)
   }
 

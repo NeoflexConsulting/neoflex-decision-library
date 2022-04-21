@@ -17,7 +17,7 @@ case class UnderwritingFlow(applicant: Applicant, out: ApplicationResponse)
           } and when("Level 3") { out.riskLevel == 3 } andThen {
             out.underwritingRequired = true
             out.underwritingLevel = 2
-          } otherwise flow(
+          } otherwise flow("Underwriting by scoring value")(
             ScoringFlow(applicant.person, out),
 
             rule("Underwriting level") {

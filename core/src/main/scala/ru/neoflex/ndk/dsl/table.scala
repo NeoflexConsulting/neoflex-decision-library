@@ -3,20 +3,27 @@ import ru.neoflex.ndk.dsl.Table._
 
 import scala.reflect.ClassTag
 
-abstract class Table(val name: String, initializer: => TableBuilder) extends TableOp {
+abstract class Table(override val id: String, override val name: Option[String], initializer: => TableBuilder) extends TableOp {
+  def this(id: String, initializer: => TableBuilder) = {
+    this(id, None, initializer)
+  }
+
   private val t = initializer
 
   val expressions: List[Expression]     = t.expressionsList
   val actions: List[ActionDef]          = t.actionsList
   val conditions: List[Table.Condition] = t.conditionsList
+
+  val actionsByName: Map[String, ActionDef] = actions.map(a => (a.name, a)).toMap
 }
 
 final case class SealedTable(
-  override val name: String,
+  override val id: String,
+  override val name: Option[String],
   override val expressions: List[Expression],
   override val actions: List[ActionDef],
   override val conditions: List[Table.Condition])
-    extends Table(name, TableBuilder(expressions, actions, conditions))
+    extends Table(id, name, TableBuilder(expressions, actions, conditions))
 
 object Table {
   final case class Expression(f: () => Any, name: String = "")
@@ -119,9 +126,9 @@ object Table {
 }
 
 trait TableSyntax extends Operators {
-  def table(name: String)(builder: => TableBuilder): SealedTable = {
+  def table(id: String, name: Option[String] = None)(builder: => TableBuilder): SealedTable = {
     val tb = builder
-    SealedTable(name, tb.expressionsList, tb.actionsList, tb.conditionsList)
+    SealedTable(id, name, tb.expressionsList, tb.actionsList, tb.conditionsList)
   }
 
   def expressions: TableBuilder = TableBuilder(List.empty, List.empty, List.empty)
