@@ -1,7 +1,8 @@
 package ru.neoflex.ndk.testkit
 
 import org.scalatest.matchers.should.Matchers
-import ru.neoflex.ndk.testkit.flow.{ Applicant, ApplicationResponse, Person, RiskLevelTable, TestFlow }
+import ru.neoflex.ndk.dsl.syntax._
+import ru.neoflex.ndk.testkit.flow._
 
 class FlowSpec extends NdkAnyFlatSpec with Matchers {
   private val applicant =
@@ -31,6 +32,27 @@ class FlowSpec extends NdkAnyFlatSpec with Matchers {
     testTable run { flowContext =>
       flowContext table "t1" has oneExecutedRow()
       response.riskLevel should be(2)
+    }
+  }
+
+  "test flow" should "run with replaced operator" in {
+    val response = ApplicationResponse()
+    val testFlow = TestFlow(applicant, response) withOperators (
+      "g1" -> gateway("g1") {
+        when(response.riskLevel == 1) andThen {
+          println("Level 1 worked")
+        } and when(response.riskLevel == 2) andThen {
+          println("Level 2 worked")
+        } otherwise {
+          println("Otherwise worked")
+        }
+      }
+    )
+
+    testFlow run { flowContext =>
+      flowContext table "t1" has oneExecutedRow()
+      flowContext gateway "g1" has fired()
+      flowContext rule "r1" has notFired()
     }
   }
 }

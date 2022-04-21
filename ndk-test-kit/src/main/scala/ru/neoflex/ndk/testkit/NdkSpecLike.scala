@@ -3,7 +3,7 @@ package ru.neoflex.ndk.testkit
 import org.scalactic.source
 import ru.neoflex.ndk.dsl.FlowOp
 
-trait NdkSpecLike extends FlowMatchers {
+trait NdkSpecLike extends FlowMatchers with OperatorPatching {
   implicit class FlowOperatorTestingOps(op: FlowOp) extends FlowTestingRunner {
     def run(after: NdkExecutionContext => Unit)(implicit pos: source.Position): Unit = {
       val ctx = run(op)

@@ -34,6 +34,12 @@ final case class ExpressionsAndConditionsNumberMatchError(table: TableOp, failed
         s"Failed condition: $failedCondition"
     )
 }
+final case class OperatorsTypeMatchError(first: FlowOp, second: FlowOp, message: String = "") extends NdkError {
+  override def toThrowable: Throwable =
+    new RuntimeException(
+      s"Operators type is different, first[${first.id}, ${first.getClass}], second[${second.id}, ${second.getClass}]. $message"
+    )
+}
 
 trait ErrorSyntax {
   type EitherError[A] = Either[NdkError, A]
