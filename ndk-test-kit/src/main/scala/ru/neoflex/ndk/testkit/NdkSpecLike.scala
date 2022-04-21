@@ -12,6 +12,7 @@ trait NdkSpecLike extends FlowMatchers {
   }
 
   implicit class ContextMatcherOps(ctx: NdkExecutionContext) {
+    def flow(id: String): OperatorMatcher      = new OperatorMatcher(id, OperatorType.Flow, ctx)
     def action(id: String): OperatorMatcher    = new OperatorMatcher(id, OperatorType.Action, ctx)
     def rule(id: String): OperatorMatcher      = new OperatorMatcher(id, OperatorType.Rule, ctx)
     def gateway(id: String): OperatorMatcher   = new OperatorMatcher(id, OperatorType.Gateway, ctx)

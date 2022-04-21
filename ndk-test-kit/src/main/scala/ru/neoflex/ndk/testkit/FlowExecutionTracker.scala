@@ -46,6 +46,8 @@ class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) e
   override def forEachFinished(forEach: ForEachOp): F[Unit] = finished(forEach)
   override def ruleStarted(rule: Rule): F[Rule] = started(rule)
   override def ruleFinished(rule: Rule): F[Unit] = finished(rule)
+  override def gatewayStarted(gateway: GatewayOp): F[GatewayOp] = started(gateway)
+  override def gatewayFinished(gateway: GatewayOp): F[Unit] = finished(gateway)
   override def tableStarted(table: TableOp): F[TableOp] = started(table)
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] = {
     ifHasId(table.id) {

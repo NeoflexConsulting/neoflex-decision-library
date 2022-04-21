@@ -28,13 +28,13 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
     case flow: Flow         => executeFlow(flow).map(Either.right)
   }
 
-  private def observeExecution[O <: FlowOp](
+  private def observeExecution[O <: FlowOp, T](
     op: O,
     start: O => F[O],
     finish: O => F[Unit]
   )(
-    exec: O => F[Unit]
-  ): F[Unit] = {
+    exec: O => F[T]
+  ): F[T] = {
     for {
       tweakedOp <- start(op)
       result    = exec(tweakedOp)
@@ -82,32 +82,33 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
 
   protected def executeTable(tableIn: TableOp): F[Unit] = new TableExecutor(tableIn, this, observer).execute()
 
-  protected def findGatewayOperator(gateway: GatewayOp): F[FlowOp] = {
-    logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
-    val conditionsAndExecutionResult = gateway.whens.map(c => Try((c.cond(), c))).toList.sequence
-    val foundOperator = for {
-      conditionResultAndConditions <- conditionsAndExecutionResult
-      foundResultAndCondition      = conditionResultAndConditions.find { case (conditionResult, _) => conditionResult }
-      foundTrueCondition           = foundResultAndCondition.map { case (_, condition) => condition }
-    } yield foundTrueCondition match {
-      case Some(when) =>
-        logger.debug(
-          "Found first true 'when' within gateway[{}, {}] to execute: {}",
-          gateway.id,
-          gateway.name,
-          when.name
-        )
-        when.op
-      case None =>
-        logger.debug(
-          "No 'when' branches were found within gateway[{}, {}], the 'otherwise' branch will be selected",
-          gateway.id,
-          gateway.name
-        )
-        gateway.otherwise
+  protected def findGatewayOperator(gatewayIn: GatewayOp): F[FlowOp] =
+    observeExecution(gatewayIn, observer.gatewayStarted, observer.gatewayFinished) { gateway =>
+      logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
+      val conditionsAndExecutionResult = gateway.whens.map(c => Try((c.cond(), c))).toList.sequence
+      val foundOperator = for {
+        conditionResultAndConditions <- conditionsAndExecutionResult
+        foundResultAndCondition      = conditionResultAndConditions.find { case (conditionResult, _) => conditionResult }
+        foundTrueCondition           = foundResultAndCondition.map { case (_, condition) => condition }
+      } yield foundTrueCondition match {
+        case Some(when) =>
+          logger.debug(
+            "Found first true 'when' within gateway[{}, {}] to execute: {}",
+            gateway.id,
+            gateway.name,
+            when.name
+          )
+          when.op
+        case None =>
+          logger.debug(
+            "No 'when' branches were found within gateway[{}, {}], the 'otherwise' branch will be selected",
+            gateway.id,
+            gateway.name
+          )
+          gateway.otherwise
+      }
+      pureFromTry(foundOperator, gateway)
     }
-    pureFromTry(foundOperator, gateway)
-  }
 
   protected def executeRule(rule: Rule): F[Unit] = observeExecution(rule, observer.ruleStarted, observer.ruleFinished) {
     tweakedRule =>
