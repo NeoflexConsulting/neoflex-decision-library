@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.dsl
 import ru.neoflex.ndk.dsl.Gateway.When
 import ru.neoflex.ndk.dsl.syntax.NoId
+import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
 final case class Gateway(override val id: String, override val name: Option[String], whens: Seq[When], otherwise: FlowOp) extends GatewayOp
 
@@ -11,22 +12,16 @@ object Gateway {
       wb
     }
 
-    def otherwise(f: => Unit): Gateway = Gateway(NoId, None, whens, SealedAction(() => f))
-
     def otherwise(op: FlowOp): Gateway = Gateway(NoId, None, whens, op)
   }
-  final case class WhenBuilder(name: String, var whens: Seq[When]) {
+
+  final case class WhenBuilder(name: Option[String], var whens: Seq[When]) {
     private var exprValue: () => Boolean = _
     private var action: FlowOp       = _
 
     def apply(expr: => Boolean): WhenBuilder = {
       exprValue = () => expr
       this
-    }
-
-    def andThen(f: => Unit): SealedWhens = {
-      action = SealedAction(() => f)
-      SealedWhens(whens :+ toWhen)
     }
 
     def andThen(op: FlowOp): SealedWhens = {
@@ -37,7 +32,7 @@ object Gateway {
     def toWhen: When = When(name, exprValue, action)
   }
 
-  final case class When(name: String, cond: () => Boolean, op: FlowOp)
+  final case class When(name: Option[String], cond: () => Boolean, op: FlowOp)
 }
 
 trait GatewaySyntax {
@@ -45,5 +40,5 @@ trait GatewaySyntax {
 
   def when(name: String): Gateway.WhenBuilder = Gateway.WhenBuilder(name, Seq.empty)
 
-  def when: Gateway.WhenBuilder = Gateway.WhenBuilder("", Seq.empty)
+  def when: Gateway.WhenBuilder = Gateway.WhenBuilder(None, Seq.empty)
 }

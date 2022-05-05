@@ -3,7 +3,7 @@ package ru.neoflex.ndk.engine
 import cats.MonadError
 import cats.syntax.applicative._
 import cats.syntax.flatMap._
-import ru.neoflex.ndk.dsl.{ Action, Flow, FlowOp, ForEachOp, GatewayOp, Rule, TableOp, WhileOp }
+import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.error.NdkError
 
 class FlowExecutionObserverComposite[F[_]](
@@ -35,8 +35,8 @@ class FlowExecutionObserverComposite[F[_]](
   override def whileFinished(loop: WhileOp): F[Unit]            = callObservers(_.whileFinished(loop))
   override def forEachStarted(forEach: ForEachOp): F[ForEachOp] = callObservers(forEach, _.forEachStarted)
   override def forEachFinished(forEach: ForEachOp): F[Unit]     = callObservers(_.forEachFinished(forEach))
-  override def ruleStarted(rule: Rule): F[Rule]                 = callObservers(rule, _.ruleStarted)
-  override def ruleFinished(rule: Rule): F[Unit]                = callObservers(_.ruleFinished(rule))
+  override def ruleStarted(rule: RuleOp): F[RuleOp]             = callObservers(rule, _.ruleStarted)
+  override def ruleFinished(rule: RuleOp): F[Unit]              = callObservers(_.ruleFinished(rule))
   override def tableStarted(table: TableOp): F[TableOp]         = callObservers(table, _.tableStarted)
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] =
     callObservers(_.tableFinished(table, executedRows))

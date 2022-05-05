@@ -1,12 +1,13 @@
 package ru.neoflex.ndk.engine
 
 import cats.MonadError
-import cats.implicits.toTraverseOps
+import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
 import cats.syntax.applicative._
 import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
 import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.dsl.syntax.NoName
 import ru.neoflex.ndk.error.{ NdkError, OperatorExecutionError }
 import ru.neoflex.ndk.tools.Logging
 
@@ -20,7 +21,7 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
 
   final protected def executeOperator(flowOp: FlowOp): F[Unit] = flowOp.tailRecM {
     case action: Action     => executeAction(action).map(Either.right)
-    case rule: Rule         => executeRule(rule).map(Either.right)
+    case rule: RuleOp       => executeRule(rule).map(Either.right)
     case table: TableOp     => executeTable(table).map(Either.right)
     case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
     case op: WhileOp        => executeWhile(op).map(Either.right)
@@ -28,13 +29,7 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
     case flow: Flow         => executeFlow(flow).map(Either.right)
   }
 
-  private def observeExecution[O <: FlowOp, T](
-    op: O,
-    start: O => F[O],
-    finish: O => F[Unit]
-  )(
-    exec: O => F[T]
-  ): F[T] = {
+  private def observeExecution[O <: FlowOp, T](op: O, start: O => F[O], finish: O => F[Unit])(exec: O => F[T]): F[T] = {
     for {
       tweakedOp <- start(op)
       result    = exec(tweakedOp)
@@ -110,21 +105,28 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
       pureFromTry(foundOperator, gateway)
     }
 
-  protected def executeRule(rule: Rule): F[Unit] = observeExecution(rule, observer.ruleStarted, observer.ruleFinished) {
-    tweakedRule =>
-      val Rule(id, name, body) = tweakedRule
+  protected def executeRule(rule: RuleOp): F[Unit] =
+    observeExecution(rule, observer.ruleStarted, observer.ruleFinished) { tweakedRule =>
+      import tweakedRule._
       logger.debug("Executing rule: ({}, {})", id, name)
 
-      def executeBranch(f: () => Unit, branchName: String) = {
-        logger.trace("Executing {} branch of the rule: ({}, {})", branchName, id, name)
-        execute(f, tweakedRule, branchName)
+      def executeBranch(r: NamedAction) = {
+        logger.trace("Executing {} branch of the rule: ({}, {})", r.name, id, name)
+        execute(r.body, tweakedRule, r.name)
       }
 
-      execute(body.expr, tweakedRule).ifM(
-        executeBranch(body.leftBranch, "left"),
-        executeBranch(body.rightBranch, "right")
-      )
-  }
+      for {
+        conditionAndResult <- pureFromTry(conditions.map { c =>
+                               Try((c, c.expr()))
+                             }.toList.sequence, tweakedRule)
+        maybeTrueCondition   = conditionAndResult.find(_._2).map(_._1)
+        maybeConditionAction = maybeTrueCondition.map(c => NamedAction(c.name.getOrElse(NoName), c.body)).map(_.some)
+        maybeRuleAction = maybeConditionAction.getOrElse {
+          otherwise.map(o => NamedAction(o.name.getOrElse(NoName), o.body))
+        }
+        _ <- maybeRuleAction.map(executeBranch).getOrElse(().pure)
+      } yield ()
+    }
 
   private[engine] def execute[T](action: () => T, operator: FlowOp, details: Any*): F[T] = {
     pureFromTry(Try(action()), operator, details: _*)
@@ -134,3 +136,5 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
     t.toEither.leftMap(OperatorExecutionError(operator, _, details: _*))
   }
 }
+
+private[engine] final case class NamedAction(name: String, body: () => Unit)

@@ -21,8 +21,8 @@ trait FlowExecutionObserver[F[_]] {
   def forEachStarted(forEach: ForEachOp): F[ForEachOp]
   def forEachFinished(forEach: ForEachOp): F[Unit]
 
-  def ruleStarted(rule: Rule): F[Rule]
-  def ruleFinished(rule: Rule): F[Unit]
+  def ruleStarted(rule: RuleOp): F[RuleOp]
+  def ruleFinished(rule: RuleOp): F[Unit]
 
   def tableStarted(table: TableOp): F[TableOp]
   def tableFinished(table: TableOp, executedRows: Int): F[Unit]
@@ -37,8 +37,8 @@ class NoOpFlowExecutionObserver[F[_]](implicit monadError: MonadError[F, NdkErro
   override def whileFinished(loop: WhileOp): F[Unit]                     = ().pure
   override def forEachStarted(forEach: ForEachOp): F[ForEachOp]          = forEach.pure
   override def forEachFinished(forEach: ForEachOp): F[Unit]              = ().pure
-  override def ruleStarted(rule: Rule): F[Rule]                          = rule.pure
-  override def ruleFinished(rule: Rule): F[Unit]                         = ().pure
+  override def ruleStarted(rule: RuleOp): F[RuleOp]                          = rule.pure
+  override def ruleFinished(rule: RuleOp): F[Unit]                         = ().pure
   override def tableStarted(table: TableOp): F[TableOp]                  = table.pure
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] = ().pure
   override def gatewayStarted(gateway: GatewayOp): F[GatewayOp]          = gateway.pure

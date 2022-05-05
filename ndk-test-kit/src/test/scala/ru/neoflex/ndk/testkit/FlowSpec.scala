@@ -39,11 +39,11 @@ class FlowSpec extends NdkAnyFlatSpec with Matchers {
     val response = ApplicationResponse()
     val testFlow = TestFlow(applicant, response) withOperators (
       "g1" -> gateway("g1") {
-        when(response.riskLevel == 1) andThen {
+        when(response.riskLevel == 1) andThen action {
           println("Level 1 worked")
-        } and when(response.riskLevel == 2) andThen {
+        } and when(response.riskLevel == 2) andThen action {
           println("Level 2 worked")
-        } otherwise {
+        } otherwise action {
           println("Otherwise worked")
         }
       }

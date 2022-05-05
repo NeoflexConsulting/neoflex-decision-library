@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.dsl
 
 import ru.neoflex.ndk.dsl.Gateway.When
+import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
 import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 import syntax.NoId
 
@@ -33,7 +34,10 @@ final case class SealedAction(
   override val name: Option[String] = None)
     extends Action(id, f, name)
 
-final case class Rule(override val id: String, override val name: Option[String], body: Condition) extends FlowOp
+trait RuleOp extends FlowOp {
+  def conditions: Seq[Condition]
+  def otherwise: Option[Otherwise]
+}
 
 abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val name: Option[String] = None)
     extends FlowOp {
@@ -74,25 +78,6 @@ trait WhileOp extends FlowOp {
 trait ForEachOp extends FlowOp {
   def collection: () => Iterable[Any]
   def body: Any => FlowOp
-}
-
-final case class Condition(expr: () => Boolean, leftBranch: () => Unit = () => (), rightBranch: () => Unit = () => ()) {}
-
-trait ConditionImplicits {
-  implicit class ConditionOps(c: Condition) {
-    def andThen(left: => Unit): Condition    = c.copy(leftBranch = () => left)
-    def otherwise(right: => Unit): Condition = c.copy(rightBranch = () => right)
-  }
-}
-
-trait RuleSyntax {
-  def rule(id: String = NoId, name: Option[String] = None)(body: => Condition): Rule = {
-    Rule(id, name, body)
-  }
-
-  def condition(expr: => Boolean): Condition = {
-    Condition(() => expr)
-  }
 }
 
 trait FlowSyntax {

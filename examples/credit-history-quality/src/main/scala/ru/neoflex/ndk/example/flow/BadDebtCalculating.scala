@@ -2,7 +2,6 @@ package ru.neoflex.ndk.example.flow
 
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.example.domain.{ CreditHistoryQuality, Loan }
 
 case class BadDebtCalculating(loans: Seq[Loan], chQuality: CreditHistoryQuality)

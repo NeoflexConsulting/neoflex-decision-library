@@ -2,7 +2,6 @@ package ru.neoflex.ndk.testkit.flow
 
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
 case class TestFlow(applicant: Applicant, out: ApplicationResponse)
@@ -13,9 +12,9 @@ case class TestFlow(applicant: Applicant, out: ApplicationResponse)
         RiskLevelTable(applicant, out),
 
         gateway("g1", "Risk level gateway") {
-          when("Level 1") { out.riskLevel == 1 } andThen {
+          when("Level 1") { out.riskLevel == 1 } andThen action {
             out.underwritingRequired = false
-          } and when("Level 3") { out.riskLevel == 3 } andThen {
+          } and when("Level 3") { out.riskLevel == 3 } andThen action {
             out.underwritingRequired = true
             out.underwritingLevel = 2
           } and when("Level 4") { out.riskLevel == 4 } andThen {

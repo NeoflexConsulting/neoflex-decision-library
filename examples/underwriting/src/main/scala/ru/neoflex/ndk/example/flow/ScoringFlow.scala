@@ -2,7 +2,6 @@ package ru.neoflex.ndk.example.flow
 
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.example.domain.Person
 import ru.neoflex.ndk.example.domain.ApplicationResponse
 
@@ -18,70 +17,70 @@ case class ScoringFlow(in: Person, out: ApplicationResponse)
           }
         },
 
-        gateway("age") {
-          when(in.age < 39) andThen {
+        rule("age") {
+          condition(in.age < 39) andThen {
             out.scoring += 13
-          } and when(in.age >= 30 && in.age <= 39) andThen {
+          } condition(in.age >= 30 && in.age <= 39) andThen {
             out.scoring += 17
-          } and when(in.age >= 40 && in.age <= 49) andThen {
+          } condition(in.age >= 40 && in.age <= 49) andThen {
             out.scoring += 23
           } otherwise {
             out.scoring += 23
           }
         },
 
-        gateway("maritalStatus") {
-          when(in.maritalStatus == "MARRIED") andThen {
+        rule("maritalStatus") {
+          condition(in.maritalStatus == "MARRIED") andThen {
             out.scoring += 27
-          } and when(in.maritalStatus == "REMARRIAGE") andThen {
+          } condition(in.maritalStatus == "REMARRIAGE") andThen {
             out.scoring += 22
-          } and when(in.maritalStatus == "WIDOWHOOD") andThen {
+          } condition(in.maritalStatus == "WIDOWHOOD") andThen {
             out.scoring += 20
-          } and when(in.maritalStatus == "DIVORCED") andThen {
+          } condition(in.maritalStatus == "DIVORCED") andThen {
             out.scoring += 10
           } otherwise {
             out.scoring += 0
           }
         },
 
-        gateway("childrenQty") {
-          when(in.childrenQty == 0) andThen {
+        rule("childrenQty") {
+          condition(in.childrenQty == 0) andThen {
             out.scoring += 0
-          } and when(in.childrenQty == 1) andThen {
+          } condition(in.childrenQty == 1) andThen {
             out.scoring += 6
-          } and when(in.childrenQty == 2) andThen {
+          } condition(in.childrenQty == 2) andThen {
             out.scoring += 13
-          } and when(in.childrenQty == 3) andThen {
+          } condition(in.childrenQty == 3) andThen {
             out.scoring += 6
           } otherwise {
             out.scoring += 0
           }
         },
 
-        gateway("education") {
-          when(in.education == "BASIC GENERAL") andThen {
+        rule("education") {
+          condition(in.education == "BASIC GENERAL") andThen {
             out.scoring += 0
-          } and when(in.education == "SECONDARY GENERAL") andThen {
+          } condition(in.education == "SECONDARY GENERAL") andThen {
             out.scoring += 0
-          } and when(in.education == "PRIMARY PROFESSIONAL") andThen {
+          } condition(in.education == "PRIMARY PROFESSIONAL") andThen {
             out.scoring += 2
-          } and when(in.education == "SECONDARY PROFESSIONAL") andThen {
+          } condition(in.education == "SECONDARY PROFESSIONAL") andThen {
             out.scoring += 2
-          } and when(in.education == "INCOMPLETE HIGHER EDUCATION") andThen {
+          } condition(in.education == "INCOMPLETE HIGHER EDUCATION") andThen {
             out.scoring += 7
-          } and when(in.education == "HIGHER EDUCATION") andThen {
+          } condition(in.education == "HIGHER EDUCATION") andThen {
             out.scoring += 10
-          } and when(in.education == "MORE THAN ONE HIGHER EDUCATION") andThen {
+          } condition(in.education == "MORE THAN ONE HIGHER EDUCATION") andThen {
             out.scoring += 15
           } otherwise {
             out.scoring += 15
           }
         },
 
-        gateway("workExperience") {
-          when(in.workExperience == "3-") andThen {
+        rule("workExperience") {
+          condition(in.workExperience == "3-") andThen {
             out.scoring += 0
-          } and when(in.workExperience == "3-5") andThen {
+          } condition(in.workExperience == "3-5") andThen {
             out.scoring += 6
           } otherwise {
             out.scoring += 15

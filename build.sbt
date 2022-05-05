@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     publish / skip := true
   )
-  .aggregate(core, testKit, underwritingExample, creditHistoryQualityExample)
+  .aggregate(core, testKit, ndkRenderer, underwritingExample, creditHistoryQualityExample)
 
 lazy val core = Project(id = "neoflex-decision-kit", base = file("core"))
   .settings(
@@ -28,13 +28,19 @@ lazy val testKit = (project in file("ndk-test-kit"))
   )
   .dependsOn(core)
 
+lazy val ndkRenderer = (project in file("ndk-renderer"))
+  .settings(
+    name := "ndk-renderer",
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+  ).dependsOn(core)
+
 lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(
     name := "underwriting-example",
     version := "0.0.1-SNAPSHOT",
     publish / skip := true
   )
-  .dependsOn(core)
+  .dependsOn(core, ndkRenderer)
 
 lazy val creditHistoryQualityExample = (project in file("examples/credit-history-quality"))
   .settings(
@@ -42,4 +48,4 @@ lazy val creditHistoryQualityExample = (project in file("examples/credit-history
     version := "0.0.1-SNAPSHOT",
     publish / skip := true
   )
-  .dependsOn(core)
+  .dependsOn(core, ndkRenderer)

@@ -2,7 +2,6 @@ package ru.neoflex.ndk.example.flow
 
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.example.domain._
 
 case class ChecksFlow(
@@ -21,20 +20,20 @@ case class ChecksFlow(
           }
         },
 
-        gateway("Current delinquency CRE check") {
-          when(values.maxCurrentDelq >= 61 && values.currentDelqSum >= 150000) andThen {
+        rule("Current delinquency CRE check") {
+          condition(values.maxCurrentDelq >= 61 && values.currentDelqSum >= 150000) andThen {
             checkMarks.curDelCRE = Blue
-          } and when(values.maxCurrentDelq <= 5 && values.currentDelqSum <= 50000) andThen {
+          } condition (values.maxCurrentDelq <= 5 && values.currentDelqSum <= 50000) andThen {
             checkMarks.curDelCRE = White
           } otherwise {
             checkMarks.curDelCRE = Yellow
           }
         },
 
-        gateway("Max delinquency CRE check") {
-          when("345789" contains applicant.externalCheck.loansOverview.worstStatusEver) andThen {
+        rule("Max delinquency CRE check") {
+          condition("345789" contains applicant.externalCheck.loansOverview.worstStatusEver) andThen {
             checkMarks.maxDelCRE = Blue
-          } and when(applicant.externalCheck.loansOverview.worstStatusEver == '2') andThen {
+          } condition(applicant.externalCheck.loansOverview.worstStatusEver == '2') andThen {
             checkMarks.maxDelCRE = Yellow
           } otherwise {
             checkMarks.maxDelCRE = White

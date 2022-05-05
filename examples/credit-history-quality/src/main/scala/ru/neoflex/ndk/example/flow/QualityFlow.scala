@@ -1,7 +1,6 @@
 package ru.neoflex.ndk.example.flow
 
 import ru.neoflex.ndk.dsl.Flow
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.example.domain.{ Applicant, CheckMarks, CreditHistoryQuality, IntermediateValues }
 

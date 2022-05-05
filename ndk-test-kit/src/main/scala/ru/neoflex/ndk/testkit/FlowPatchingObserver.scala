@@ -3,7 +3,7 @@ package ru.neoflex.ndk.testkit
 import cats.MonadError
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.engine.FlowExecutionObserver
-import ru.neoflex.ndk.error.{NdkError, OperatorsTypeMatchError}
+import ru.neoflex.ndk.error.{ NdkError, OperatorsTypeMatchError }
 import cats.syntax.applicative._
 import cats.syntax.applicativeError._
 
@@ -32,8 +32,8 @@ class FlowPatchingObserver[F[_]](operatorsToReplace: Map[String, FlowOp])(implic
   override def whileFinished(loop: WhileOp): F[Unit]                     = ().pure
   override def forEachStarted(forEach: ForEachOp): F[ForEachOp]          = replaceOperatorIfNeeded(forEach)
   override def forEachFinished(forEach: ForEachOp): F[Unit]              = ().pure
-  override def ruleStarted(rule: Rule): F[Rule]                          = replaceOperatorIfNeeded(rule)
-  override def ruleFinished(rule: Rule): F[Unit]                         = ().pure
+  override def ruleStarted(rule: RuleOp): F[RuleOp]                      = replaceOperatorIfNeeded(rule)
+  override def ruleFinished(rule: RuleOp): F[Unit]                       = ().pure
   override def tableStarted(table: TableOp): F[TableOp]                  = replaceOperatorIfNeeded(table)
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] = ().pure
 }

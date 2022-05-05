@@ -2,7 +2,6 @@ package ru.neoflex.ndk.testkit.flow
 
 import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
-import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.syntax.{ condition, flowOps, forEach, rule }
 
 case class LoanDebtUnderwritingFlow(loans: Seq[Loan], out: ApplicationResponse)
