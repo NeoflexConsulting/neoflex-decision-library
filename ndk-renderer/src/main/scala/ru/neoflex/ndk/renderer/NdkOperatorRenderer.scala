@@ -3,7 +3,6 @@ package ru.neoflex.ndk.renderer
 import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.renderer.uml.PlantUmlEncodersImpl
 
-import scala.reflect.{ClassTag, classTag}
 import scala.reflect.runtime.universe.runtimeMirror
 
 object NdkOperatorRenderer {
@@ -30,24 +29,5 @@ object NdkOperatorRenderer {
     str
       .replaceAll("[\n]", "|n")
       .replaceAll("[\r]", "|r")
-  }
-}
-
-object T extends App {
-  import scala.reflect.runtime.universe._
-
-  test[Char]()
-
-  def test[A: TypeTag: ClassTag](): Unit = {
-    val tt = implicitly[TypeTag[A]]
-    val cls = classTag[A].runtimeClass
-    val mirror = runtimeMirror(cls.getClassLoader)
-    val smb = mirror.classSymbol(cls)
-    println(tt)
-    println(smb)
-    println(tt.tpe)
-    println(smb.info)
-    println(tt.tpe =:= typeOf[A])
-    println(smb.info =:= typeOf[A])
   }
 }
