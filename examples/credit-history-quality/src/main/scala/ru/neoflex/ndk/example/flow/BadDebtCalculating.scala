@@ -6,7 +6,8 @@ import ru.neoflex.ndk.example.domain.{ CreditHistoryQuality, Loan }
 
 case class BadDebtCalculating(loans: Seq[Loan], chQuality: CreditHistoryQuality)
     extends Flow(
-      "Bad debt calculation",
+      "bdc-f-1",
+      Some("Bad debt calculation"),
       forEachOp(NoId, Some("Has more values to determine bad debt?"), loans) { loan =>
         flow(
           forEachOp("Payment discipline", loan.paymentDiscipline) { mannerOfPayment =>

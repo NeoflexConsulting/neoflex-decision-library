@@ -11,6 +11,7 @@ final case class Rule(
     extends RuleOp
 
 trait RuleSyntax {
+  def rule(body: => RuleBuilder): Rule = rule()(body)
   def rule(id: String = NoId, name: Option[String] = None)(body: => RuleBuilder): Rule = {
     val rb = body
     Rule(id, name, rb.conditions, rb.otherwiseBranch)

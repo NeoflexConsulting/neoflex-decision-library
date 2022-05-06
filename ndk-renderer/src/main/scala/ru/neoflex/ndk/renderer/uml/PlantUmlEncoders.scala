@@ -11,8 +11,10 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
 
   def encode(op: FlowOp): String = {
     val flowUml = apply(op)
+    val title = op.name.map(x => s"title $x").getOrElse("")
     s"""@startuml
        |start
+       |$title
        |$flowUml
        |stop
        |@enduml""".stripMargin
@@ -70,7 +72,7 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
   }
 
   val table: Encoder[TableOp] = (t: TableOp) => {
-    t.name.getOrElse(s":$NoName table;")
+    t.name.map(x => s":$x;").getOrElse(s":$NoName table;")
   }
 
   override def whileLoop: Encoder[WhileOp] = (w: WhileOp) => {

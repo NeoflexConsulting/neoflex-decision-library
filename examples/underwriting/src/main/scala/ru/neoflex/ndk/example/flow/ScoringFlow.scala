@@ -4,91 +4,92 @@ import ru.neoflex.ndk.dsl.Flow
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.example.domain.Person
 import ru.neoflex.ndk.example.domain.ApplicationResponse
+import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
 case class ScoringFlow(in: Person, out: ApplicationResponse)
     extends Flow(
       "Person scoring calculation flow",
       flowOps(
-        rule("sex") {
-          condition(in.sex == "WOMAN") andThen {
+        rule("s-r-1") {
+          condition("sex = WOMAN", in.sex == "WOMAN") andThen {
             out.scoring += 50
           } otherwise {
             out.scoring -= 10
           }
         },
 
-        rule("age") {
-          condition(in.age < 39) andThen {
+        rule("a-r-1") {
+          condition("age < 39", in.age < 39) andThen {
             out.scoring += 13
-          } condition(in.age >= 30 && in.age <= 39) andThen {
+          } condition("age >= 30 and age <= 39", in.age >= 30 && in.age <= 39) andThen {
             out.scoring += 17
-          } condition(in.age >= 40 && in.age <= 49) andThen {
+          } condition("age >= 40 and age <= 49", in.age >= 40 && in.age <= 49) andThen {
             out.scoring += 23
           } otherwise {
             out.scoring += 23
           }
         },
 
-        rule("maritalStatus") {
-          condition(in.maritalStatus == "MARRIED") andThen {
+        rule("ms-r-1") {
+          condition("Is married?", in.maritalStatus == "MARRIED") andThen {
             out.scoring += 27
-          } condition(in.maritalStatus == "REMARRIAGE") andThen {
+          } condition("Is there remarriage?", in.maritalStatus == "REMARRIAGE") andThen {
             out.scoring += 22
-          } condition(in.maritalStatus == "WIDOWHOOD") andThen {
+          } condition("Is there widowhood?", in.maritalStatus == "WIDOWHOOD") andThen {
             out.scoring += 20
-          } condition(in.maritalStatus == "DIVORCED") andThen {
+          } condition("Is there divorce?", in.maritalStatus == "DIVORCED") andThen {
             out.scoring += 10
           } otherwise {
             out.scoring += 0
           }
         },
 
-        rule("childrenQty") {
-          condition(in.childrenQty == 0) andThen {
+        rule("cq-r-1") {
+          condition("No children?", in.childrenQty == 0) andThen {
             out.scoring += 0
-          } condition(in.childrenQty == 1) andThen {
+          } condition("One child?", in.childrenQty == 1) andThen {
             out.scoring += 6
-          } condition(in.childrenQty == 2) andThen {
+          } condition("Two children?", in.childrenQty == 2) andThen {
             out.scoring += 13
-          } condition(in.childrenQty == 3) andThen {
+          } condition("Three children?", in.childrenQty == 3) andThen {
             out.scoring += 6
           } otherwise {
             out.scoring += 0
           }
         },
 
-        rule("education") {
-          condition(in.education == "BASIC GENERAL") andThen {
+        rule("edu-r-1") {
+          condition("Basic education?", in.education == "BASIC GENERAL") andThen {
             out.scoring += 0
-          } condition(in.education == "SECONDARY GENERAL") andThen {
+          } condition("General secondary education?", in.education == "SECONDARY GENERAL") andThen {
             out.scoring += 0
-          } condition(in.education == "PRIMARY PROFESSIONAL") andThen {
+          } condition("Primary professional education?", in.education == "PRIMARY PROFESSIONAL") andThen {
             out.scoring += 2
-          } condition(in.education == "SECONDARY PROFESSIONAL") andThen {
+          } condition("Secondary professional education?", in.education == "SECONDARY PROFESSIONAL") andThen {
             out.scoring += 2
-          } condition(in.education == "INCOMPLETE HIGHER EDUCATION") andThen {
+          } condition("Incomplete higher education?", in.education == "INCOMPLETE HIGHER EDUCATION") andThen {
             out.scoring += 7
-          } condition(in.education == "HIGHER EDUCATION") andThen {
+          } condition("Higher education?", in.education == "HIGHER EDUCATION") andThen {
             out.scoring += 10
-          } condition(in.education == "MORE THAN ONE HIGHER EDUCATION") andThen {
+          } condition("More than one higher education?", in.education == "MORE THAN ONE HIGHER EDUCATION") andThen {
             out.scoring += 15
           } otherwise {
             out.scoring += 15
           }
         },
 
-        rule("workExperience") {
-          condition(in.workExperience == "3-") andThen {
+        rule("wexp-r-1") {
+          condition("Work experience < 3 years?", in.workExperience == "3-") andThen {
             out.scoring += 0
-          } condition(in.workExperience == "3-5") andThen {
+          } condition("Work experience from 3 to 5 years?", in.workExperience == "3-5") andThen {
             out.scoring += 6
           } otherwise {
             out.scoring += 15
           }
         },
 
-        rule("loansQty") {
-          condition(in.loansQty >= 1) andThen {
+        rule("lnsq-r-1") {
+          condition("Had any loans?", in.loansQty >= 1) andThen {
             out.scoring += 15
           }
         }

@@ -4,9 +4,11 @@ import ru.neoflex.ndk.dsl.Table
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.example.domain.{ Applicant, ApplicationResponse }
+import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
 case class RiskLevelTable(in: Applicant, out: ApplicationResponse)
     extends Table(
+      "rl-t-1",
       "Risk level table",
       expressions (
         "role" expr in.role,
