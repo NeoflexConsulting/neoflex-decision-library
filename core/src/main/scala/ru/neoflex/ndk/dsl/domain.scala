@@ -78,6 +78,7 @@ trait WhileOp extends FlowOp {
 trait ForEachOp extends FlowOp {
   def collection: () => Iterable[Any]
   def body: Any => FlowOp
+  def elementClass: Option[Class[_]]
 }
 
 trait FlowSyntax {

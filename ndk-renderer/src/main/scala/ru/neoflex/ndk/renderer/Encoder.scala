@@ -15,9 +15,11 @@ trait Encoders {
   def generic: Encoder[FlowOp]
 }
 
-trait GenericEncoder extends Encoder[FlowOp] {
+trait EncodersHolder {
   val encoders: Encoders
+}
 
+trait GenericEncoder extends Encoder[FlowOp] with EncodersHolder {
   override def apply(op: FlowOp): String =
     op match {
       case action: Action     => encoders.action(action)
