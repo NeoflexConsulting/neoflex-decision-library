@@ -74,25 +74,35 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
   }
 
   val table: Encoder[TableOp] = (t: TableOp) => {
-    val conditionsString = t.conditions.map { row =>
-      val r         = new StringBuilder()
-      val separator = " and "
-      row.operators.zip(t.expressions).foreach {
-        case (operator, expression) =>
-          val exprName = expression.name
-          r ++= operator.show(exprName)
-          r ++= separator
+    val name = t.name.getOrElse(s"$NoName table")
+    val r    = new StringBuilder()
+    r ++= s":$name;\r\n"
+    r ++= "note right\r\n"
+
+    t.expressions.foreach { e =>
+      r ++= "||= "
+      r ++= e.name
+    }
+    r ++= "|= action |\r\n"
+
+    t.conditions.foreach { row =>
+      val rowBuilder = new StringBuilder()
+      row.operators.foreach { operator =>
+        rowBuilder ++= "| "
+        rowBuilder ++= operator.show()
       }
-      r.delete(r.length() - separator.length, r.length() + separator.length)
+      r ++= "|"
+      r ++= rowBuilder.result()
+      r ++= "| "
       row.callableAction.show().foreach { actionName =>
-        r ++= " "
         r ++= actionName
       }
-      r.result()
-    }.mkString("", "\r\n", ";")
+      r ++= " |\r\n"
+    }
 
-    val name = t.name.getOrElse(s"$NoName table")
-    s":$name:\r\n\r\n$conditionsString"
+    r ++= "end note"
+
+    r.result()
   }
 
   val whileLoop: Encoder[WhileOp] = (w: WhileOp) => {
