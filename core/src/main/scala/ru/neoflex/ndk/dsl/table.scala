@@ -1,4 +1,5 @@
 package ru.neoflex.ndk.dsl
+import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl.Table._
 
 import scala.reflect.ClassTag
@@ -89,38 +90,67 @@ object Table {
     def andConditions(conditions: Condition*): TableBuilder = copy(conditionsList = conditions.toList)
   }
 
+  final case class RowBuilder(operators: Seq[Operator]) {
+    def apply: CallableAction => Table.Condition = action => Table.Condition(operators, action)
+    def apply(name: String)(body: => Unit): Condition = Condition(operators, SealedAction(() => body, name))
+  }
+
   trait Operators {
     trait OrderingOperator {
-      def compare[T: Ordering: ClassTag](o: Any, v: T)(cmp: Ordering[T] => (T, T) => Boolean): Boolean = o match {
+      def compare[T: Ordering : ClassTag](o: Any, v: T)(cmp: Ordering[T] => (T, T) => Boolean): Boolean = o match {
         case x: T => cmp(implicitly[Ordering[T]])(x, v)
       }
     }
+
     case class eqv[T](v: T) extends Operator {
       override def apply(o: Any): Boolean = o == v
     }
+
     case class neq[T](v: T) extends Operator {
       override def apply(o: Any): Boolean = o != v
     }
-    case class gt[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
+
+    case class gt[T: Ordering : ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.gt)
     }
-    case class gte[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
+
+    case class gte[T: Ordering : ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.gteq)
     }
-    case class lt[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
+
+    case class lt[T: Ordering : ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.lt)
     }
-    case class lte[T: Ordering: ClassTag](v: T) extends Operator with OrderingOperator {
+
+    case class lte[T: Ordering : ClassTag](v: T) extends Operator with OrderingOperator {
       override def apply(o: Any): Boolean = compare(o, v)(_.lteq)
     }
+
     case class empty() extends Operator {
       override def apply(v: Any): Boolean = true
     }
+
     case class nonEmpty() extends Operator {
       override def apply(v: Any): Boolean = true
     }
+
     case class any() extends Operator {
       override def apply(v: Any): Boolean = true
+    }
+
+    implicit class OperatorOps(op: Operator) {
+      def show(lhs: String): String = op match {
+        case eqv(v) => s"$lhs is $v"
+        case neq(v) => s"$lhs is not $v"
+        case gt(v) => s"$lhs > $v"
+        case gte(v) => s"$lhs >= $v"
+        case lt(v) => s"$lhs < $v"
+        case lte(v) => s"$lhs <= $v"
+        case empty() => s"$lhs is empty"
+        case nonEmpty() => s"$lhs is non empty"
+        case any() => s"$lhs is any value"
+        case _ => "Unknown operator"
+      }
     }
   }
 }
@@ -133,7 +163,7 @@ trait TableSyntax extends Operators {
 
   def expressions: TableBuilder = TableBuilder(List.empty, List.empty, List.empty)
 
-  def row(operators: Operator*): CallableAction => Table.Condition = action => Table.Condition(operators, action)
+  def row(operators: Operator*): RowBuilder = RowBuilder(operators)
 }
 
 trait TableImplicits {
@@ -161,5 +191,12 @@ trait TableImplicits {
 
   implicit class NamingActionRef(name: String) {
     def withArgs(args: Any*): ActionRef = ActionRef(name, Args(args.toList))
+  }
+
+  implicit class CallableActionOps(a: CallableAction) {
+    def show(): Option[String] = a match {
+      case ActionRef(name, _) => s"-> $name".some
+      case SealedAction(_, name) => Option(name).filter(_.nonEmpty).map(x => s"-> $x")
+    }
   }
 }

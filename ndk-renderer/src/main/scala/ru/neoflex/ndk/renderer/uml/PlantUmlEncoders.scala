@@ -1,6 +1,8 @@
 package ru.neoflex.ndk.renderer.uml
 
 import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.dsl.implicits.CallableActionOps
+import ru.neoflex.ndk.dsl.syntax.OperatorOps
 import ru.neoflex.ndk.renderer.{ Encoder, Encoders, GenericEncoder }
 
 import scala.collection.mutable
@@ -72,7 +74,25 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
   }
 
   val table: Encoder[TableOp] = (t: TableOp) => {
-    t.name.map(x => s":$x;").getOrElse(s":$NoName table;")
+    val conditionsString = t.conditions.map { row =>
+      val r         = new StringBuilder()
+      val separator = " and "
+      row.operators.zip(t.expressions).foreach {
+        case (operator, expression) =>
+          val exprName = expression.name
+          r ++= operator.show(exprName)
+          r ++= separator
+      }
+      r.delete(r.length() - separator.length, r.length() + separator.length)
+      row.callableAction.show().foreach { actionName =>
+        r ++= " "
+        r ++= actionName
+      }
+      r.result()
+    }.mkString("", "\r\n", ";")
+
+    val name = t.name.getOrElse(s"$NoName table")
+    s":$name:\r\n\r\n$conditionsString"
   }
 
   val whileLoop: Encoder[WhileOp] = (w: WhileOp) => {

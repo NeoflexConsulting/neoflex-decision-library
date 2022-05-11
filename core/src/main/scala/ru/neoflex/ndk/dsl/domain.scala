@@ -15,24 +15,9 @@ sealed trait FlowOp {
   def name: Option[String] = None
 }
 
-abstract class Action(override val id: String, val f: () => Unit, override val name: Option[String] = None)
-    extends (() => Unit)
-    with FlowOp {
-  def this(f: => Unit) = {
-    this(NoId, () => f)
-  }
-
-  def this(id: String, f: => Unit) = {
-    this(id, () => f)
-  }
-
-  override def apply(): Unit = f()
+trait Action extends FlowOp with (() => Unit) {
+  val f: () => Unit
 }
-final case class SealedAction(
-  override val f: () => Unit,
-  override val id: String = NoId,
-  override val name: Option[String] = None)
-    extends Action(id, f, name)
 
 trait RuleOp extends FlowOp {
   def conditions: Seq[Condition]
@@ -85,9 +70,4 @@ trait FlowSyntax {
   def flow: SealedFlow                                          = SealedFlow(NoId, None, Seq.empty)
   def flow(id: String, name: Option[String] = None): SealedFlow = SealedFlow(id, name, Seq.empty)
   def flowOps(ops: FlowOp*): Seq[FlowOp]                        = ops
-}
-
-trait ActionSyntax {
-  def action(f: => Unit): SealedAction                                                 = SealedAction(() => f)
-  def action(id: String = NoId, name: Option[String] = None)(f: => Unit): SealedAction = SealedAction(() => f, id, name)
 }
