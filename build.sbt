@@ -9,30 +9,36 @@ lazy val root = (project in file("."))
   )
   .aggregate(core, testKit, ndkRenderer, underwritingExample, creditHistoryQualityExample)
 
-lazy val core = Project(id = "neoflex-decision-kit", base = file("core"))
+lazy val core = artifactModule("neoflex-decision-kit", "core")
   .settings(
     name := "neoflex-decision-kit",
-    version := "0.0.1-SNAPSHOT",
     libraryDependencies += "org.typelevel"  %% "cats-core"      % "2.7.0",
     libraryDependencies += "org.slf4j"      % "slf4j-api"       % "1.7.9",
     libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11"
   )
 
-lazy val testKit = (project in file("ndk-test-kit"))
+lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
   .settings(
     name := "ndk-test-kit",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.11",
+    resolvers ++= Repositories.resolvers,
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.2.11",
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.0.0"
+    ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }
   )
-  .dependsOn(core)
 
-lazy val ndkRenderer = (project in file("ndk-renderer"))
+lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
   .settings(
     name := "ndk-renderer",
-    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
-  ).dependsOn(core)
+    resolvers ++= Repositories.resolvers,
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.0.0"
+    )
+  )
 
 lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(
@@ -49,3 +55,6 @@ lazy val creditHistoryQualityExample = (project in file("examples/credit-history
     publish / skip := true
   )
   .dependsOn(core, ndkRenderer)
+
+def artifactModule(id: String, baseDir: String) =
+  Project(id = id, base = file(baseDir)).settings(Settings.artifactSettings(baseDir))
