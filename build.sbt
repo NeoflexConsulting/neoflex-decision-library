@@ -1,5 +1,6 @@
 import sbt.Keys.libraryDependencies
 
+ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 ThisBuild / organization := "ru.neoflex.ndk"
 ThisBuild / scalaVersion := "2.13.2"
 
