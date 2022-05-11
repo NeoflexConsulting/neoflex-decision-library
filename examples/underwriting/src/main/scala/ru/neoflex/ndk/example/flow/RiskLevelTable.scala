@@ -14,7 +14,6 @@ case class RiskLevelTable(in: Applicant, out: ApplicationResponse)
         "role" expr in.role,
         "channel" expr in.channel
       ) andConditions (
-        row(eqv("APPLICANT"), eqv("RECOMMEND")).apply { out.riskLevel = 2 },
         row(eqv("APPLICANT"), eqv("RECOMMEND")).apply("riskLevel = 2") { out.riskLevel = 2 },
         row(eqv("APPLICANT"), eqv("PROMO")).apply("riskLevel = 3") { out.riskLevel = 3 },
         row(eqv("APPLICANT"), eqv("STREET")).apply("riskLevel = 3") { out.riskLevel = 3 },
