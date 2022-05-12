@@ -8,7 +8,10 @@ final case class Rule(
   override val name: Option[String],
   conditions: Seq[Condition],
   otherwise: Option[Otherwise])
-    extends RuleOp
+    extends RuleOp {
+
+  override def isEmbedded: Boolean = true
+}
 
 trait RuleSyntax {
   def rule(body: => RuleBuilder): Rule = rule()(body)

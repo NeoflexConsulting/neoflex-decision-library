@@ -19,7 +19,10 @@ final case class SealedAction(
   override val f: () => Unit,
   override val id: String = NoId,
   override val name: Option[String] = None)
-    extends ActionBase(id, f, name)
+    extends ActionBase(id, f, name) {
+
+  override def isEmbedded: Boolean = true
+}
 
 trait ActionSyntax {
   def action(f: => Unit): SealedAction                                                 = SealedAction(() => f)

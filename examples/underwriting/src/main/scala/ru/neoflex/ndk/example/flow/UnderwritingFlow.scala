@@ -22,7 +22,7 @@ case class UnderwritingFlow(applicant: Applicant, out: ApplicationResponse)
                 out.underwritingLevel = 2
               }
             }
-          } otherwise flow("Underwriting by scoring value")(
+          } otherwise flow("us-f-1", "Underwriting by scoring value")(
             ScoringFlow(applicant.person, out),
             rule("uwl-r-1") {
               condition("scoring < 150?", out.scoring < 150) andThen {

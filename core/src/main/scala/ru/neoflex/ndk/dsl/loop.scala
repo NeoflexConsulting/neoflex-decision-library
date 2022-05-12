@@ -9,7 +9,10 @@ final case class While(
   override val name: Option[String],
   condition: () => Boolean,
   body: FlowOp)
-    extends WhileOp
+    extends WhileOp {
+
+  override def isEmbedded: Boolean = true
+}
 
 final case class ForEach(
   override val id: String,
@@ -17,7 +20,10 @@ final case class ForEach(
   collection: () => Iterable[Any],
   body: Any => FlowOp,
   elementClass: Option[Class[_]] = None)
-    extends ForEachOp
+    extends ForEachOp {
+
+  override def isEmbedded: Boolean = true
+}
 
 trait WhileSyntax {
   def whileLoop(condition: => Boolean)(body: FlowOp): While             = While(NoId, None, () => condition, body)

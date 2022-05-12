@@ -8,6 +8,7 @@ import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
 case class ScoringFlow(in: Person, out: ApplicationResponse)
     extends Flow(
+      "psc-f-1",
       "Person scoring calculation flow",
       flowOps(
         rule("s-r-1") {

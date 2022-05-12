@@ -1,11 +1,11 @@
 package ru.neoflex.ndk.renderer.uml
 
 import ru.neoflex.ndk.dsl.ForEachOp
-import ru.neoflex.ndk.renderer.Encoder
+import ru.neoflex.ndk.renderer.{Encoder, EncodingContext}
 
 trait ForEachOperatorEncoder extends Encoder[ForEachOp] {
-  override def apply(forEach: ForEachOp): String = {
-    val loopName = forEach.name.getOrElse("has more elements?")
+  override def apply(ctx: EncodingContext[ForEachOp]): String = {
+    val loopName = ctx.op.name.getOrElse("has more elements?")
     s"""
        |while ($loopName) is (yes)
        |:action;

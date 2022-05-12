@@ -25,7 +25,10 @@ final case class SealedTable(
   override val expressions: List[Expression],
   override val actions: List[ActionDef],
   override val conditions: List[Table.Condition])
-    extends Table(id, name, TableBuilder(expressions, actions, conditions))
+    extends Table(id, name, TableBuilder(expressions, actions, conditions)) {
+
+  override def isEmbedded: Boolean = true
+}
 
 object Table {
   final case class Expression(f: () => Any, name: String = "")

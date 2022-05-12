@@ -3,7 +3,15 @@ import ru.neoflex.ndk.dsl.Gateway.When
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
-final case class Gateway(override val id: String, override val name: Option[String], whens: Seq[When], otherwise: FlowOp) extends GatewayOp
+final case class Gateway(
+  override val id: String,
+  override val name: Option[String],
+  whens: Seq[When],
+  otherwise: FlowOp)
+    extends GatewayOp {
+
+  override def isEmbedded: Boolean = true
+}
 
 object Gateway {
   final case class SealedWhens(whens: Seq[When]) {
@@ -17,7 +25,7 @@ object Gateway {
 
   final case class WhenBuilder(name: Option[String], var whens: Seq[When]) {
     private var exprValue: () => Boolean = _
-    private var action: FlowOp       = _
+    private var action: FlowOp           = _
 
     def apply(expr: => Boolean): WhenBuilder = {
       exprValue = () => expr

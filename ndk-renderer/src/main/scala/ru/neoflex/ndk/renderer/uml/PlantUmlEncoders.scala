@@ -3,17 +3,19 @@ package ru.neoflex.ndk.renderer.uml
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.implicits.CallableActionOps
 import ru.neoflex.ndk.dsl.syntax.OperatorOps
-import ru.neoflex.ndk.renderer.{ Encoder, Encoders, GenericEncoder }
+import ru.neoflex.ndk.renderer.{ DepthLimitedEncoder, Encoder, Encoders, EncodingContext }
 
 import scala.collection.mutable
 
-trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
+trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder {
   override val encoders: Encoders       = this
   override def generic: Encoder[FlowOp] = this
 
-  def encode(op: FlowOp): String = {
-    val flowUml = apply(op)
-    val title   = op.name.map(x => s"title $x").getOrElse("")
+  def encode(op: FlowOp): String = encode(EncodingContext(op, 1, 0))
+
+  def encode(ctx: EncodingContext[FlowOp]): String = {
+    val flowUml = apply(ctx)
+    val title   = ctx.op.name.map(x => s"title $x").getOrElse("")
     s"""@startuml
        |start
        |$title
@@ -22,12 +24,13 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
        |@enduml""".stripMargin
   }
 
-  val action: Encoder[Action] = (a: Action) => {
-    val actionName = a.name.getOrElse(s"$NoName action")
+  val action: Encoder[Action] = (ctx: EncodingContext[Action]) => {
+    val actionName = ctx.op.name.getOrElse(s"$NoName action")
     s":$actionName;"
   }
 
-  val rule: Encoder[RuleOp] = (r: RuleOp) => {
+  val rule: Encoder[RuleOp] = (ctx: EncodingContext[RuleOp]) => {
+    val r                                              = ctx.op
     val ruleName                                       = r.name.getOrElse(s"$NoName rule")
     def conditionOrRuleName(c: Rule.Condition): String = c.name.getOrElse(ruleName)
     def buildConditionName(c: Rule.Condition): String  = c.name.getOrElse(s"$NoName condition")
@@ -51,20 +54,21 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
     }
   }
 
-  val flow: Encoder[Flow] = (f: Flow) => {
-    f.ops.map(generic).foldLeft("")(String.join("\r\n", _, _))
+  val flow: Encoder[Flow] = (ctx: EncodingContext[Flow]) => {
+    ctx.op.ops.map(x => generic(ctx.withOperatorAndDepth(x))).foldLeft("")(String.join("\r\n", _, _))
   }
 
-  val gateway: Encoder[GatewayOp] = (g: GatewayOp) => {
+  val gateway: Encoder[GatewayOp] = (ctx: EncodingContext[GatewayOp]) => {
+    val g           = ctx.op
     val gatewayName = g.name.getOrElse(s"$NoName gateway")
     val cases = g.whens.zipWithIndex.map {
       case (when, idx) =>
         val whenName = when.name.getOrElse(s"Condition $idx")
         s"""case ($whenName)
-         |${generic(when.op)}""".stripMargin
+         |${generic(ctx.withOperatorAndDepth(when.op))}""".stripMargin
     } :+
       s"""case (otherwise)
-         |${generic(g.otherwise)}""".stripMargin
+         |${generic(ctx.withOperatorAndDepth(g.otherwise))}""".stripMargin
 
     val casesString = cases.mkString("\r\n")
 
@@ -73,7 +77,8 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
        |endswitch""".stripMargin
   }
 
-  val table: Encoder[TableOp] = (t: TableOp) => {
+  val table: Encoder[TableOp] = (ctx: EncodingContext[TableOp]) => {
+    val t    = ctx.op
     val name = t.name.getOrElse(s"$NoName table")
     val r    = new StringBuilder()
     r ++= s":$name;\r\n"
@@ -105,15 +110,21 @@ trait PlantUmlEncoders extends Encoders with Constants with GenericEncoder {
     r.result()
   }
 
-  val whileLoop: Encoder[WhileOp] = (w: WhileOp) => {
+  val whileLoop: Encoder[WhileOp] = (ctx: EncodingContext[WhileOp]) => {
+    val w        = ctx.op
     val loopName = w.name.getOrElse("Condition is true?")
-    val bodyUml  = encoders.generic(w.body)
+    val bodyUml  = encoders.generic(ctx.withOperatorAndDepth(w.body))
     s"""while ($loopName) is (yes)
        |$bodyUml
        |endwhile (no)""".stripMargin
   }
 
   val forEach: Encoder[ForEachOp] = ForEachOperatorEncoder
+
+  val nameOnly: Encoder[FlowOp] = (ctx: EncodingContext[FlowOp]) => {
+    val name = ctx.op.name.getOrElse(s"$NoName operator")
+    s":$name;"
+  }
 }
 
 object SimplePlantUmlEncoders extends PlantUmlEncoders

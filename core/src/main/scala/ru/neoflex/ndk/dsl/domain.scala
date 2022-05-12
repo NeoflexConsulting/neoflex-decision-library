@@ -13,6 +13,8 @@ trait Constants {
 sealed trait FlowOp {
   def id: String           = NoId
   def name: Option[String] = None
+
+  def isEmbedded: Boolean = false
 }
 
 trait Action extends FlowOp with (() => Unit) {
@@ -40,7 +42,10 @@ abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val 
 }
 final case class SealedFlow(override val id: String, override val name: Option[String], override val ops: Seq[FlowOp])
     extends Flow(id, name, ops) {
+
   def apply(ops: FlowOp*): SealedFlow = copy(ops = ops)
+
+  override def isEmbedded: Boolean = true
 }
 
 trait TableOp extends FlowOp {
