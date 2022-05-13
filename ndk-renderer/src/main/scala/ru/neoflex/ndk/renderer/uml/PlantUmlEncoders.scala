@@ -26,7 +26,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
   val action: Encoder[Action] = (ctx: EncodingContext[Action]) => {
     val actionName = ctx.op.name.getOrElse(s"$NoName action")
-    s":$actionName;"
+    addLink(ctx.op, s":$actionName;")
   }
 
   val rule: Encoder[RuleOp] = (ctx: EncodingContext[RuleOp]) => {
@@ -107,7 +107,8 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
     r ++= "end note"
 
-    r.result()
+    val uml = r.result()
+    addLink(t, uml)
   }
 
   val whileLoop: Encoder[WhileOp] = (ctx: EncodingContext[WhileOp]) => {
@@ -123,7 +124,15 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
   val nameOnly: Encoder[FlowOp] = (ctx: EncodingContext[FlowOp]) => {
     val name = ctx.op.name.getOrElse(s"$NoName operator")
-    s":$name;"
+    addLink(ctx.op, s":$name;")
+  }
+
+  private def addLink(op: FlowOp, uml: String): String = {
+    if (op.isEmbedded) {
+      uml
+    } else {
+      s"[[${op.getClass.getName}]] $uml"
+    }
   }
 }
 
