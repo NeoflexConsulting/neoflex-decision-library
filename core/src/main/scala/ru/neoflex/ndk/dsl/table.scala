@@ -103,6 +103,7 @@ object Table {
     trait OrderingOperator {
       def compare[T: Ordering: ClassTag](o: Any, v: T)(cmp: Ordering[T] => (T, T) => Boolean): Boolean = o match {
         case x: T => cmp(implicitly[Ordering[T]])(x, v)
+        case _ => throw new MatchError(o)
       }
     }
 

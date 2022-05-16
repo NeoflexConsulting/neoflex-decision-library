@@ -62,6 +62,7 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
               executeOperator(body).map(_ => Either.left(tweakedWhile)),
               monadError.pure(Either.right(()))
             )
+        case o => throw new MatchError(o)
       }
     }
   }
