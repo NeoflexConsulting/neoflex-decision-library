@@ -24,7 +24,7 @@ lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.11",
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.0.0"
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.1.0"
     ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
@@ -37,7 +37,7 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.0.0"
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.1.0"
     )
   )
 
