@@ -1,6 +1,8 @@
 package ru.neoflex.ndk.renderer.uml
 
+import ru.neoflex.ndk.dsl.Rule.Otherwise
 import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.implicits.CallableActionOps
 import ru.neoflex.ndk.dsl.syntax.OperatorOps
 import ru.neoflex.ndk.renderer.{ DepthLimitedEncoder, Encoder, Encoders, EncodingContext }
@@ -34,21 +36,26 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     val ruleName                                       = r.name.getOrElse(s"$NoName rule")
     def conditionOrRuleName(c: Rule.Condition): String = c.name.getOrElse(ruleName)
     def buildConditionName(c: Rule.Condition): String  = c.name.getOrElse(s"$NoName condition")
-    def otherwiseName(): Option[String]                = r.otherwise.map(_.name.getOrElse("Otherwise"))
+    def otherwiseName(o: Otherwise): String            = o.name.getOrElse("Otherwise")
+    def otherwise(rb: RuleUmlBuilder, actionNum: Int): Unit = r.otherwise.foreach { o =>
+      rb.otherwise(otherwiseName(o)).action(actionNum, makeLinkOrEmpty(o))
+    }
+    def startIf(c: Rule.Condition): RuleUmlBuilder =
+      new RuleUmlBuilder().startIf(conditionOrRuleName(c)).action(1, makeLinkOrEmpty(c))
 
     r.conditions.toList match {
       case head :: Nil =>
-        val ruleBuilder = new RuleUmlBuilder().startIf(conditionOrRuleName(head)).action(1)
-        otherwiseName().foreach(ruleBuilder.otherwise(_).action(2))
+        val ruleBuilder = startIf(head)
+        otherwise(ruleBuilder, 2)
         ruleBuilder.endIf()
       case head :: tail =>
         var actionNum   = 1
-        val ruleBuilder = new RuleUmlBuilder().startIf(conditionOrRuleName(head)).action(actionNum)
+        val ruleBuilder = startIf(head)
         tail.foreach { c =>
           actionNum += 1
-          ruleBuilder.startElseIf(buildConditionName(c)).action(actionNum)
+          ruleBuilder.startElseIf(buildConditionName(c)).action(actionNum, makeLinkOrEmpty(c))
         }
-        otherwiseName().foreach(ruleBuilder.otherwise(_).action(actionNum + 1))
+        otherwise(ruleBuilder, actionNum + 1)
         ruleBuilder.endIf()
       case Nil => ""
     }
@@ -127,11 +134,22 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     addLink(ctx.op, s":$name;")
   }
 
+  private def makeLinkOrEmpty(dls: DeclarationLocationSupport): String = {
+    dls.declarationLocation.map { loc =>
+      val link = FileLineNumber(loc.fileName, loc.lineNumber).stringValue
+      s"[[$link]]"
+    }.getOrElse("")
+  }
+
   private def addLink(op: FlowOp, uml: String): String = {
     if (op.isEmbedded) {
-      uml
+      op match {
+        case dls: DeclarationLocationSupport => makeLinkOrEmpty(dls) + uml
+        case _                               => uml
+      }
     } else {
-      s"[[${op.getClass.getName}]] $uml"
+      val link = ClassLink(op.getClass.getName).stringValue
+      s"[[$link]] $uml"
     }
   }
 }
@@ -155,8 +173,8 @@ private[uml] class RuleUmlBuilder {
     this
   }
 
-  def action(num: Int): RuleUmlBuilder = {
-    b ++= s"\r\n:action$num;"
+  def action(num: Int, link: String): RuleUmlBuilder = {
+    b ++= s"\r\n$link:action$num;"
     this
   }
 

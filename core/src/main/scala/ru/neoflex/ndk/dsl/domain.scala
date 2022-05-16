@@ -1,8 +1,9 @@
 package ru.neoflex.ndk.dsl
 
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
-import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
+import ru.neoflex.ndk.dsl.Rule.{Condition, Otherwise}
+import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
+import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import syntax.NoId
 
 trait Constants {
@@ -17,7 +18,7 @@ sealed trait FlowOp {
   def isEmbedded: Boolean = false
 }
 
-trait Action extends FlowOp with (() => Unit) {
+trait Action extends FlowOp with (() => Unit) with DeclarationLocationSupport {
   val f: () => Unit
 }
 

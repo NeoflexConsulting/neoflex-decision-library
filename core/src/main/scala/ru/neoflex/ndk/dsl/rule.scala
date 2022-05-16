@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.dsl
 
 import ru.neoflex.ndk.dsl.Rule._
+import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.syntax.NoId
 
 final case class Rule(
@@ -46,6 +47,6 @@ object Rule {
       copy(otherwiseBranch = Some(Otherwise(name, () => body)))
   }
 
-  final case class Condition(name: Option[String], expr: () => Boolean, body: () => Unit)
-  final case class Otherwise(name: Option[String], body: () => Unit)
+  final case class Condition(name: Option[String], expr: () => Boolean, body: () => Unit) extends DeclarationLocationSupport
+  final case class Otherwise(name: Option[String], body: () => Unit) extends DeclarationLocationSupport
 }
