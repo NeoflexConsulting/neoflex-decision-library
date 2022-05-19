@@ -103,7 +103,7 @@ object Table {
     trait OrderingOperator {
       def compare[T: Ordering: ClassTag](o: Any, v: T)(cmp: Ordering[T] => (T, T) => Boolean): Boolean = o match {
         case x: T => cmp(implicitly[Ordering[T]])(x, v)
-        case _ => throw new MatchError(o)
+        case _    => throw new MatchError(o)
       }
     }
 
@@ -132,11 +132,19 @@ object Table {
     }
 
     case class empty() extends Operator {
-      override def apply(v: Any): Boolean = true
+      override def apply(v: Any): Boolean = v match {
+        case s: String          => s.isEmpty
+        case i: IterableOnce[_] => i.iterator.isEmpty
+        case _                  => throw new MatchError(v)
+      }
     }
 
     case class nonEmpty() extends Operator {
-      override def apply(v: Any): Boolean = true
+      override def apply(v: Any): Boolean = v match {
+        case s: String          => s.nonEmpty
+        case i: IterableOnce[_] => i.iterator.nonEmpty
+        case _                  => throw new MatchError(v)
+      }
     }
 
     case class any() extends Operator {
