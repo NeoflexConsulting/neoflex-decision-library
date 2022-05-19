@@ -8,9 +8,11 @@ import cats.syntax.flatMap._
 import cats.syntax.functor._
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoName
-import ru.neoflex.ndk.error.{ NdkError, OperatorExecutionError }
+import ru.neoflex.ndk.error._
 import ru.neoflex.ndk.tools.Logging
 
+import java.io.PrintWriter
+import scala.io.Source
 import scala.util.Try
 
 class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit monadError: MonadError[F, NdkError])
@@ -27,6 +29,8 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
     case op: WhileOp        => executeWhile(op).map(Either.right)
     case op: ForEachOp      => executeForEach(op).map(Either.right)
     case flow: Flow         => executeFlow(flow).map(Either.right)
+    case op: PythonOperatorOp[_, _] =>
+      executePythonOperator(op.asInstanceOf[PythonOperatorOp[Any, Any]]).map(Either.right)
   }
 
   private def observeExecution[O <: FlowOp, T](op: O, start: O => F[O], finish: O => F[Unit])(exec: O => F[T]): F[T] = {
@@ -36,6 +40,34 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
       _         <- finish(tweakedOp)
     } yield result
   }.flatten
+
+  protected def executePythonOperator(pyOperatorIn: PythonOperatorOp[Any, Any]): F[Unit] = {
+    def writeInputData(p: Process, o: PythonOperatorOp[_, _]): F[Unit] = {
+      val dataInWriter = new PrintWriter(p.getOutputStream)
+      o.encodedDataIn.foreach { v =>
+        dataInWriter.println(v)
+      }
+      dataInWriter.flush()
+      dataInWriter.close()
+      monadError.raiseWhen(dataInWriter.checkError())(PyOperatorWritingError(o))
+    }
+
+    logger.debug("Executing python operator: ({}, {})", pyOperatorIn.id, pyOperatorIn.name)
+
+    observeExecution(pyOperatorIn, observer.pyOperatorStarted, observer.pyOperatorFinished) { op =>
+      val pb = new ProcessBuilder("python", op.command).redirectErrorStream(true)
+
+      for {
+        process  <- Try(pb.start()).toEither.leftMap(PyOperatorStartError(op, _)).liftTo[F]
+        _        <- writeInputData(process, op)
+        exitCode = process.waitFor()
+        _        <- monadError.raiseWhen(exitCode != 0)(PyOperatorExecutionError(op, exitCode))
+        output   = Source.fromInputStream(process.getInputStream).getLines().toSeq
+        _        <- Try(process.getInputStream.close()).toEither.leftMap(OperatorExecutionError(op, _)).liftTo[F]
+        _        <- op.collectResults(output).leftMap(PyDataDecodeError(output, op, _)).liftTo[F]
+      } yield ()
+    }
+  }
 
   protected def executeFlow(flow: Flow): F[Unit] = {
     logger.debug("Executing flow: ({}, {})", flow.id, flow.name)

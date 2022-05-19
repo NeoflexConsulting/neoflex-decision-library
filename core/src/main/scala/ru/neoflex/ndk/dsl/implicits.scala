@@ -1,3 +1,3 @@
 package ru.neoflex.ndk.dsl
 
-object implicits extends TableImplicits
+object implicits extends TableImplicits with PyDataCodecImplicits

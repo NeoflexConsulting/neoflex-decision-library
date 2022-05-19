@@ -5,8 +5,8 @@ import ru.neoflex.ndk.dsl.syntax.EitherError
 import org.scalactic.source
 
 trait FlowMatchers {
-  def fired(): Matcher                = FiredOperatorMarcher(true)
-  def notFired(): Matcher             = FiredOperatorMarcher(false)
+  def fired(): Matcher                = FiredOperatorMatcher(true)
+  def notFired(): Matcher             = FiredOperatorMatcher(false)
   def executedRows(num: Int): Matcher = ExecutedRows(num)
   def oneExecutedRow(): Matcher       = ExecutedRows(1)
 }
@@ -20,7 +20,7 @@ sealed trait Matcher {
   ): Unit
 }
 
-final case class FiredOperatorMarcher(shouldBeFired: Boolean) extends Matcher {
+final case class FiredOperatorMatcher(shouldBeFired: Boolean) extends Matcher {
   def assertMatch(
     id: String,
     operatorType: OperatorType,

@@ -40,4 +40,9 @@ class FlowExecutionObserverComposite[F[_]](
   override def tableStarted(table: TableOp): F[TableOp]         = callObservers(table, _.tableStarted)
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] =
     callObservers(_.tableFinished(table, executedRows))
+
+  override def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]] =
+    callObservers(op, _.pyOperatorStarted)
+
+  override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit] = callObservers(_.pyOperatorFinished(op))
 }

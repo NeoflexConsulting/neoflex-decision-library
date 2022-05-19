@@ -1,8 +1,9 @@
 package ru.neoflex.ndk.dsl
 
+import cats.implicits.toTraverseOps
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Rule.{Condition, Otherwise}
-import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
+import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
+import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import syntax.NoId
 
@@ -71,6 +72,32 @@ trait ForEachOp extends FlowOp {
   def body: Any => FlowOp
   def elementClass: Option[Class[_]]
 }
+
+abstract class PythonOperatorOp[In: PyDataEncoder, Out: PyDataDecoder] extends FlowOp {
+  def command: String
+  def dataIn: () => Seq[In]
+  def resultCollector: Seq[Out] => Unit
+
+  def encodedDataIn: Iterator[String] = dataIn().iterator.map { v =>
+    implicitly[PyDataEncoder[In]].encode(v)
+  }
+
+  def collectResults(strings: Seq[String]): Either[Throwable, Unit] = {
+    strings.map { v =>
+      implicitly[PyDataDecoder[Out]].decode(v)
+    }.toList.sequence.map(resultCollector).map(_ => ())
+  }
+}
+
+trait PyDataEncoder[T] {
+  def encode(v: T): String
+}
+
+trait PyDataDecoder[T] {
+  def decode(v: String): Either[Throwable, T]
+}
+
+trait PyDataCodec[T] extends PyDataEncoder[T] with PyDataDecoder[T]
 
 trait FlowSyntax {
   def flow: SealedFlow                                          = SealedFlow(NoId, None, Seq.empty)

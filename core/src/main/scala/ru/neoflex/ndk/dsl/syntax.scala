@@ -12,3 +12,4 @@ object syntax
     with ForEachSyntax
     with ErrorSyntax
     with Constants
+    with PythonOperatorSyntax

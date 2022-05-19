@@ -36,4 +36,9 @@ class FlowPatchingObserver[F[_]](operatorsToReplace: Map[String, FlowOp])(implic
   override def ruleFinished(rule: RuleOp): F[Unit]                       = ().pure
   override def tableStarted(table: TableOp): F[TableOp]                  = replaceOperatorIfNeeded(table)
   override def tableFinished(table: TableOp, executedRows: Int): F[Unit] = ().pure
+
+  override def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]] =
+    replaceOperatorIfNeeded(op)
+
+  override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit] = ().pure
 }
