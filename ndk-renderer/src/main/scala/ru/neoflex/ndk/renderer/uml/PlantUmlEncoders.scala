@@ -31,6 +31,11 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     addLink(ctx.op, s":$actionName;")
   }
 
+  val pythonOperator: Encoder[PythonOperatorOp[Any, Any]] = (ctx: EncodingContext[PythonOperatorOp[Any, Any]]) => {
+    val name = ctx.op.name.getOrElse(s"$NoName python operator")
+    addLink(ctx.op, s":$name;")
+  }
+
   val rule: Encoder[RuleOp] = (ctx: EncodingContext[RuleOp]) => {
     val r                                              = ctx.op
     val ruleName                                       = r.name.getOrElse(s"$NoName rule")

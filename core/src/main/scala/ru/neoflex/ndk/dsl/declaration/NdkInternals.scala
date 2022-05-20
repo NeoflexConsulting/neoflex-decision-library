@@ -79,7 +79,16 @@ object NdkInternals {
     classOf[implicits.NamingActionRef],
     classOf[implicits.NamingActionDef],
     classOf[implicits.NamingExpression[_]],
-    classOf[implicits.CallableActionOps]
+    classOf[implicits.CallableActionOps],
+    classOf[PythonOperatorSyntax],
+    classOf[PythonOperatorOp[_, _]],
+    classOf[PythonOperator[_, _]],
+    classOf[PyDataCodecImplicits],
+    classOf[PyDataEncoder[_]],
+    classOf[PyDataDecoder[_]],
+    classOf[PyDataCodec[_]],
+    classOf[implicits.ToStringEncoder[_]],
+    classOf[implicits.BaseDecoder[_]]
   ).map(_.getName).toSet
 
   def nonEmbeddedClass(className: String): Boolean =

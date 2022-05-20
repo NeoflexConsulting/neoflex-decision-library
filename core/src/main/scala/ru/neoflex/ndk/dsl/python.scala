@@ -1,5 +1,7 @@
 package ru.neoflex.ndk.dsl
 
+import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
+
 import scala.util.Try
 
 final case class PythonOperator[In: PyDataEncoder, Out: PyDataDecoder](
@@ -8,7 +10,9 @@ final case class PythonOperator[In: PyDataEncoder, Out: PyDataDecoder](
   command: String,
   dataIn: () => Seq[In],
   resultCollector: Seq[Out] => Unit)
-    extends PythonOperatorOp[In, Out]
+    extends PythonOperatorOp[In, Out] with DeclarationLocationSupport {
+  override def isEmbedded: Boolean = true
+}
 
 trait PythonOperatorSyntax {
   def pythonCall[In: PyDataEncoder, Out: PyDataDecoder](

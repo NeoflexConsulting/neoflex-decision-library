@@ -12,6 +12,7 @@ trait Encoders {
   def gateway: Encoder[GatewayOp]
   def whileLoop: Encoder[WhileOp]
   def forEach: Encoder[ForEachOp]
+  def pythonOperator: Encoder[PythonOperatorOp[Any, Any]]
   def generic: Encoder[FlowOp]
   def nameOnly: Encoder[FlowOp]
 }
@@ -23,13 +24,14 @@ trait EncodersHolder {
 trait GenericEncoder extends Encoder[FlowOp] with EncodersHolder {
   override def apply(ctx: EncodingContext[FlowOp]): String =
     ctx.op match {
-      case _: Action    => encoders.action(ctx.cast)
-      case _: RuleOp    => encoders.rule(ctx.cast)
-      case _: Flow      => encoders.flow(ctx.cast)
-      case _: TableOp   => encoders.table(ctx.cast)
-      case _: GatewayOp => encoders.gateway(ctx.cast)
-      case _: WhileOp   => encoders.whileLoop(ctx.cast)
-      case _: ForEachOp => encoders.forEach(ctx.cast)
+      case _: Action                 => encoders.action(ctx.cast)
+      case _: RuleOp                 => encoders.rule(ctx.cast)
+      case _: Flow                   => encoders.flow(ctx.cast)
+      case _: TableOp                => encoders.table(ctx.cast)
+      case _: GatewayOp              => encoders.gateway(ctx.cast)
+      case _: WhileOp                => encoders.whileLoop(ctx.cast)
+      case _: ForEachOp              => encoders.forEach(ctx.cast)
+      case _: PythonOperatorOp[_, _] => encoders.pythonOperator(ctx.cast)
     }
 }
 
