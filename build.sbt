@@ -57,5 +57,13 @@ lazy val creditHistoryQualityExample = (project in file("examples/credit-history
   )
   .dependsOn(core, ndkRenderer)
 
+lazy val approvalStrategyExample = (project in file("examples/approval-strategy"))
+  .settings(
+    name := "approval-strategy-example",
+    version := "0.0.1-SNAPSHOT",
+    publish / skip := true
+  )
+  .dependsOn(core, ndkRenderer)
+
 def artifactModule(id: String, baseDir: String) =
   Project(id = id, base = file(baseDir)).settings(Settings.artifactSettings(baseDir))

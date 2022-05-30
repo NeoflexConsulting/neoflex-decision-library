@@ -2,6 +2,19 @@ package ru.neoflex.ndk.renderer
 
 import ru.neoflex.ndk.dsl.FlowOp
 
+import java.time.{
+  Instant,
+  LocalDate,
+  LocalDateTime,
+  LocalTime,
+  Month,
+  MonthDay,
+  OffsetDateTime,
+  OffsetTime,
+  Year,
+  YearMonth,
+  ZonedDateTime
+}
 import scala.reflect.api
 import scala.reflect.api.{ TypeCreator, Universe }
 import scala.reflect.runtime.universe._
@@ -36,12 +49,25 @@ class DataGenerator(mirror: Mirror) extends App with (Class[_] => Any) {
     case t if t =:= typeOf[Char]              => '0'
     case t if t =:= typeOf[Int]               => i
     case t if t =:= typeOf[Long]              => i.toLong
+    case t if t =:= typeOf[Double]            => i.toDouble
+    case t if t =:= typeOf[Float]             => i.toFloat
     case t if t <:< typeOf[Option[_]]         => None
     case t if t =:= typeOf[String]            => s"arbitrary-$i"
     case t if t =:= typeOf[Boolean]           => false
     case t if t =:= typeOf[BigDecimal]        => BigDecimal(0)
     case t if t <:< typeOf[Seq[_]]            => List.empty
     case t if t <:< typeOf[Map[_, _]]         => Map.empty
+    case t if t <:< typeOf[LocalDate]         => LocalDate.now()
+    case t if t <:< typeOf[OffsetTime]        => OffsetTime.now()
+    case t if t <:< typeOf[OffsetDateTime]    => OffsetDateTime.now()
+    case t if t <:< typeOf[LocalTime]         => LocalTime.now()
+    case t if t <:< typeOf[ZonedDateTime]     => ZonedDateTime.now()
+    case t if t <:< typeOf[Month]             => Month.JANUARY
+    case t if t <:< typeOf[MonthDay]          => MonthDay.now()
+    case t if t <:< typeOf[Year]              => Year.now()
+    case t if t <:< typeOf[YearMonth]         => YearMonth.now()
+    case t if t <:< typeOf[LocalDateTime]     => LocalDateTime.now()
+    case t if t <:< typeOf[Instant]           => Instant.now()
     case t if isCaseClass(t)                  => generateFromCaseClass(convert(t).tpe)
     case t if isSealedTrait(t)                => findFirstSubclassObject(t)
     case t                                    => throw new Exception(s"Generator doesn't support generating $t")

@@ -1,4 +1,5 @@
 package ru.neoflex.ndk.dsl
+
 import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl.Table._
 
@@ -151,18 +152,36 @@ object Table {
       override def apply(v: Any): Boolean = true
     }
 
+    case class contains[T](v: T) extends Operator {
+      override def apply(o: Any): Boolean = o match {
+        case s: String          => s.contains(v.toString)
+        case i: IterableOnce[_] => i.iterator.contains(v)
+        case _                  => throw new MatchError(o)
+      }
+    }
+
+    case class notContains[T](v: T) extends Operator {
+      override def apply(o: Any): Boolean = o match {
+        case s: String          => !s.contains(v.toString)
+        case i: IterableOnce[_] => !i.iterator.contains(v)
+        case _                  => throw new MatchError(o)
+      }
+    }
+
     implicit class OperatorOps(op: Operator) {
       def show(): String = op match {
-        case eqv(v)     => v.toString
-        case neq(v)     => s"is not $v"
-        case gt(v)      => s"> $v"
-        case gte(v)     => s">= $v"
-        case lt(v)      => s"< $v"
-        case lte(v)     => s"<= $v"
-        case empty()    => "empty"
-        case nonEmpty() => "non empty"
-        case any()      => "any"
-        case _          => "Unknown operator"
+        case eqv(v)         => v.toString
+        case neq(v)         => s"is not $v"
+        case gt(v)          => s"> $v"
+        case gte(v)         => s">= $v"
+        case lt(v)          => s"< $v"
+        case lte(v)         => s"<= $v"
+        case empty()        => "empty"
+        case nonEmpty()     => "non empty"
+        case any()          => "any"
+        case contains(v)    => s"contains $v"
+        case notContains(v) => s"not contains $v"
+        case _              => "Unknown operator"
       }
     }
   }
