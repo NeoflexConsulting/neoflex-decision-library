@@ -23,6 +23,30 @@ lazy val core = artifactModule("neoflex-decision-kit", "core")
     libraryDependencies += "com.github.pureconfig" %% "pureconfig"          % "0.17.1"
   )
 
+lazy val preparePythonVenv     = taskKey[Unit]("Prepare python virtual environment")
+lazy val initializePythonVenv  = taskKey[Unit]("Initialize python virtual environment")
+lazy val installPythonPackages = taskKey[Unit]("Install python required packages")
+
+import sys.process._
+
+lazy val pythonExtension = artifactModule("ndk-python-extension", "ndk-python-extension")
+  .settings(
+    name := "neoflex-decision-kit",
+    libraryDependencies += "org.graalvm.sdk" % "graal-sdk" % "22.0.0",
+    initializePythonVenv := {
+      val log         = streams.value.log
+      val javaHome    = sys.env("JAVA_HOME")
+      val graalpython = s"$javaHome/bin/graalpython"
+      s"$graalpython -m venv venv" ! log
+    },
+    installPythonPackages := {
+      val log = streams.value.log
+      s"venv/bin/pip install mlflow" ! log
+    },
+    preparePythonVenv := Def.sequential(initializePythonVenv, installPythonPackages).value
+  )
+  .dependsOn(core)
+
 lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
   .settings(
     name := "ndk-test-kit",

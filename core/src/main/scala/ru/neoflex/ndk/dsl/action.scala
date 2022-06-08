@@ -12,6 +12,14 @@ abstract class ActionBase(override val id: String, override val f: () => Unit, o
     this(id, () => f)
   }
 
+  def this(id: String) = {
+    this(id, () => (), None)
+  }
+
+  def this(id: String, name: Option[String]) = {
+    this(id, () => (), name)
+  }
+
   override def apply(): Unit = f()
 }
 
