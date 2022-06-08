@@ -137,7 +137,7 @@ object RestServiceImplicits {
 
               case r =>
                 r.as[String].map { e =>
-                  RestServiceError(new IllegalStateException(e), rs).raiseError
+                  RestServiceError(new IllegalStateException(e), rs).raiseError[F, Unit]
                 }
             }
           }

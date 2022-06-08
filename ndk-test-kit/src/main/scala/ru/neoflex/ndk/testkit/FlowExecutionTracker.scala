@@ -57,7 +57,7 @@ class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) e
     ().pure
   }
   override def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]] = started(op)
-  override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit]                  = finished(op)
+  override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit]                      = finished(op)
 }
 
 sealed trait ExecutionDetails {
@@ -75,14 +75,15 @@ case object Finished extends ExecutionStatus {
 
 sealed trait OperatorType
 object OperatorType {
-  case object Action     extends OperatorType
-  case object Rule       extends OperatorType
-  case object Gateway    extends OperatorType
-  case object Table      extends OperatorType
-  case object ForEach    extends OperatorType
-  case object While      extends OperatorType
-  case object Flow       extends OperatorType
-  case object PyOperator extends OperatorType
+  case object Action      extends OperatorType
+  case object Rule        extends OperatorType
+  case object Gateway     extends OperatorType
+  case object Table       extends OperatorType
+  case object ForEach     extends OperatorType
+  case object While       extends OperatorType
+  case object Flow        extends OperatorType
+  case object PyOperator  extends OperatorType
+  case object RestService extends OperatorType
 
   def apply(op: FlowOp): OperatorType = op match {
     case _: Action                 => Action
@@ -93,5 +94,6 @@ object OperatorType {
     case _: WhileOp                => While
     case _: ForEachOp              => ForEach
     case _: PythonOperatorOp[_, _] => PyOperator
+    case _: RestService[_, _]      => RestService
   }
 }
