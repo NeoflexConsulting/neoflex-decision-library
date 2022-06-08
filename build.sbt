@@ -31,7 +31,7 @@ import sys.process._
 
 lazy val pythonExtension = artifactModule("ndk-python-extension", "ndk-python-extension")
   .settings(
-    name := "neoflex-decision-kit",
+    name := "ndk-python-extension",
     libraryDependencies += "org.graalvm.sdk" % "graal-sdk" % "22.0.0",
     initializePythonVenv := {
       val log         = streams.value.log
