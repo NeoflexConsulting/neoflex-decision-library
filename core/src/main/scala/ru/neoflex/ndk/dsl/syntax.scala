@@ -13,3 +13,4 @@ object syntax
     with ErrorSyntax
     with Constants
     with PythonOperatorSyntax
+    with RestServiceSyntax

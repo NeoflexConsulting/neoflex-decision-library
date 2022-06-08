@@ -6,16 +6,21 @@ import cats.syntax.applicative._
 import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
+import ru.neoflex.ndk.dsl.RestServiceImplicits.RestServiceOps
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoName
 import ru.neoflex.ndk.error._
 import ru.neoflex.ndk.tools.Logging
+import ru.neoflex.ndk.{ ExecutionConfig, RestConfig }
 
 import java.io.PrintWriter
 import scala.io.Source
 import scala.util.Try
 
-class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit monadError: MonadError[F, NdkError])
+class FlowExecutionEngine[F[_]](
+  observer: FlowExecutionObserver[F],
+  executionConfig: ExecutionConfig
+)(implicit monadError: MonadError[F, NdkError])
     extends FlowExecutor[F]
     with Logging {
 
@@ -31,6 +36,13 @@ class FlowExecutionEngine[F[_]](observer: FlowExecutionObserver[F])(implicit mon
     case flow: Flow         => executeFlow(flow).map(Either.right)
     case op: PythonOperatorOp[_, _] =>
       executePythonOperator(op.asInstanceOf[PythonOperatorOp[Any, Any]]).map(Either.right)
+    case service: RestService[_, _] =>
+      callRemoteService(service.asInstanceOf[RestService[Any, Any]]).map(Either.right)
+  }
+
+  private def callRemoteService(rs: RestService[Any, Any]): F[Unit] = {
+    implicit val restConfig: RestConfig = executionConfig.rest
+    rs.executeRequest()
   }
 
   private def observeExecution[O <: FlowOp, T](op: O, start: O => F[O], finish: O => F[Unit])(exec: O => F[T]): F[T] = {

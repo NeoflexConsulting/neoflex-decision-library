@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.renderer.uml
 
+import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl.Rule.Otherwise
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
@@ -33,6 +34,16 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
   val pythonOperator: Encoder[PythonOperatorOp[Any, Any]] = (ctx: EncodingContext[PythonOperatorOp[Any, Any]]) => {
     val name = ctx.op.name.getOrElse(ctx.op.command.take(32))
+    addLink(ctx.op, s":$name;")
+  }
+
+  val restService: Encoder[RestService[Any, Any]] = (ctx: EncodingContext[RestService[Any, Any]]) => {
+    val name = ctx.op.name.orElse {
+      ctx.op.serviceNameOrEndpoint match {
+        case Left(value) => value.some
+        case Right(_)    => None
+      }
+    }.getOrElse(s"$NoName service call")
     addLink(ctx.op, s":$name;")
   }
 
@@ -92,7 +103,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
   val table: Encoder[TableOp] = (ctx: EncodingContext[TableOp]) => {
     val t    = ctx.op
     val name = t.name.getOrElse(s"$NoName table")
-    val r    = new StringBuilder()
+    val r    = new mutable.StringBuilder()
     r ++= s":$name;\r\n"
     r ++= "note right\r\n"
 
@@ -103,7 +114,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     r ++= "|= action |\r\n"
 
     t.conditions.foreach { row =>
-      val rowBuilder = new StringBuilder()
+      val rowBuilder = new mutable.StringBuilder()
       row.operators.foreach { operator =>
         rowBuilder ++= "| "
         rowBuilder ++= operator.show()

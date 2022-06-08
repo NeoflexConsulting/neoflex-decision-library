@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.error
 
-import ru.neoflex.ndk.dsl.{ FlowOp, Table, TableOp }
+import pureconfig.error.ConfigReaderFailures
+import ru.neoflex.ndk.dsl.{FlowOp, Table, TableOp}
 
 sealed trait NdkError {
   def toThrowable: Throwable
@@ -62,6 +63,15 @@ final case class PyDataDecodeError(data: Seq[String], op: FlowOp, error: Throwab
   )
 }
 
+final case class RestServiceError(error: Throwable, op: FlowOp) extends NdkError {
+  override def toThrowable: Throwable = error
+}
+
+final case class ConfigLoadError(failures: ConfigReaderFailures) extends NdkError {
+  override def toThrowable: Throwable = new RuntimeException(failures.prettyPrint())
+}
+
 trait ErrorSyntax {
   type EitherError[A] = Either[NdkError, A]
+  type EitherThrowable[A] = Either[Throwable, A]
 }

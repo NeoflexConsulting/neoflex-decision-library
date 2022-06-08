@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.dsl
 
 import cats.implicits.toTraverseOps
+import io.circe.{ Decoder, Encoder, Json }
 import ru.neoflex.ndk.dsl.Gateway.When
 import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
 import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
@@ -71,6 +72,24 @@ trait ForEachOp extends FlowOp {
   def collection: () => Iterable[Any]
   def body: Any => FlowOp
   def elementClass: Option[Class[_]]
+}
+
+abstract class RestService[Req: Encoder, Resp: Decoder] extends FlowOp {
+  def serviceNameOrEndpoint: RestService.ServiceNameOrEndpoint
+  def makeUri: () => String
+  def inputBody: () => Option[Req]
+  def encodedInputBody: Option[Json] = inputBody().map { implicitly[Encoder[Req]].apply(_) }
+  def responseCollector: Resp => Unit
+  def collectResponse(body: Option[String]): Either[Throwable, Unit] = {
+    body.map { response =>
+      val decoder = implicitly[Decoder[Resp]]
+      io.circe.jawn.decode(response)(decoder).map(responseCollector)
+    }.getOrElse(Right(()))
+  }
+}
+
+object RestService {
+  type ServiceNameOrEndpoint = Either[String, String]
 }
 
 abstract class PythonOperatorOp[In: PyDataEncoder, Out: PyDataDecoder] extends FlowOp {

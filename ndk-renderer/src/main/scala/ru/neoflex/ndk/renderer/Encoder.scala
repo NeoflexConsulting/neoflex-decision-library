@@ -13,6 +13,7 @@ trait Encoders {
   def whileLoop: Encoder[WhileOp]
   def forEach: Encoder[ForEachOp]
   def pythonOperator: Encoder[PythonOperatorOp[Any, Any]]
+  def restService: Encoder[RestService[Any, Any]]
   def generic: Encoder[FlowOp]
   def nameOnly: Encoder[FlowOp]
 }
@@ -32,6 +33,7 @@ trait GenericEncoder extends Encoder[FlowOp] with EncodersHolder {
       case _: WhileOp                => encoders.whileLoop(ctx.cast)
       case _: ForEachOp              => encoders.forEach(ctx.cast)
       case _: PythonOperatorOp[_, _] => encoders.pythonOperator(ctx.cast)
+      case _: RestService[_, _]      => encoders.restService(ctx.cast)
     }
 }
 
