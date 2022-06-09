@@ -13,10 +13,11 @@ trait DeclarationLocationSupport {
 final case class DeclarationLocation(fileName: String, lineNumber: Int)
 
 object DeclarationLocation {
-  private val logger                     = LoggerFactory.getLogger(getClass)
-  private val collectDeclarationLocation = JBoolean.getBoolean("ru.neoflex.ndk.collectDeclarationLocation")
+  private val logger                             = LoggerFactory.getLogger(getClass)
+  private val collectDeclarationLocationProperty = "ru.neoflex.ndk.collectDeclarationLocation"
+  private val collectDeclarationLocation         = JBoolean.getBoolean(collectDeclarationLocationProperty)
 
-  logger.info(s"ru.neoflex.ndk.collectDeclarationLocation=$collectDeclarationLocation")
+  logger.info(s"$collectDeclarationLocationProperty=$collectDeclarationLocation")
 
   def apply(obj: Any): Option[DeclarationLocation] = obj match {
     case _ if !collectDeclarationLocation => None

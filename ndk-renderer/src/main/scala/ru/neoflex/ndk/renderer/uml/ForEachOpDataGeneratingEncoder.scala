@@ -3,7 +3,7 @@ package ru.neoflex.ndk.renderer.uml
 import ru.neoflex.ndk.dsl.ForEachOp
 import ru.neoflex.ndk.renderer.{ Encoder, Encoders, EncodersHolder, EncodingContext }
 
-trait ForEachOpDataGeneratingEncoder extends Encoder[ForEachOp] with EncodersHolder {
+trait ForEachOpDataGeneratingEncoder extends Encoder[ForEachOp] with EncodersHolder with LoopUmlBuilder {
   val dataGenerator: Class[_] => Any
 
   override def apply(ctx: EncodingContext[ForEachOp]): String = {
@@ -15,10 +15,7 @@ trait ForEachOpDataGeneratingEncoder extends Encoder[ForEachOp] with EncodersHol
     }.getOrElse(":action;")
 
     val loopName = forEach.name.getOrElse("has more elements?")
-    s"""
-       |while ($loopName) is (yes)
-       |$loopBody
-       |endwhile (no)""".stripMargin
+    buildLoopUml(loopName, loopBody)
   }
 }
 

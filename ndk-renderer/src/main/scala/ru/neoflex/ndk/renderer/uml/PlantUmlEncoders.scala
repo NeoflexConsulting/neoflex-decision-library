@@ -10,7 +10,7 @@ import ru.neoflex.ndk.renderer.{ DepthLimitedEncoder, Encoder, Encoders, Encodin
 
 import scala.collection.mutable
 
-trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder {
+trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder with LoopUmlBuilder {
   override val encoders: Encoders       = this
   override def generic: Encoder[FlowOp] = this
 
@@ -18,13 +18,13 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
   def encode(ctx: EncodingContext[FlowOp]): String = {
     val flowUml = apply(ctx)
-    val title   = ctx.op.name.map(x => s"title $x").getOrElse("")
-    s"""@startuml
-       |start
-       |$title
-       |$flowUml
-       |stop
-       |@enduml""".stripMargin
+    val title   = ctx.op.name.getOrElse("")
+    new UmlBuilder()
+      .startUml()
+      .title(title)
+      .add(flowUml)
+      .stop()
+      .endUml()
   }
 
   val action: Encoder[Action] = (ctx: EncodingContext[Action]) => {
@@ -82,22 +82,19 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
   }
 
   val gateway: Encoder[GatewayOp] = (ctx: EncodingContext[GatewayOp]) => {
-    val g           = ctx.op
-    val gatewayName = g.name.getOrElse(s"$NoName gateway")
-    val cases = g.whens.zipWithIndex.map {
+    val g              = ctx.op
+    val gatewayName    = g.name.getOrElse(s"$NoName gateway")
+    val gatewayBuilder = new GatewayUmlBuilder().startSwitch(gatewayName)
+
+    g.whens.zipWithIndex.foreach {
       case (when, idx) =>
         val whenName = when.name.getOrElse(s"Condition $idx")
-        s"""case ($whenName)
-         |${generic(ctx.withOperatorAndDepth(when.op))}""".stripMargin
-    } :+
-      s"""case (otherwise)
-         |${generic(ctx.withOperatorAndDepth(g.otherwise))}""".stripMargin
+        gatewayBuilder.addCase(whenName, generic(ctx.withOperatorAndDepth(when.op)))
+    }
 
-    val casesString = cases.mkString("\r\n")
-
-    s"""switch ($gatewayName)
-       |$casesString
-       |endswitch""".stripMargin
+    gatewayBuilder
+      .otherwise("otherwise", generic(ctx.withOperatorAndDepth(g.otherwise)))
+      .endSwitch()
   }
 
   val table: Encoder[TableOp] = (ctx: EncodingContext[TableOp]) => {
@@ -108,10 +105,12 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     r ++= "note right\r\n"
 
     t.expressions.foreach { e =>
-      r ++= "||= "
+      r ++= "|= "
       r ++= e.name
     }
-    r ++= "|= action |\r\n"
+    t.expressions.headOption.foreach { _ =>
+      r ++= "|= action |\r\n"
+    }
 
     t.conditions.foreach { row =>
       val rowBuilder = new mutable.StringBuilder()
@@ -138,9 +137,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     val w        = ctx.op
     val loopName = w.name.getOrElse("Condition is true?")
     val bodyUml  = encoders.generic(ctx.withOperatorAndDepth(w.body))
-    s"""while ($loopName) is (yes)
-       |$bodyUml
-       |endwhile (no)""".stripMargin
+    buildLoopUml(loopName, bodyUml)
   }
 
   val forEach: Encoder[ForEachOp] = ForEachOperatorEncoder
@@ -176,6 +173,42 @@ class PlantUmlEncodersImpl(dataGenerator: Class[_] => Any) extends PlantUmlEncod
   override val forEach: Encoder[ForEachOp] = ForEachOpDataGeneratingEncoderImpl(dataGenerator, this)
 }
 
+private[uml] class UmlBuilder {
+  val b = new mutable.StringBuilder()
+
+  def startUml(): UmlBuilder = {
+    b ++= "@startuml"
+    this
+  }
+
+  def endUml(): String = {
+    b ++= "\r\n@enduml"
+    b.result()
+  }
+
+  def title(name: String): UmlBuilder = {
+    b ++= "\r\ntitle "
+    b ++= name
+    this
+  }
+
+  def add(text: String): UmlBuilder = {
+    b ++= "\r\n"
+    b ++= text
+    this
+  }
+
+  def start(): UmlBuilder = {
+    b ++= "\r\nstart"
+    this
+  }
+
+  def stop(): UmlBuilder = {
+    b ++= "\r\nstop"
+    this
+  }
+}
+
 private[uml] class RuleUmlBuilder {
   val b = new mutable.StringBuilder()
 
@@ -201,6 +234,38 @@ private[uml] class RuleUmlBuilder {
 
   def endIf(): String = {
     b ++= "\r\nendif"
+    b.result()
+  }
+}
+
+private[uml] class GatewayUmlBuilder {
+  val b = new mutable.StringBuilder()
+
+  def startSwitch(name: String): GatewayUmlBuilder = {
+    b ++= "switch ("
+    b ++= name
+    b ++= ")"
+    this
+  }
+
+  def addCase(name: String, body: String): GatewayUmlBuilder = {
+    b ++= "\r\ncase ("
+    b ++= name
+    b ++= ")\r\n"
+    b ++= body
+    this
+  }
+
+  def otherwise(name: String, body: String): GatewayUmlBuilder = {
+    b ++= "\r\ncase ("
+    b ++= name
+    b ++= ")\r\n"
+    b ++= body
+    this
+  }
+
+  def endSwitch(): String = {
+    b ++= "\r\nendswitch"
     b.result()
   }
 }
