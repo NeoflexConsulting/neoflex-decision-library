@@ -21,6 +21,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     val title   = ctx.op.name.getOrElse("")
     new UmlBuilder()
       .startUml()
+      .start()
       .title(title)
       .add(flowUml)
       .stop()
