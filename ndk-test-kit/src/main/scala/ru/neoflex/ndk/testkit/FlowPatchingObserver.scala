@@ -41,4 +41,9 @@ class FlowPatchingObserver[F[_]](operatorsToReplace: Map[String, FlowOp])(implic
     replaceOperatorIfNeeded(op)
 
   override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit] = ().pure
+
+  override def restServiceStarted(op: RestService[Any, Any]): F[RestService[Any, Any]] =
+    replaceOperatorIfNeeded(op)
+
+  override def restServiceFinished(op: RestService[Any, Any]): F[Unit] = ().pure
 }

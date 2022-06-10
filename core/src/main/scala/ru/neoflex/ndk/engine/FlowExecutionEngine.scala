@@ -40,11 +40,6 @@ class FlowExecutionEngine[F[_]](
       callRemoteService(service.asInstanceOf[RestService[Any, Any]]).map(Either.right)
   }
 
-  private def callRemoteService(rs: RestService[Any, Any]): F[Unit] = {
-    implicit val restConfig: RestConfig = executionConfig.rest
-    rs.executeRequest()
-  }
-
   private def observeExecution[O <: FlowOp, T](op: O, start: O => F[O], finish: O => F[Unit])(exec: O => F[T]): F[T] = {
     for {
       tweakedOp <- start(op)
@@ -78,6 +73,13 @@ class FlowExecutionEngine[F[_]](
         _        <- Try(process.getInputStream.close()).toEither.leftMap(OperatorExecutionError(op, _)).liftTo[F]
         _        <- op.collectResults(output).leftMap(PyDataDecodeError(output, op, _)).liftTo[F]
       } yield ()
+    }
+  }
+
+  private def callRemoteService(rs: RestService[Any, Any]): F[Unit] = {
+    observeExecution(rs, observer.restServiceStarted, observer.restServiceFinished) { op =>
+      implicit val restConfig: RestConfig = executionConfig.rest
+      op.executeRequest()
     }
   }
 

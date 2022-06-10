@@ -45,4 +45,9 @@ class FlowExecutionObserverComposite[F[_]](
     callObservers(op, _.pyOperatorStarted)
 
   override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit] = callObservers(_.pyOperatorFinished(op))
+
+  override def restServiceStarted(op: RestService[Any, Any]): F[RestService[Any, Any]] =
+    callObservers(op, _.restServiceStarted)
+
+  override def restServiceFinished(op: RestService[Any, Any]): F[Unit] = callObservers(_.restServiceFinished(op))
 }

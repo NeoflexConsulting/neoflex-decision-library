@@ -29,6 +29,9 @@ trait FlowExecutionObserver[F[_]] {
 
   def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]]
   def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit]
+
+  def restServiceStarted(op: RestService[Any, Any]): F[RestService[Any, Any]]
+  def restServiceFinished(op: RestService[Any, Any]): F[Unit]
 }
 
 class NoOpFlowExecutionObserver[F[_]](implicit monadError: MonadError[F, NdkError]) extends FlowExecutionObserver[F] {
@@ -48,4 +51,6 @@ class NoOpFlowExecutionObserver[F[_]](implicit monadError: MonadError[F, NdkErro
   override def gatewayFinished(gateway: GatewayOp): F[Unit]                                 = ().pure
   override def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]] = op.pure
   override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit]                      = ().pure
+  override def restServiceStarted(op: RestService[Any, Any]): F[RestService[Any, Any]] = op.pure
+  override def restServiceFinished(op: RestService[Any, Any]): F[Unit]                      = ().pure
 }

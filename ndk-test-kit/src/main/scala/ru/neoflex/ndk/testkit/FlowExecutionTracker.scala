@@ -58,6 +58,9 @@ class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) e
   }
   override def pyOperatorStarted(op: PythonOperatorOp[Any, Any]): F[PythonOperatorOp[Any, Any]] = started(op)
   override def pyOperatorFinished(op: PythonOperatorOp[Any, Any]): F[Unit]                      = finished(op)
+
+  override def restServiceStarted(op: RestService[Any, Any]): F[RestService[Any, Any]] = started(op)
+  override def restServiceFinished(op: RestService[Any, Any]): F[Unit]                 = finished(op)
 }
 
 sealed trait ExecutionDetails {
