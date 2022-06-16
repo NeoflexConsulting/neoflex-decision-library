@@ -67,15 +67,14 @@ class FlowExecutionEngine[F[_]](
     }
 
     observeExecution(pyOperatorIn, observer.pyOperatorStarted, observer.pyOperatorFinished) { op =>
-      {
-        for {
-          pooledProcess <- processPool
-                            .borrowProcess("python", op.command)
-                            .toEither
-                            .leftMap(PyOperatorStartError(op, _))
-          _ <- callProcess(pooledProcess, op)
-        } yield ()
-      }.liftTo[F]
+      for {
+        pooledProcess <- processPool
+                          .borrowProcess("python", op.command)
+                          .toEither
+                          .leftMap(PyOperatorStartError(op, _))
+                          .liftTo[F]
+        _ <- callProcess(pooledProcess, op).liftTo[F]
+      } yield ()
     }
   }
 

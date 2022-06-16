@@ -1,6 +1,6 @@
 import mlflow
 import pandas as pd
-from pipe_wrapper import PipeWrapper
+from pipe_json_wrapper import PipeJsonWrapper
 
 logged_model = '../../mlflow/examples/sklearn_elasticnet_wine/mlruns/0/b9defef6a9c8401a9ed9252fbec25d1e/artifacts/model'
 
@@ -12,4 +12,4 @@ def predict(data):
     return predictions[0]
 
 
-PipeWrapper(predict).run()
+PipeJsonWrapper(predict).run()

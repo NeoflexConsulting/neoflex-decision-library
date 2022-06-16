@@ -6,7 +6,7 @@ def identity(x):
     return x
 
 
-class PipeWrapper:
+class PipeJsonWrapper:
     def __init__(self, user_fn, map_input=identity, map_output=identity):
         self.user_fn = user_fn
         self.map_input = map_input
