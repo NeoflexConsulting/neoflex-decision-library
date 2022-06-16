@@ -5,9 +5,10 @@ import cats.syntax.either._
 import ru.neoflex.ndk.tools.Logging
 
 import java.time.Instant
-import java.util.concurrent.{ ArrayBlockingQueue, BlockingQueue, ConcurrentHashMap }
+import java.util.concurrent.{ ArrayBlockingQueue, BlockingQueue, ConcurrentHashMap, TimeUnit }
+import scala.io.Source
 import scala.jdk.CollectionConverters.{ CollectionHasAsScala, ConcurrentMapHasAsScala }
-import scala.util.{ Success, Try }
+import scala.util.{ Success, Try, Using }
 
 class ProcessPool(processIoFactory: ProcessIoFactory = BatchedIoFactory, perProcessPoolSize: Int = 1) extends Logging {
 
@@ -74,19 +75,30 @@ class ProcessPool(processIoFactory: ProcessIoFactory = BatchedIoFactory, perProc
     }
 
   private def addProcess(processPool: SingleProcessTypePool): Try[PooledProcess] = {
+    def errorStartingProcess(process: Process): Throwable = {
+      def error(exitCode: Int, output: String) = {
+        new IllegalStateException(
+          s"Process starting failed: ${processPool.key}, exit code: ${exitCode}, output: $output"
+        )
+      }
+
+      Using(Source.fromInputStream(process.getErrorStream)) { source =>
+        val output = source.mkString
+        error(process.exitValue(), output)
+      }.fold(t => {
+          val e = error(process.exitValue(), "")
+          e.addSuppressed(t)
+          e
+        }, x => x)
+    }
+
     logger.debug("Creating new process: {}", processPool.key.commandLine.mkString(" "))
-    val pb = new ProcessBuilder(processPool.key.commandLine: _*).redirectErrorStream(true)
+    val pb = new ProcessBuilder(processPool.key.commandLine: _*)
 
     for {
       process <- Try(pb.start())
-      _ <- Either
-            .cond(
-              process.isAlive,
-              (),
-              new IllegalStateException(s"Process starting failed: ${processPool.key}")
-            )
-            .toTry
-      _ = processPool.grow()
+      _       <- Either.cond(!process.waitFor(2, TimeUnit.SECONDS), (), errorStartingProcess(process)).toTry
+      _       = processPool.grow()
     } yield PooledProcess(processPool.key, process, processIoFactory)
   }
 
@@ -106,7 +118,7 @@ class ProcessPool(processIoFactory: ProcessIoFactory = BatchedIoFactory, perProc
 
     def canGrow: Boolean = currentPoolSize < perProcessPoolSize
 
-    def grow(): Unit = currentPoolSize += 1
+    def grow(): Unit   = currentPoolSize += 1
     def reduce(): Unit = currentPoolSize -= 1
   }
 }

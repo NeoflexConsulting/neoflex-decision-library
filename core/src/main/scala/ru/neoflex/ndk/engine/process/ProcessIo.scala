@@ -54,7 +54,7 @@ class BatchedReader(process: Process) extends ProcessReader {
 
   override def readData(): Try[Seq[String]] = {
     def errorReadingBatchStart(dataRead: String) =
-      new IllegalArgumentException(s"Could not read batch start mark, read data: $dataRead, process: ${process.info()}")
+      new IllegalArgumentException(s"Could not read batch start directive, read data: $dataRead, process: ${process.info()}")
 
     for {
       firstLine <- readLine()

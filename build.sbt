@@ -102,5 +102,13 @@ lazy val restModelExample = (project in file("examples/rest-model"))
   )
   .dependsOn(core, ndkRenderer)
 
+lazy val pyModelExample = (project in file("examples/py-model"))
+  .settings(
+    name := "py-model-example",
+    version := "0.0.1-SNAPSHOT",
+    publish / skip := true
+  )
+  .dependsOn(core, ndkRenderer)
+
 def artifactModule(id: String, baseDir: String) =
   Project(id = id, base = file(baseDir)).settings(Settings.artifactSettings(baseDir))
