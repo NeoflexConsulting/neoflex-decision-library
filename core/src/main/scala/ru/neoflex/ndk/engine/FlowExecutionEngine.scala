@@ -58,9 +58,9 @@ class FlowExecutionEngine[F[_]](
         val processWriter = p.getProcessWriter
         val processReader = p.getProcessReader
         for {
-          processInput  <- pyOperatorIn.encodedDataIn.leftMap(PyDataEncodeError(op, _)).map(_.toSeq)
+          processInput  <- pyOperatorIn.encodedDataIn.leftMap(PyDataEncodeError(op, _))
           _             <- processWriter.writeData(processInput).toEither.leftMap(PyOperatorWritingError(op, _))
-          processOutput <- processReader.readData().toEither.leftMap(OperatorExecutionError(op, _))
+          processOutput <- processReader.readSingleData().toEither.leftMap(OperatorExecutionError(op, _))
           _             <- op.collectResults(processOutput).leftMap(PyDataDecodeError(processOutput, op, _))
         } yield ()
       }.toEither.leftMap[NdkError](OperatorExecutionError(op, _)).joinRight

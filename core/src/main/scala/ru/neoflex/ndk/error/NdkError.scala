@@ -68,7 +68,7 @@ final case class PyDataEncodeError(op: FlowOp, error: Throwable) extends NdkErro
     error
   )
 }
-final case class PyDataDecodeError(data: Seq[String], op: FlowOp, error: Throwable) extends NdkError {
+final case class PyDataDecodeError(data: String, op: FlowOp, error: Throwable) extends NdkError {
   override def toThrowable: Throwable = new RuntimeException(
     s"Error occurred while decoding result from python operator[${op.name}, ${op.id}]",
     error

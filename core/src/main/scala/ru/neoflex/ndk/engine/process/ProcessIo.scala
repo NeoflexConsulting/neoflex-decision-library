@@ -1,24 +1,40 @@
 package ru.neoflex.ndk.engine.process
 
-import java.io.{BufferedReader, Closeable, InputStreamReader, PrintWriter}
-import scala.util.Try
+import java.io.{ BufferedReader, Closeable, InputStreamReader, PrintWriter }
+import scala.util.{ Failure, Success, Try }
 
 trait ProcessWriter extends Closeable {
+  def writeData(data: String): Try[Unit] = writeData(Seq(data))
   def writeData(data: Seq[String]): Try[Unit]
 }
 
 trait ProcessReader extends Closeable {
+  def readSingleData(): Try[String] = readData().flatMap {
+    case Seq(x) => Success(x)
+    case _      => Failure(new IllegalStateException("No data or more than one line was read from process"))
+  }
   def readData(): Try[Seq[String]]
 }
 
-sealed trait ProcessIoFactory {
-  def createReader(process: Process): ProcessReader
-  def createWriter(process: Process): ProcessWriter
+class SimpleReader(process: Process) extends ProcessReader {
+  private val reader = new BufferedReader(new InputStreamReader(process.getInputStream))
+
+  override def readData(): Try[Seq[String]] = Try {
+    Seq(reader.readLine())
+  }
+
+  override def close(): Unit = reader.close()
 }
 
-object BatchedIoFactory extends ProcessIoFactory {
-  override def createReader(process: Process): ProcessReader = new BatchedReader(process)
-  override def createWriter(process: Process): ProcessWriter = new BatchedWriter(process)
+class SimpleWriter(process: Process) extends ProcessWriter {
+  private val writer = new PrintWriter(process.getOutputStream)
+
+  override def writeData(data: Seq[String]): Try[Unit] = Try {
+    data.foreach(writer.println)
+    writer.flush()
+  }
+
+  override def close(): Unit = writer.close()
 }
 
 class BatchedWriter(process: Process) extends ProcessWriter {
@@ -54,7 +70,9 @@ class BatchedReader(process: Process) extends ProcessReader {
 
   override def readData(): Try[Seq[String]] = {
     def errorReadingBatchStart(dataRead: String) =
-      new IllegalArgumentException(s"Could not read batch start directive, read data: $dataRead, process: ${process.info()}")
+      new IllegalArgumentException(
+        s"Could not read batch start directive, read data: $dataRead, process: ${process.info()}"
+      )
 
     for {
       firstLine <- readLine()

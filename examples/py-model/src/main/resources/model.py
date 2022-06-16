@@ -12,4 +12,4 @@ def predict(data):
     return predictions[0]
 
 
-PipeWrapper(predict, map_input=lambda x: float(x)).run()
+PipeWrapper(predict).run()
