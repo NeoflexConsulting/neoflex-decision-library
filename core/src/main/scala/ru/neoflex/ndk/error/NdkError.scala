@@ -1,7 +1,7 @@
 package ru.neoflex.ndk.error
 
 import pureconfig.error.ConfigReaderFailures
-import ru.neoflex.ndk.dsl.{FlowOp, Table, TableOp}
+import ru.neoflex.ndk.dsl.{ FlowOp, Table, TableOp }
 
 sealed trait NdkError {
   def toThrowable: Throwable
@@ -44,17 +44,29 @@ final case class OperatorsTypeMatchError(first: FlowOp, second: FlowOp, message:
 
 final case class PyOperatorStartError(op: FlowOp, error: Throwable) extends NdkError {
   override def toThrowable: Throwable =
-    new RuntimeException(s"Error occurred while starting python process of the operator[${op.name}, ${op.id}]", error)
+    new RuntimeException(
+      s"Error occurred while starting or getting python process of the operator[${op.name}, ${op.id}]",
+      error
+    )
 }
-final case class PyOperatorWritingError(op: FlowOp) extends NdkError {
+final case class PyOperatorWritingError(op: FlowOp, error: Throwable) extends NdkError {
   override def toThrowable: Throwable =
-    new RuntimeException(s"Error occurred while writing data to py process of the operator[${op.name}, ${op.id}]")
+    new RuntimeException(
+      s"Error occurred while writing data to py process of the operator[${op.name}, ${op.id}]",
+      error
+    )
 }
 final case class PyOperatorExecutionError(op: FlowOp, exitCode: Int) extends NdkError {
   override def toThrowable: Throwable =
     new IllegalStateException(
       s"Error occurred while executing python operator[${op.name}, ${op.id}]. Exit code: $exitCode"
     )
+}
+final case class PyDataEncodeError(op: FlowOp, error: Throwable) extends NdkError {
+  override def toThrowable: Throwable = new RuntimeException(
+    s"Error occurred while encoding input data for python operator[${op.name}, ${op.id}]",
+    error
+  )
 }
 final case class PyDataDecodeError(data: Seq[String], op: FlowOp, error: Throwable) extends NdkError {
   override def toThrowable: Throwable = new RuntimeException(
@@ -72,6 +84,6 @@ final case class ConfigLoadError(failures: ConfigReaderFailures) extends NdkErro
 }
 
 trait ErrorSyntax {
-  type EitherError[A] = Either[NdkError, A]
+  type EitherError[A]     = Either[NdkError, A]
   type EitherThrowable[A] = Either[Throwable, A]
 }

@@ -9,17 +9,17 @@ import cats.syntax.functor._
 import ru.neoflex.ndk.dsl.RestServiceImplicits.RestServiceOps
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoName
+import ru.neoflex.ndk.engine.process.ProcessPool
 import ru.neoflex.ndk.error._
 import ru.neoflex.ndk.tools.Logging
 import ru.neoflex.ndk.{ ExecutionConfig, RestConfig }
 
-import java.io.PrintWriter
-import scala.io.Source
 import scala.util.Try
 
 class FlowExecutionEngine[F[_]](
   observer: FlowExecutionObserver[F],
-  executionConfig: ExecutionConfig
+  executionConfig: ExecutionConfig,
+  processPool: ProcessPool
 )(implicit monadError: MonadError[F, NdkError])
     extends FlowExecutor[F]
     with Logging {
@@ -49,29 +49,22 @@ class FlowExecutionEngine[F[_]](
   }.flatten
 
   protected def executePythonOperator(pyOperatorIn: PythonOperatorOp[Any, Any]): F[Unit] = {
-    def writeInputData(p: Process, o: PythonOperatorOp[_, _]): F[Unit] = {
-      val dataInWriter = new PrintWriter(p.getOutputStream)
-      o.encodedDataIn.foreach { v =>
-        dataInWriter.println(v)
-      }
-      dataInWriter.flush()
-      dataInWriter.close()
-      monadError.raiseWhen(dataInWriter.checkError())(PyOperatorWritingError(o))
-    }
-
     logger.debug("Executing python operator: ({}, {})", pyOperatorIn.id, pyOperatorIn.name)
 
     observeExecution(pyOperatorIn, observer.pyOperatorStarted, observer.pyOperatorFinished) { op =>
-      val pb = new ProcessBuilder("python", op.command).redirectErrorStream(true)
-
       for {
-        process  <- Try(pb.start()).toEither.leftMap(PyOperatorStartError(op, _)).liftTo[F]
-        _        <- writeInputData(process, op)
-        exitCode = process.waitFor()
-        _        <- monadError.raiseWhen(exitCode != 0)(PyOperatorExecutionError(op, exitCode))
-        output   = Source.fromInputStream(process.getInputStream).getLines().toSeq
-        _        <- Try(process.getInputStream.close()).toEither.leftMap(OperatorExecutionError(op, _)).liftTo[F]
-        _        <- op.collectResults(output).leftMap(PyDataDecodeError(output, op, _)).liftTo[F]
+        pooledProcess <- processPool
+                          .borrowProcess("python", op.command)
+                          .toEither
+                          .leftMap(PyOperatorStartError(op, _))
+                          .liftTo[F]
+        processWriter = pooledProcess.getProcessWriter
+        processReader = pooledProcess.getProcessReader
+        processInput  <- pyOperatorIn.encodedDataIn.leftMap(PyDataEncodeError(op, _)).liftTo[F].map(_.toSeq)
+        _             <- processWriter.writeData(processInput).toEither.leftMap(PyOperatorWritingError(op, _)).liftTo[F]
+        processOutput <- processReader.readData().toEither.leftMap(OperatorExecutionError(op, _)).liftTo[F]
+        _             = processPool.release(pooledProcess)
+        _             <- op.collectResults(processOutput).leftMap(PyDataDecodeError(processOutput, op, _)).liftTo[F]
       } yield ()
     }
   }

@@ -1,12 +1,14 @@
 package ru.neoflex.ndk.dsl
 
 import cats.implicits.toTraverseOps
-import io.circe.{ Decoder, Encoder, Json }
+import io.circe.{Decoder, Encoder, Json}
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
-import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
+import ru.neoflex.ndk.dsl.Rule.{Condition, Otherwise}
+import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import syntax.NoId
+
+import scala.util.Try
 
 trait Constants {
   val NoId   = "NoId"
@@ -97,9 +99,11 @@ abstract class PythonOperatorOp[In: PyDataEncoder, Out: PyDataDecoder] extends F
   def dataIn: () => Seq[In]
   def resultCollector: Seq[Out] => Unit
 
-  def encodedDataIn: Iterator[String] = dataIn().iterator.map { v =>
-    implicitly[PyDataEncoder[In]].encode(v)
-  }
+  def encodedDataIn: Either[Throwable, Iterator[String]] = Try {
+    dataIn().iterator.map { v =>
+      implicitly[PyDataEncoder[In]].encode(v)
+    }
+  }.toEither
 
   def collectResults(strings: Seq[String]): Either[Throwable, Unit] = {
     strings.map { v =>
