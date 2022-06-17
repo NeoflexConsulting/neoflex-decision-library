@@ -1,11 +1,13 @@
 package ru.neoflex.ndk.engine.process
 
 import java.time.Instant
+import java.util.concurrent.Future
 
 final case class PooledProcess(
   key: ProcessKey,
   process: Process,
   processIoFactory: ProcessIoFactory,
+  errorMonitoringTask: Future[_],
   lastTimeUsed: Instant = Instant.now()) {
 
   private val processReader = processIoFactory.createReader(process)

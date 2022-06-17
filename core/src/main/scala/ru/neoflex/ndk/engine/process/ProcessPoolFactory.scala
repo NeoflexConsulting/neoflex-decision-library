@@ -4,24 +4,12 @@ import ru.neoflex.ndk.ProcessPoolConfig
 import ru.neoflex.ndk.tools.Logging
 
 import java.time.Instant
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.{ Executors, ThreadFactory, TimeUnit }
+import java.util.concurrent.{ Executors, TimeUnit }
 
 object ProcessPoolFactory {
   private lazy val processCleanerPool = Executors.newScheduledThreadPool(
     1,
-    new ThreadFactory {
-      private val group =
-        Option(System.getSecurityManager).map(_.getThreadGroup).getOrElse(Thread.currentThread.getThreadGroup)
-      private val threadNumber = new AtomicInteger(1)
-
-      override def newThread(r: Runnable): Thread = {
-        val t = new Thread(group, r, s"process-cleaner-${threadNumber.getAndIncrement()}", 0)
-        t.setDaemon(true)
-        t.setPriority(Thread.NORM_PRIORITY)
-        t
-      }
-    }
+    new NamedThreadFactory("process-cleaner")
   )
 
   def create(poolConfig: ProcessPoolConfig): ProcessPool = {
