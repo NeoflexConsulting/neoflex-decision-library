@@ -10,7 +10,7 @@ import scala.io.Source
 import scala.jdk.CollectionConverters.{ CollectionHasAsScala, ConcurrentMapHasAsScala }
 import scala.util.{ Success, Try, Using }
 
-class ProcessPool(processIoFactory: ProcessIoFactory = BatchedIoFactory, perProcessPoolSize: Int = 1) extends Logging {
+class ProcessPool(processIoFactory: ProcessIoFactory = SimpleIoFactory, perProcessPoolSize: Int = 1) extends Logging {
 
   private val pool = new ConcurrentHashMap[ProcessKey, SingleProcessTypePool]()
 
