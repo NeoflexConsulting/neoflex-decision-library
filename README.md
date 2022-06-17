@@ -266,7 +266,102 @@ case class PrintConditionsTable(in: Applicant, out: ApplicationResponse)
 
 ### Python operator
 
-TBD
+`PythonOperator` — is a special operator which helps with calling scripts written in python from a flow.
+Interaction between java and python processes performs via sending json structures via pipe(stdin). Step by step interaction looks as follows:
+
+- serialize user data structure to json string
+- send json string to python process via pipe
+- receive json string like response from python process
+- deserialize string to user data structure
+- call user response handler with deserialized structure
+
+Bellow is an example of the python operator declaration:
+```scala
+final case class WineModelFlow(data: WineModelData)
+    extends Flow(
+      "wm-f-1",
+      "WineModel",
+      flowOps(
+        pythonCall[Seq[Double], Double](
+          "pm-c-1",
+          "Call wine model",
+          "examples/py-model/src/main/resources/model.py",
+          data.features
+        ) { result =>
+          data.result = result
+        }
+      )
+    )
+```
+
+`pythonCall[Seq[Double], Double]` — here in square brackets specified two type parameters:
+
+1. First type parameter is a type of input data structure for the python process. Here it is `Seq[Double]` — sequence of doubles(array in other words)
+2. Second type parameter is a type of output data structure returned from the python process. Here it is just number with double precision.
+
+As the type parameter there could be any type that the user wants to use or has created, but there must be `io.circe.Encoder` and `io.circe.Decoder`
+for input and output respectively. Fortunately, for basic scala types there already exist encoders and decoders,
+for custom types you need to create a new one.
+
+`examples/py-model/src/main/resources/model.py` — this is the location of the python script to be called.
+
+`data.features` — this is the input data for the python script.
+
+`{ result =>
+  data.result = result
+}` — this is the result handler.
+
+The above example is only scala side of the interaction, there is also python side.
+Bellow is an example of the `model.py` script:
+```python
+import mlflow
+import pandas as pd
+from pipe_json_wrapper import PipeJsonWrapper
+
+logged_model = '../../mlflow/examples/sklearn_elasticnet_wine/mlruns/0/b9defef6a9c8401a9ed9252fbec25d1e/artifacts/model'
+loaded_model = mlflow.pyfunc.load_model(logged_model)
+
+
+def predict(data):
+    predictions = loaded_model.predict(pd.DataFrame([data]))
+    return predictions[0]
+
+
+PipeJsonWrapper(predict).run()
+
+```
+
+`predict` is your function which will be called with deserialized from json data come from the java process.
+Data returned by the `predict` function will be automatically serialized to json and returned to the java process.
+
+Also, to run your function with the pipe interface you need the following wrapper class:
+```python
+import json
+import sys
+
+
+def identity(x):
+    return x
+
+
+class PipeJsonWrapper:
+    def __init__(self, user_fn, map_input=identity, map_output=identity):
+        self.user_fn = user_fn
+        self.map_input = map_input
+        self.map_output = map_output
+
+    def run(self):
+        for l in iter(sys.stdin.readline, ''):
+            line = l.strip()
+            input_data = json.loads(line)
+            result = self.user_fn(input_data)
+            result = self.map_output(result)
+            output_data = json.dumps(result)
+            print(output_data)
+            sys.stdout.flush()
+```
+
+This class listens to stdin, deserializes input data, calls user function, serializes the response and sends it to stdout.
 
 ## Testing
 
