@@ -354,7 +354,7 @@ class PipeJsonWrapper:
         for l in iter(sys.stdin.readline, ''):
             line = l.strip()
             input_data = json.loads(line)
-            result = self.user_fn(input_data)
+            result = self.user_fn(self.map_input(input_data))
             result = self.map_output(result)
             output_data = json.dumps(result)
             print(output_data)
@@ -365,4 +365,39 @@ This class listens to stdin, deserializes input data, calls user function, seria
 
 ## Testing
 
-TBD
+There also exist special module `ndk-test-kit` which helps in testing the developed flows.
+You need to extend one of the predefined classes(`NdkSpec`, `NdkAnyFlatSpec`, `NdkAnyWordSpec`) to test your flow.
+After that you can write as many tests as you need for your flow.
+
+Below is an example of a flow test:
+
+```scala
+val testFlow = TestFlow()                       // create flow
+testFlow run { flowContext =>                   // run created flow
+  flowContext table "t1" has oneExecutedRow()   // after executing the flow, check that there was one executed row from the table with id t1
+  flowContext gateway "g1" has fired()          // check that the gateway with id g1 was run
+  flowContext rule "r1" has fired()             // check that the rule with id r1 was run
+  flowContext flow "f2" has notFired()          // check that the sub flow with id f1 wasn't run
+  flowContext forEach "loop1" has notFired()    // check that the loop with id loop1 wasn't run
+  flowContext rule "loop1-r1" has notFired()    // check that the rule with id loop1-r1 wasn't run
+
+  response.underwritingRequired should be(true) // just usual scalatest check against filled data structure
+  response.underwritingLevel should be(2)
+}
+```
+
+Each operator must have unique identifier across the running flow if you want to check the flow using rules like this `flowContext gateway "g1" has fired()`. 
+Also, you can replace some operators in the flow for testing purposes as in the example below:
+```scala
+val testFlow = TestFlow(applicant, response) withOperators (
+  "g1" -> gateway("g1") {
+    when(response.riskLevel == 1) andThen action {
+      println("Level 1 worked")
+    } and when(response.riskLevel == 2) andThen action {
+      println("Level 2 worked")
+    } otherwise action {
+      println("Otherwise worked")
+    }
+  }
+)
+```

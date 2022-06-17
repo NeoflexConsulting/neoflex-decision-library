@@ -16,7 +16,7 @@ class PipeJsonWrapper:
         for l in iter(sys.stdin.readline, ''):
             line = l.strip()
             input_data = json.loads(line)
-            result = self.user_fn(input_data)
+            result = self.user_fn(self.map_input(input_data))
             result = self.map_output(result)
             output_data = json.dumps(result)
             print(output_data)
