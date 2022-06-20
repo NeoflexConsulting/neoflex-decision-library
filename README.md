@@ -12,6 +12,7 @@ For now there are available such operators:
 - forEach
 - while
 - table
+- REST service operator
 - python operator
 
 To start creating your beautiful business flows you need some imports:
@@ -263,6 +264,39 @@ case class PrintConditionsTable(in: Applicant, out: ApplicationResponse)
       )
     )
 ```
+
+### REST service operator
+
+With REST service operator you can configure call to a remote service from your business flow.
+```scala
+case class RestModelCallFlow(data: FlowData)
+    extends Flow(
+      "rmc-f-1",
+      "RestModelCall",
+      flowOps(
+        serviceCall[MlFlowModelData[Double], List[Double]](
+          "sc-1",
+          "Call elasticnet wine model",
+          serviceEndpoint("http://localhost:5000"),
+          "/invocations",
+          data.features.mlFlowData
+        ) { result =>
+          data.result = result
+        }
+      )
+    )
+```
+This is an example of calling an ML model that is deployed with mlflow as a REST service. The most important parameters here is:
+
+- `serviceEndpoint("http://localhost:5000")` — defines service location
+- `"/invocations"` — defines service uri
+- `data.features.mlFlowData` — defines data which will be sent as a serialized json in request body to the remote service
+- `{ result => 
+  data.result = result
+  }` — defines a response handler which stores response data to the `data.result` variable
+
+And these are all you need to call remote service. Also, you can change `serviceEndpoint("http://localhost:5000")` to `serviceName("wine-model")` 
+and set the service location with the specified name in the `application.conf` configuration file.
 
 ### Python operator
 
