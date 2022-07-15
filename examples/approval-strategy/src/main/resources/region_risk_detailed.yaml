@@ -1,0 +1,21 @@
+table:
+  - code: "80"
+    city: "N/A"
+    risk: 3
+    description: "Забайкальский край"
+  - code: "%агинский%бурятский%"
+    city: "N/A"
+    risk: 3
+    description: "Забайкальский край"
+  - code: "24"
+    city: "%норильск%"
+    risk: 1
+    description: "Красноярский"
+
+indexedFields:
+  - type: "eq|like"
+    name: "code"
+  - type: "like"
+    name: "city"
+
+valueField: "risk"

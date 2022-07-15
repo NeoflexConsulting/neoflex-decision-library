@@ -90,7 +90,13 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
   .settings(
     name := "approval-strategy-example",
     version := "0.0.1-SNAPSHOT",
-    publish / skip := true
+    publish / skip := true,
+    libraryDependencies += "io.circe" %% "circe-yaml" % "0.14.1",
+    libraryDependencies += "org.springframework" % "spring-expression" % "5.3.21",
+    tpolecatCiModeOptions ~= { options =>
+      println(options)
+      options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard, ScalacOptions.warnDeadCode, ScalacOptions.privateWarnDeadCode, ScalacOptions.fatalWarnings))
+    }
   )
   .dependsOn(core, ndkRenderer)
 
