@@ -20,7 +20,9 @@ lazy val core = artifactModule("neoflex-decision-kit", "core")
     libraryDependencies += "org.http4s"            %% "http4s-ember-client" % "0.23.12",
     libraryDependencies += "org.http4s"            %% "http4s-circe"        % "0.23.12",
     libraryDependencies += "io.circe"              %% "circe-generic"       % "0.14.2",
-    libraryDependencies += "com.github.pureconfig" %% "pureconfig"          % "0.17.1"
+    libraryDependencies += "com.github.pureconfig" %% "pureconfig"          % "0.17.1",
+    libraryDependencies += "org.camunda.feel"      % "feel-engine"          % "1.14.2",
+    libraryDependencies += "io.circe"              %% "circe-yaml"          % "0.14.1"
   )
 
 lazy val preparePythonVenv     = taskKey[Unit]("Prepare python virtual environment")
@@ -65,7 +67,7 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
     name := "ndk-renderer",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang" % "scala-reflect"         % scalaVersion.value,
       "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.5.0"
     )
   )
@@ -91,7 +93,6 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
     name := "approval-strategy-example",
     version := "0.0.1-SNAPSHOT",
     publish / skip := true,
-    libraryDependencies += "io.circe" %% "circe-yaml" % "0.14.1",
     libraryDependencies += "org.springframework" % "spring-expression" % "5.3.21",
     tpolecatCiModeOptions ~= { options =>
       println(options)

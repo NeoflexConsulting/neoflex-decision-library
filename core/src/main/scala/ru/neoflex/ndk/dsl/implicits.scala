@@ -1,3 +1,5 @@
 package ru.neoflex.ndk.dsl
 
-object implicits extends TableImplicits
+import ru.neoflex.ndk.dsl.dictionary.indexed.SearchConditionOperatorImplicits
+
+object implicits extends TableImplicits with SearchConditionOperatorImplicits

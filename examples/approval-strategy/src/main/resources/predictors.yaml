@@ -1,4 +1,0 @@
-table:
-  age:
-    versions:
-      "1": "#application.sysdate.getYear() - #application.applicantData.person.birthDate.getYear()"
