@@ -9,6 +9,7 @@ import ru.neoflex.ndk.dsl.dictionary.{ DictionaryLoader, DictionaryValue }
 import ru.neoflex.ndk.error.{ FeelExpressionError, NdkError }
 
 import scala.reflect.ClassTag
+import scala.util.Try
 
 abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Boolean = true) {
   private val engine = new FeelEngine()
@@ -22,17 +23,19 @@ abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Bool
   def apply[T: ClassTag](name: String, version: String, parameters: (String, Any)*): DictionaryValue[T] =
     DictionaryValue[T](dictionaryName) {
       for {
-        expressions <- _expressions
-        result      <- evalExpression(expressions, name, version, parameters)
-      } yield result.map(NumberValueMapper.convertIfNumber[T](_).asInstanceOf[T])
+        expressions     <- _expressions
+        evaluatedResult <- evalExpression(expressions, name, version, parameters)
+        result <- Try(evaluatedResult.map(NumberValueMapper.convertIfNumber[T](_).asInstanceOf[T])).toEither
+                   .leftMap(e => FeelExpressionError(dictionaryName, name, version, e.getMessage))
+      } yield result
     }
 
   private def evalExpression(
-                              expressions: FeelExpressions[ParsedExpression],
-                              name: String,
-                              version: String,
-                              parameters: Seq[(String, Any)]
-                            ): Either[NdkError, Option[Any]] = {
+    expressions: FeelExpressions[ParsedExpression],
+    name: String,
+    version: String,
+    parameters: Seq[(String, Any)]
+  ): Either[NdkError, Option[Any]] = {
     expressions.value.get(name).flatMap(_.versions.get(version)) match {
       case Some(expression) =>
         engine

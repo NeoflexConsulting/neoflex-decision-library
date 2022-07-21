@@ -7,7 +7,7 @@ import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.syntax.NoId
 
-import scala.util.Try
+import scala.util.control.Exception.nonFatalCatch
 
 trait Constants {
   val NoId   = "NoId"
@@ -99,9 +99,9 @@ abstract class PythonOperatorOp[In: Encoder, Out: Decoder] extends FlowOp {
   def resultCollector: Out => Unit
 
   def encodedDataIn: Either[Throwable, String] =
-    Try {
+    nonFatalCatch.either {
       Encoder[In].apply(dataIn()).printWith(Printer.noSpaces)
-    }.toEither
+    }
 
   def collectResults(value: String): Either[Throwable, Unit] = {
     io.circe.jawn.decode[Out](value)(Decoder[Out]).map(resultCollector)

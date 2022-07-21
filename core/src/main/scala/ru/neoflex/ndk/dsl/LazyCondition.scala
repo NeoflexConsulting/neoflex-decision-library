@@ -1,17 +1,20 @@
 package ru.neoflex.ndk.dsl
 
+import cats.syntax.either._
 import ru.neoflex.ndk.dsl.dictionary.DictionaryValue
-import ru.neoflex.ndk.error.NdkError
+import ru.neoflex.ndk.error.{ NdkError, WrappedError }
+
+import scala.util.control.Exception.nonFatalCatch
 
 sealed trait LazyCondition {
   def eval(): Either[NdkError, Boolean]
 }
 
 final case class SimpleLazyCondition(c: () => Boolean) extends LazyCondition {
-  override def eval(): Either[NdkError, Boolean] = Right(c())
+  override def eval(): Either[NdkError, Boolean] = nonFatalCatch.either(c()).leftMap(WrappedError)
 }
 
-object LazyCondition {
+trait LazyConditionImplicits {
   implicit def toLazyCondition(c: => Boolean): LazyCondition = SimpleLazyCondition(() => c)
 }
 

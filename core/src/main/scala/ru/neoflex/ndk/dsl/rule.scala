@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.dsl
 
 import ru.neoflex.ndk.dsl.Rule._
+import ru.neoflex.ndk.dsl.implicits.toLazyCondition
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.syntax.NoId
 
@@ -24,13 +25,18 @@ trait RuleSyntax {
   def condition(expr: => Boolean): ConditionBuilder = condition(None, expr)
 
   def condition(name: Option[String], expr: => Boolean): ConditionBuilder =
-    ConditionBuilder(name, () => expr)
+    condition(name, toLazyCondition(expr))
+
+  def condition(expr: LazyCondition): ConditionBuilder = condition(None, expr)
+
+  def condition(name: Option[String], expr: LazyCondition): ConditionBuilder =
+    ConditionBuilder(name, expr)
 }
 
 object Rule {
   final case class ConditionBuilder(
     name: Option[String],
-    expr: () => Boolean,
+    expr: LazyCondition,
     ruleBuilder: RuleBuilder = RuleBuilder()) {
 
     def andThen(body: => Unit): RuleBuilder =
@@ -38,8 +44,12 @@ object Rule {
   }
 
   final case class RuleBuilder(conditions: Seq[Condition] = Seq.empty, otherwiseBranch: Option[Otherwise] = None) {
-    def condition(expr: => Boolean): ConditionBuilder                       = condition(None, expr)
-    def condition(name: Option[String], expr: => Boolean): ConditionBuilder = ConditionBuilder(name, () => expr, this)
+    def condition(expr: => Boolean): ConditionBuilder = condition(None, expr)
+    def condition(name: Option[String], expr: => Boolean): ConditionBuilder =
+      ConditionBuilder(name, toLazyCondition(expr), this)
+
+    def condition(expr: LazyCondition): ConditionBuilder                       = condition(None, expr)
+    def condition(name: Option[String], expr: LazyCondition): ConditionBuilder = ConditionBuilder(name, expr, this)
 
     def otherwise(body: => Unit): RuleBuilder = otherwise(None, body)
 
@@ -47,6 +57,7 @@ object Rule {
       copy(otherwiseBranch = Some(Otherwise(name, () => body)))
   }
 
-  final case class Condition(name: Option[String], expr: () => Boolean, body: () => Unit) extends DeclarationLocationSupport
+  final case class Condition(name: Option[String], expr: LazyCondition, body: () => Unit)
+      extends DeclarationLocationSupport
   final case class Otherwise(name: Option[String], body: () => Unit) extends DeclarationLocationSupport
 }

@@ -8,12 +8,18 @@ sealed trait NdkError {
   def toThrowable: Throwable
 }
 
-final case class OperatorExecutionError(operator: FlowOp, error: Throwable, details: Any*) extends NdkError {
-  override def toThrowable: Throwable =
-    new RuntimeException(
-      s"Execution of the Operator[${operator.name}, ${operator.id}] has failed. Details: $details",
-      error
-    )
+final case class OperatorExecutionError(operator: FlowOp, error: Option[Throwable], details: Any*) extends NdkError {
+  override def toThrowable: Throwable = {
+    val message = s"Execution of the Operator[${operator.name}, ${operator.id}] has failed. Details: $details"
+    error.map(new RuntimeException(message, _)).getOrElse(new RuntimeException(message))
+  }
+}
+object OperatorExecutionError {
+  def apply(operator: FlowOp, error: Throwable, details: Any*): OperatorExecutionError =
+    OperatorExecutionError(operator, Some(error), details)
+}
+final case class WrappedError(error: Throwable) extends NdkError {
+  override def toThrowable: Throwable = error
 }
 final case class TableActionNotFound(table: TableOp, actionName: String) extends NdkError {
   override def toThrowable: Throwable =
@@ -100,15 +106,16 @@ final case class FeelExpressionError(dictionaryName: String, expressionName: Str
         s"Dictionary: $dictionaryName, expression: $expressionName:$version, message: $message"
     )
 }
-
 final case class FieldNotIndexedError(dictionaryName: String, fieldName: String, indexType: IndexType)
     extends NdkError {
   override def toThrowable: Throwable =
     new RuntimeException(s"Field $fieldName is not indexed in dictionary $dictionaryName with index type: $indexType")
 }
-
 final case class NoSuchFieldInDictionaryRecord(fieldName: String) extends NdkError {
   override val toThrowable: Throwable = new RuntimeException(s"There is no such field in the dictionary: $fieldName")
+}
+final case class DictionaryFieldTypeMismatch(fieldName: Option[String], record: Any, error: Throwable) extends NdkError {
+  override def toThrowable: Throwable = new RuntimeException("")
 }
 
 trait ErrorSyntax {

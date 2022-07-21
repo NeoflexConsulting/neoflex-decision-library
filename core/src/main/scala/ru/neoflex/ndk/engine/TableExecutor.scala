@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.engine
 
+import cats.syntax.either._
 import cats.MonadError
 import cats.implicits.toTraverseOps
 import cats.syntax.applicative._
@@ -8,6 +9,7 @@ import cats.syntax.flatMap._
 import cats.syntax.functor._
 import ru.neoflex.ndk.dsl.Table.{ ActionDef, CallableAction }
 import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.dsl.dictionary.DictionaryValue
 import ru.neoflex.ndk.error.{
   ActionArgumentsMatchError,
   ExpressionsAndConditionsNumberMatchError,
@@ -48,7 +50,13 @@ class TableExecutor[F[_]](
 
   private def executeExpressions(expressions: Seq[Table.Expression]) = _table.flatMap { table =>
     expressions.map { expr =>
-      engine.execute(expr.f, table, expr.name).map((expr.name, _))
+      engine
+        .execute(expr.f, table, expr.name)
+        .flatMap {
+          case dv: DictionaryValue[_] => dv.get.liftTo[F].asInstanceOf[F[Any]]
+          case r                      => r.pure[F]
+        }
+        .map((expr.name, _))
     }.toList.sequence
   }
 

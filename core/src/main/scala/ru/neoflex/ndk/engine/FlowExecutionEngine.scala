@@ -129,7 +129,11 @@ class FlowExecutionEngine[F[_]](
   protected def findGatewayOperator(gatewayIn: GatewayOp): F[FlowOp] =
     observeExecution(gatewayIn, observer.gatewayStarted, observer.gatewayFinished) { gateway =>
       logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
-      val conditionsAndExecutionResult = gateway.whens.map(c => Try((c.cond(), c))).toList.sequence
+      val conditionsAndExecutionResult = gateway.whens
+        .map(c => c.cond.eval().map(r => (r, c)))
+        .toList
+        .sequence
+        .leftMap(e => OperatorExecutionError(gateway, None, e))
       val foundOperator = for {
         conditionResultAndConditions <- conditionsAndExecutionResult
         foundResultAndCondition      = conditionResultAndConditions.find { case (conditionResult, _) => conditionResult }
@@ -151,7 +155,7 @@ class FlowExecutionEngine[F[_]](
           )
           gateway.otherwise
       }
-      pureFromTry(foundOperator, gateway)
+      foundOperator.liftTo[F]
     }
 
   protected def executeRule(rule: RuleOp): F[Unit] =
@@ -164,10 +168,16 @@ class FlowExecutionEngine[F[_]](
         execute(r.body, tweakedRule, r.name)
       }
 
+      def executeConditions() =
+        conditions
+          .map(c => c.expr.eval().map(r => (c, r)))
+          .toList
+          .sequence
+          .leftMap(e => OperatorExecutionError(tweakedRule, None, e))
+          .liftTo[F]
+
       for {
-        conditionAndResult <- pureFromTry(conditions.map { c =>
-                               Try((c, c.expr()))
-                             }.toList.sequence, tweakedRule)
+        conditionAndResult   <- executeConditions()
         maybeTrueCondition   = conditionAndResult.find(_._2).map(_._1)
         maybeConditionAction = maybeTrueCondition.map(c => NamedAction(c.name.getOrElse(NoName), c.body)).map(_.some)
         maybeRuleAction = maybeConditionAction.getOrElse {

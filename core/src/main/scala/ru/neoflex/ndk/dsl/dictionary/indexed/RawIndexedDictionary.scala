@@ -1,9 +1,16 @@
 package ru.neoflex.ndk.dsl.dictionary.indexed
 
 import cats.implicits.toTraverseOps
+import cats.syntax.either._
 import io.circe.generic.semiauto._
 import io.circe.{ Decoder, Json }
-import ru.neoflex.ndk.error.{ NdkError, NoSuchFieldInDictionaryRecord }
+import ru.neoflex.ndk.error.{
+  DictionaryFieldTypeMismatch,
+  NdkError,
+  NoSuchFieldInDictionaryRecord
+}
+
+import scala.util.control.Exception.nonFatalCatch
 
 final case class RawIndexedDictionary[V](table: List[V], indexedFields: Set[IndexedField], valueField: Option[String])
 
@@ -21,8 +28,14 @@ object RawIndexedDictionary {
     override def get[V](record: Map[String, Json], name: Option[String]): Either[NdkError, V] = {
       name
         .flatMap(record.get)
-        .map(_.foldJson().asInstanceOf[V])
         .toRight(NoSuchFieldInDictionaryRecord(name.getOrElse("")))
+        .flatMap { j =>
+          nonFatalCatch.either {
+            j.foldJson().asInstanceOf[V]
+          }.leftMap { e =>
+            DictionaryFieldTypeMismatch(name, record, e)
+          }
+        }
     }
   }
   implicit def productDictValueExtractor[T <: Product]: ValueExtractor[T] = new ValueExtractor[T] {
@@ -33,8 +46,12 @@ object RawIndexedDictionary {
             .find(_._1 == n)
             .map(_._2)
             .toRight(NoSuchFieldInDictionaryRecord(name.getOrElse("")))
-            .map { idx =>
-              record.productElement(idx).asInstanceOf[V]
+            .flatMap { idx =>
+              nonFatalCatch.either {
+                record.productElement(idx).asInstanceOf[V]
+              }.leftMap { e =>
+                DictionaryFieldTypeMismatch(name, record, e)
+              }
             }
         case None => Right(record.asInstanceOf[V])
       }

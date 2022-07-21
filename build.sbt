@@ -22,7 +22,8 @@ lazy val core = artifactModule("neoflex-decision-kit", "core")
     libraryDependencies += "io.circe"              %% "circe-generic"       % "0.14.2",
     libraryDependencies += "com.github.pureconfig" %% "pureconfig"          % "0.17.1",
     libraryDependencies += "org.camunda.feel"      % "feel-engine"          % "1.14.2",
-    libraryDependencies += "io.circe"              %% "circe-yaml"          % "0.14.1"
+    libraryDependencies += "io.circe"              %% "circe-yaml"          % "0.14.1",
+    libraryDependencies += "org.scalatest"         %% "scalatest"           % "3.2.12" % Test
   )
 
 lazy val preparePythonVenv     = taskKey[Unit]("Prepare python virtual environment")

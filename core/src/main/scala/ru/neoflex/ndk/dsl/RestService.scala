@@ -2,14 +2,14 @@ package ru.neoflex.ndk.dsl
 
 import cats.MonadError
 import cats.implicits.catsSyntaxApplicativeErrorId
-import io.circe.{Decoder, Encoder}
+import io.circe.{ Decoder, Encoder }
 import ru.neoflex.ndk.RestConfig
 import ru.neoflex.ndk.dsl.MlFlowModelData.MlFlowModelDataOps
 import ru.neoflex.ndk.dsl.RestService.ServiceNameOrEndpoint
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
-import ru.neoflex.ndk.error.{NdkError, RestServiceError}
+import ru.neoflex.ndk.error.{ NdkError, RestServiceError }
 
-import scala.util.Try
+import scala.util.control.Exception.nonFatalCatch
 
 final case class RestServiceImpl[Req: Encoder, Resp: Decoder](
   override val id: String,
@@ -18,7 +18,8 @@ final case class RestServiceImpl[Req: Encoder, Resp: Decoder](
   override val makeUri: () => String,
   override val inputBody: () => Option[Req],
   override val responseCollector: Resp => Unit)
-    extends RestService[Req, Resp] with DeclarationLocationSupport {
+    extends RestService[Req, Resp]
+    with DeclarationLocationSupport {
   override def isEmbedded: Boolean = true
 }
 
@@ -85,16 +86,15 @@ object MlFlowModelData {
 object RestServiceImplicits {
 
   implicit class RestServiceOps[F[_]](rs: RestService[Any, Any]) {
-    import org.http4s.dsl.io._
-    import org.http4s.Uri
-    import org.http4s.circe._
-    import org.http4s._
     import cats.effect.IO
+    import cats.effect.unsafe.implicits.global
     import cats.syntax.either._
     import cats.syntax.flatMap._
     import cats.syntax.functor._
+    import org.http4s.{ Uri, _ }
+    import org.http4s.circe._
+    import org.http4s.dsl.io._
     import org.http4s.ember.client.EmberClientBuilder
-    import cats.effect.unsafe.implicits.global
 
     def executeRequest()(implicit monadError: MonadError[F, NdkError], restConfig: RestConfig): F[Unit] = {
       def getEndpoint: F[String] = {
@@ -121,7 +121,8 @@ object RestServiceImplicits {
           val executionResult = EmberClientBuilder.default[IO].build.use { client =>
             val inputJson   = rs.encodedInputBody
             val inputEntity = inputJson.map(jsonEncoder[IO].toEntity).getOrElse(Entity.empty)
-            val request     = Request(POST, parsedUri, body = inputEntity.body, headers = Headers("Content-type" -> "application/json"))
+            val request =
+              Request(POST, parsedUri, body = inputEntity.body, headers = Headers("Content-type" -> "application/json"))
             client.run(request).use {
               case Status.Successful(r) =>
                 r.attemptAs[String]
@@ -142,7 +143,7 @@ object RestServiceImplicits {
             }
           }
 
-          Try(executionResult.unsafeRunSync()).toEither.leftMap(RestServiceError(_, rs)).liftTo[F]
+          nonFatalCatch.either(executionResult.unsafeRunSync()).leftMap(RestServiceError(_, rs)).liftTo[F]
         }
 
       makeCall().flatMap(_.flatten)

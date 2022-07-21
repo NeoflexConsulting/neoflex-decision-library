@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.dsl
 import ru.neoflex.ndk.dsl.Gateway.When
+import ru.neoflex.ndk.dsl.implicits.toLazyCondition
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 
@@ -24,11 +25,13 @@ object Gateway {
   }
 
   final case class WhenBuilder(name: Option[String], var whens: Seq[When]) {
-    private var exprValue: () => Boolean = _
+    private var condValue: LazyCondition = _
     private var action: FlowOp           = _
 
-    def apply(expr: => Boolean): WhenBuilder = {
-      exprValue = () => expr
+    def apply(expr: => Boolean): WhenBuilder = apply(toLazyCondition(expr))
+
+    def apply(condition: LazyCondition): WhenBuilder = {
+      condValue = condition
       this
     }
 
@@ -37,10 +40,10 @@ object Gateway {
       SealedWhens(whens :+ toWhen)
     }
 
-    def toWhen: When = When(name, exprValue, action)
+    def toWhen: When = When(name, condValue, action)
   }
 
-  final case class When(name: Option[String], cond: () => Boolean, op: FlowOp)
+  final case class When(name: Option[String], cond: LazyCondition, op: FlowOp)
 }
 
 trait GatewaySyntax {
