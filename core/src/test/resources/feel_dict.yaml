@@ -1,0 +1,11 @@
+table:
+  hasEducation:
+    versions:
+      "1": "applicant.person.education = desiredEducation"
+  isNewClient:
+    versions:
+      "1": "applicant.person.previousApplications.firstDate = null or abs(years and months duration(today(), applicant.person.previousApplications.firstDate.get)) < duration(\"P1M\")"
+  "age":
+    versions:
+      "1": "abs(years and months duration(today(), applicant.person.birthDate)).years"
+

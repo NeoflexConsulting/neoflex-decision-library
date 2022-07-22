@@ -98,6 +98,11 @@ final case class DictionaryLoadingError(dictionaryName: String, message: String,
   }
 }
 
+final case class FeelExpressionDoesNotExist(dictionaryName: String, expressionName: String, version: String)
+    extends NdkError {
+  override def toThrowable: Throwable =
+    new RuntimeException(s"Specified expression $expressionName:$version does not exist in dictionary $dictionaryName")
+}
 final case class FeelExpressionError(dictionaryName: String, expressionName: String, version: String, message: String)
     extends NdkError {
   override def toThrowable: Throwable =
@@ -114,7 +119,8 @@ final case class FieldNotIndexedError(dictionaryName: String, fieldName: String,
 final case class NoSuchFieldInDictionaryRecord(fieldName: String) extends NdkError {
   override val toThrowable: Throwable = new RuntimeException(s"There is no such field in the dictionary: $fieldName")
 }
-final case class DictionaryFieldTypeMismatch(fieldName: Option[String], record: Any, error: Throwable) extends NdkError {
+final case class DictionaryFieldTypeMismatch(fieldName: Option[String], record: Any, error: Throwable)
+    extends NdkError {
   override def toThrowable: Throwable = new RuntimeException("")
 }
 

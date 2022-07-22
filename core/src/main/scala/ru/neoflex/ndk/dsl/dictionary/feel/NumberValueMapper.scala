@@ -15,6 +15,6 @@ object NumberValueMapper {
         case ct if ct.runtimeClass == classOf[BigInt] => number.toBigInt
         case _                                        => v
       }
-    }
+    } else v
   }
 }

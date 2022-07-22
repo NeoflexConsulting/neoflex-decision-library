@@ -1,15 +1,15 @@
 package ru.neoflex.ndk.dsl.dictionary.feel
 
-import cats.implicits.{ toBifunctorOps, toTraverseOps }
+import cats.implicits.{toBifunctorOps, toTraverseOps}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 import org.camunda.feel.FeelEngine
 import org.camunda.feel.syntaxtree.ParsedExpression
-import ru.neoflex.ndk.dsl.dictionary.{ DictionaryLoader, DictionaryValue }
-import ru.neoflex.ndk.error.{ FeelExpressionError, NdkError }
+import ru.neoflex.ndk.dsl.dictionary.{DictionaryLoader, DictionaryValue}
+import ru.neoflex.ndk.error.{FeelExpressionDoesNotExist, FeelExpressionError, NdkError}
 
 import scala.reflect.ClassTag
-import scala.util.Try
+import scala.util.control.Exception.nonFatalCatch
 
 abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Boolean = true) {
   private val engine = new FeelEngine()
@@ -25,7 +25,8 @@ abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Bool
       for {
         expressions     <- _expressions
         evaluatedResult <- evalExpression(expressions, name, version, parameters)
-        result <- Try(evaluatedResult.map(NumberValueMapper.convertIfNumber[T](_).asInstanceOf[T])).toEither
+        result <- nonFatalCatch
+                   .either(evaluatedResult.map(r => NumberValueMapper.convertIfNumber[T](r).asInstanceOf[T]))
                    .leftMap(e => FeelExpressionError(dictionaryName, name, version, e.getMessage))
       } yield result
     }
@@ -42,7 +43,7 @@ abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Bool
           .eval(expression, parameters.toMap)
           .leftMap(f => FeelExpressionError(dictionaryName, name, version, f.message))
           .map(Option.apply)
-      case None => Right(None)
+      case None => Left(FeelExpressionDoesNotExist(dictionaryName, name, version))
     }
   }
 
