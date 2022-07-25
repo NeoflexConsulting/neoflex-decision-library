@@ -3,7 +3,7 @@ package ru.neoflex.ndk.dsl.dictionary.indexed
 import cats.implicits.catsSyntaxOptionId
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{EitherValues, Inside, OptionValues}
+import org.scalatest.{ EitherValues, Inside, OptionValues }
 import ru.neoflex.ndk.dsl.implicits._
 
 class IndexedDictionarySpec extends AnyWordSpec with EitherValues with Matchers with Inside with OptionValues {
@@ -17,6 +17,11 @@ class IndexedDictionarySpec extends AnyWordSpec with EitherValues with Matchers 
       "result in empty" in {
         val result = RegionDict("code" is "9875").get.value
         result should be(None)
+      }
+
+      "return result despite the letters case" in {
+        val result = PopulationsDict("country" is "ireLand").get.value
+        result should be (5000000.some)
       }
     }
 
@@ -49,6 +54,11 @@ class IndexedDictionarySpec extends AnyWordSpec with EitherValues with Matchers 
       "result in empty" in {
         val result = RegionDict("code" like "nonexistent").get.value
         result should be(None)
+      }
+
+      "return result despite the letters case" in {
+        val result = PopulationsDict("country" like "pER%").get.value
+        result should be (34000000.some)
       }
     }
 
@@ -111,8 +121,9 @@ class IndexedDictionarySpec extends AnyWordSpec with EitherValues with Matchers 
   }
 }
 
-private object RegionDict         extends MapIndexedDictionary[String]("region_dict")
-private object ReversedRegionDict extends MapIndexedDictionary[Int]("reversed_region_dict")
-private object CurrencyDict       extends ProductIndexedDictionary[Currency, Currency]("currency_dict")
-private object DoubleValuesDict   extends MapIndexedDictionary[Double]("double_values_dict")
-private object BigDecimalValuesDict   extends MapIndexedDictionary[BigDecimal]("bigdecimal_values_dict")
+private object RegionDict           extends MapIndexedDictionary[String]("region_dict")
+private object ReversedRegionDict   extends MapIndexedDictionary[Int]("reversed_region_dict")
+private object CurrencyDict         extends ProductIndexedDictionary[Currency, Currency]("currency_dict")
+private object DoubleValuesDict     extends MapIndexedDictionary[Double]("double_values_dict")
+private object BigDecimalValuesDict extends MapIndexedDictionary[BigDecimal]("bigdecimal_values_dict")
+private object PopulationsDict      extends MapIndexedDictionary[Int]("populations_dict", inLowerCase = true)

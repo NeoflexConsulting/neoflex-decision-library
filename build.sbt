@@ -96,8 +96,7 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
     publish / skip := true,
     libraryDependencies += "org.springframework" % "spring-expression" % "5.3.21",
     tpolecatCiModeOptions ~= { options =>
-      println(options)
-      options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard, ScalacOptions.warnDeadCode, ScalacOptions.privateWarnDeadCode, ScalacOptions.fatalWarnings))
+      options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }
   )
   .dependsOn(core, ndkRenderer)

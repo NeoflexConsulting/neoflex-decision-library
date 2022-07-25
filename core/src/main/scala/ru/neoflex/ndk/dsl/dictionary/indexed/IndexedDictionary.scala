@@ -11,6 +11,7 @@ import scala.reflect.{ classTag, ClassTag }
 
 sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V: ClassTag](
   dictionaryName: String,
+  inLowerCase: Boolean = false,
   eagerLoad: Boolean = true) {
 
   private lazy val _indexes = buildDictionaryIndexes()
@@ -70,11 +71,11 @@ sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V: ClassTag]
       f.indexTypes.map {
         _.map {
           case EqIndexType =>
-            EqIndex[R, V](f.name, valueField, dictionary.table).map { index =>
+            EqIndex[R, V](f.name, valueField, dictionary.table, inLowerCase).map { index =>
               IndexKey(f.name, EqIndexType) -> index
             }
           case LikeIndexType =>
-            LikeIndex[R, V](f.name, valueField, dictionary.table).map { index =>
+            LikeIndex[R, V](f.name, valueField, dictionary.table, inLowerCase).map { index =>
               IndexKey(f.name, LikeIndexType) -> index
             }
         }
@@ -122,16 +123,17 @@ sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V: ClassTag]
   protected def recordFieldNames(record: R): Set[String]
 }
 
-abstract class MapIndexedDictionary[V: Decoder: ClassTag](dictionaryName: String, eagerLoad: Boolean = true)
-    extends IndexedDictionary[Map[String, Json], V](dictionaryName, eagerLoad) {
+abstract class MapIndexedDictionary[V: Decoder: ClassTag](dictionaryName: String, inLowerCase: Boolean = false, eagerLoad: Boolean = true)
+    extends IndexedDictionary[Map[String, Json], V](dictionaryName, inLowerCase, eagerLoad) {
 
   override protected def recordFieldNames(record: Map[String, Json]): Set[String] = record.keySet
 }
 
 abstract class ProductIndexedDictionary[R <: Product: Decoder: ClassTag, V: ClassTag](
   dictionaryName: String,
+  inLowerCase: Boolean = false,
   eagerLoad: Boolean = true)
-    extends IndexedDictionary[R, V](dictionaryName, eagerLoad) {
+    extends IndexedDictionary[R, V](dictionaryName, inLowerCase, eagerLoad) {
 
   override protected def recordFieldNames(record: R): Set[String] = record.productElementNames.toSet
 

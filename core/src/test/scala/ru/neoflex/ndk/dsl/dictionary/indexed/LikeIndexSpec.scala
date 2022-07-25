@@ -17,7 +17,7 @@ class LikeIndexSpec extends AnyFlatSpec with Matchers with EitherValues {
       SampleRecord("fourth"),
       SampleRecord("fifth")
     )
-    val index          = LikeIndex[SampleRecord, SampleRecord]("name", None, records).value
+    val index          = LikeIndex[SampleRecord, SampleRecord]("name", None, records, inLowerCase = false).value
     val randRecordIdx  = random.nextInt(records.length)
     val randRecordName = records(randRecordIdx).name
     val foundRecords   = index.find(randRecordName)

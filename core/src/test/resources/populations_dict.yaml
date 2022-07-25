@@ -1,0 +1,9 @@
+table:
+  - country: "Ireland"
+    population: 5000000
+  - country: "Peru"
+    population: 34000000
+
+indexedFields:
+  - name: "country"
+    type: "like|eq"
