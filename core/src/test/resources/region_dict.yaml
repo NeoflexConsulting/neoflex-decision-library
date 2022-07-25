@@ -1,0 +1,11 @@
+table:
+  - code: 54
+    value: "Novosibirsk"
+  - code: 77
+    value: "Moscow"
+  - code: 78
+    value: "Saint-petersburg"
+
+indexedFields:
+  - type: "eq|like"
+    name: "code"

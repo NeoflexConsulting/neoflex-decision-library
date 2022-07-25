@@ -119,9 +119,12 @@ final case class FieldNotIndexedError(dictionaryName: String, fieldName: String,
 final case class NoSuchFieldInDictionaryRecord(fieldName: String) extends NdkError {
   override val toThrowable: Throwable = new RuntimeException(s"There is no such field in the dictionary: $fieldName")
 }
-final case class DictionaryFieldTypeMismatch(fieldName: Option[String], record: Any, error: Throwable)
+final case class DictionaryFieldTypeMismatch(fieldName: Option[String], record: Any, error: Option[Throwable] = None)
     extends NdkError {
-  override def toThrowable: Throwable = new RuntimeException("")
+  override def toThrowable: Throwable = {
+    val message = s"Field $fieldName defined with wrong type in dictionary record: $record"
+    error.map(new RuntimeException(message, _)).getOrElse(new RuntimeException(message))
+  }
 }
 
 trait ErrorSyntax {

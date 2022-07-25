@@ -1,0 +1,14 @@
+table:
+  - alpha: "RUB"
+    numeric: 643
+  - alpha: "USD"
+    numeric: 840
+  - alpha: "MNT"
+    numeric: 496
+  - alpha: "JPY"
+    numeric: 392
+
+indexedFields:
+  - name: "alpha"
+    type: "eq"
+

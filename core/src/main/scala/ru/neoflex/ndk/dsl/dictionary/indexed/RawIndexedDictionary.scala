@@ -1,15 +1,12 @@
 package ru.neoflex.ndk.dsl.dictionary.indexed
 
-import cats.implicits.toTraverseOps
+import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
 import cats.syntax.either._
 import io.circe.generic.semiauto._
 import io.circe.{ Decoder, Json }
-import ru.neoflex.ndk.error.{
-  DictionaryFieldTypeMismatch,
-  NdkError,
-  NoSuchFieldInDictionaryRecord
-}
+import ru.neoflex.ndk.error.{ DictionaryFieldTypeMismatch, NdkError, NoSuchFieldInDictionaryRecord }
 
+import scala.reflect.{ classTag, ClassTag }
 import scala.util.control.Exception.nonFatalCatch
 
 final case class RawIndexedDictionary[V](table: List[V], indexedFields: Set[IndexedField], valueField: Option[String])
@@ -19,27 +16,37 @@ object RawIndexedDictionary {
   implicit def dictDecoder[V: Decoder]: Decoder[RawIndexedDictionary[V]] = deriveDecoder[RawIndexedDictionary[V]]
 
   sealed trait ValueExtractor[T] {
-    def get[V](record: T, name: Option[String]): Either[NdkError, V]
+    def get[V: ClassTag](record: T, name: Option[String]): Either[NdkError, V]
   }
+
   object ValueExtractor {
     def apply[T: ValueExtractor]: ValueExtractor[T] = implicitly[ValueExtractor[T]]
   }
+
   implicit val mapDictValueExtractor: ValueExtractor[Map[String, Json]] = new ValueExtractor[Map[String, Json]] {
-    override def get[V](record: Map[String, Json], name: Option[String]): Either[NdkError, V] = {
+    override def get[V: ClassTag](record: Map[String, Json], name: Option[String]): Either[NdkError, V] = {
       name
         .flatMap(record.get)
         .toRight(NoSuchFieldInDictionaryRecord(name.getOrElse("")))
         .flatMap { j =>
           nonFatalCatch.either {
-            j.foldJson().asInstanceOf[V]
+            val foldedJsonValue = j.foldJson()
+            JsonNumberConverter
+              .convert[V](foldedJsonValue) { v =>
+                classTag[V].runtimeClass.cast(v)
+              }
+              .map(_.asInstanceOf[V])
           }.leftMap { e =>
-            DictionaryFieldTypeMismatch(name, record, e)
+            DictionaryFieldTypeMismatch(name, record, e.some)
+          }.flatMap {
+            _.toRight(DictionaryFieldTypeMismatch(name, record))
           }
         }
     }
   }
+
   implicit def productDictValueExtractor[T <: Product]: ValueExtractor[T] = new ValueExtractor[T] {
-    override def get[V](record: T, name: Option[String]): Either[NdkError, V] = {
+    override def get[V: ClassTag](record: T, name: Option[String]): Either[NdkError, V] = {
       name match {
         case Some(n) =>
           record.productElementNames.zipWithIndex
@@ -48,9 +55,14 @@ object RawIndexedDictionary {
             .toRight(NoSuchFieldInDictionaryRecord(name.getOrElse("")))
             .flatMap { idx =>
               nonFatalCatch.either {
-                record.productElement(idx).asInstanceOf[V]
+                val value = record.productElement(idx)
+                JavaToScalaPrimitivesConverter
+                  .convert(value) { v =>
+                    classTag[V].runtimeClass.cast(v)
+                  }
+                  .asInstanceOf[V]
               }.leftMap { e =>
-                DictionaryFieldTypeMismatch(name, record, e)
+                DictionaryFieldTypeMismatch(name, record, e.some)
               }
             }
         case None => Right(record.asInstanceOf[V])

@@ -1,19 +1,21 @@
 package ru.neoflex.ndk.dsl.dictionary.indexed
 
-import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
+import cats.implicits.{catsSyntaxOptionId, toTraverseOps}
 import ru.neoflex.ndk.dsl.dictionary.indexed.LikeIndex.LikeIndexRecord
 import ru.neoflex.ndk.dsl.dictionary.indexed.RawIndexedDictionary.ValueExtractor
 import ru.neoflex.ndk.error.NdkError
 
+import scala.reflect.ClassTag
+
 sealed trait DictIndex[V] {
-  def find[K](k: K): Seq[V]
+  def find(k: Any): Seq[V]
 }
 
-class EqIndex[V](index: Map[Any, V]) extends DictIndex[V] {
-  override def find[K](k: K): Seq[V] = index.get(k).toSeq
+class EqIndex[V](index: Map[String, V]) extends DictIndex[V] {
+  override def find(k: Any): Seq[V] = index.get(k.toString).toSeq
 }
 object EqIndex {
-  def apply[R: ValueExtractor, V](
+  def apply[R: ValueExtractor, V: ClassTag](
     indexedField: String,
     valueField: Option[String],
     values: List[R]
@@ -23,13 +25,13 @@ object EqIndex {
         for {
           indexedFieldValue <- ValueExtractor[R].get[Any](value, indexedField.some)
           targetValue       <- ValueExtractor[R].get[V](value, valueField)
-        } yield indexedFieldValue -> IndexRecord(id, targetValue)
+        } yield indexedFieldValue.toString -> IndexRecord(id, targetValue)
     }.sequence.map(i => new EqIndex(i.toMap))
   }
 }
 
 class LikeIndex[V](values: List[LikeIndexRecord[V]]) extends DictIndex[V] {
-  override def find[K](k: K): Seq[V] = {
+  override def find(k: Any): Seq[V] = {
     val pattern = k.toString
     val searchFn: String => Boolean =
       if (pattern.startsWith("%") && pattern.endsWith("%") && pattern.length > 1) {
@@ -49,7 +51,7 @@ class LikeIndex[V](values: List[LikeIndexRecord[V]]) extends DictIndex[V] {
   }
 }
 object LikeIndex {
-  def apply[R: ValueExtractor, V](
+  def apply[R: ValueExtractor, V: ClassTag](
     indexedField: String,
     valueField: Option[String],
     values: List[R]

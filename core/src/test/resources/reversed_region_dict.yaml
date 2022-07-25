@@ -1,0 +1,11 @@
+table:
+  - code: 54
+    name: "Novosibirsk"
+  - code: 77
+    name: "Moscow"
+  - code: 78
+    name: "Saint-petersburg"
+
+indexedFields:
+  - type: "like"
+    name: "name"

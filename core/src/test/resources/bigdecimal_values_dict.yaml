@@ -1,0 +1,12 @@
+table:
+  - code: 10
+    value: 2.2
+  - code: 20
+    value: 100000000000000000000000000005.55
+  - code: 30
+    value: -0.43
+
+indexedFields:
+  - name: "code"
+    type: "eq"
+

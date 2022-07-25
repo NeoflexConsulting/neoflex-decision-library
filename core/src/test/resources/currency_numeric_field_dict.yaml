@@ -1,0 +1,27 @@
+table:
+  - alpha: "RUB"
+    numeric: 643
+    name: "Russian Ruble"
+    country: "Russia"
+  - alpha: "USD"
+    numeric: 840
+    name: "US Dollar"
+    country: "USA"
+  - alpha: "MNT"
+    numeric: 496
+    name: "Tugrik"
+    country: "Mongolia"
+  - alpha: "JPY"
+    numeric: 392
+    name: "Yen"
+    country: "Japan"
+
+indexedFields:
+  - name: "alpha"
+    type: "eq"
+  - name: "numeric"
+    type: "eq"
+  - name: "name"
+    type: "eq|like"
+
+valueField: "numeric"

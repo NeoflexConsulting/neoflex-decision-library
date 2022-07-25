@@ -9,7 +9,7 @@ import ru.neoflex.ndk.error.{ DictionaryLoadingError, FieldNotIndexedError, NdkE
 
 import scala.reflect.{ classTag, ClassTag }
 
-sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V](
+sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V: ClassTag](
   dictionaryName: String,
   eagerLoad: Boolean = true) {
 
@@ -50,6 +50,9 @@ sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V](
       findValue(condition).map(_.headOption.map(_.value))
     }
   }
+
+  def getUnsafe(condition: SearchConditionOperator): Option[V] =
+    apply(condition).get.fold(e => throw e.toThrowable, x => x)
 
   private def buildDictionaryIndexes(): Either[NdkError, Map[IndexKey, DictIndex[IndexRecord[V]]]] = {
     for {

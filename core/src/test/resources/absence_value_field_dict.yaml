@@ -1,0 +1,6 @@
+table:
+  - code: 1
+
+indexedFields:
+  - name: "code"
+    type: "eq"
