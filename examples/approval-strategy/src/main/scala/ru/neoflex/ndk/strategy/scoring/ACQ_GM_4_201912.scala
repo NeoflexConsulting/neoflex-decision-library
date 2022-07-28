@@ -45,11 +45,11 @@ final case class ACQ_GM_4_201912(
           val regionRisk = RegionRiskGrade(("code" like region and ("city" like city)) or ("code" is region))
 
           rule("acq-gm-r-3") {
-            condition("region score = 1", regionRisk == 1) andThen {
+            condition("region risk = 1", regionRisk == 1) andThen {
               scoreVal.scoreValue -= 5
-            } condition ("region score = 2", regionRisk == 2) andThen {
+            } condition ("region risk = 2", regionRisk == 2) andThen {
               scoreVal.scoreValue += 15
-            } condition ("region score = 3", regionRisk == 3) andThen {
+            } condition ("region risk = 3", regionRisk == 3) andThen {
               scoreVal.scoreValue += 25
             } otherwise {
               scoreVal.scoreValue -= 5

@@ -33,11 +33,11 @@ final case class Application_4_0_SCB(
           val regionRisk = RegionRiskGrade(("code" like region and ("city" like city)) or ("code" is region))
 
           rule("application-4-0-scb-r-2") {
-            condition("region score = 1", regionRisk == 1) andThen {
+            condition("region risk = 1", regionRisk == 1) andThen {
               scoreVal.scoreValue -= 4
-            } condition ("region score = 2", regionRisk == 2) andThen {
+            } condition ("region risk = 2", regionRisk == 2) andThen {
               scoreVal.scoreValue += 5
-            } condition ("region score = 3", regionRisk == 3) andThen {
+            } condition ("region risk = 3", regionRisk == 3) andThen {
               scoreVal.scoreValue += 6
             } otherwise {
               scoreVal.scoreValue -= 7
