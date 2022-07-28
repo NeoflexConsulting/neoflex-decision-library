@@ -123,7 +123,10 @@ sealed abstract class IndexedDictionary[R: ValueExtractor: Decoder, V: ClassTag]
   protected def recordFieldNames(record: R): Set[String]
 }
 
-abstract class MapIndexedDictionary[V: Decoder: ClassTag](dictionaryName: String, inLowerCase: Boolean = false, eagerLoad: Boolean = true)
+abstract class MapIndexedDictionary[V: Decoder: ClassTag](
+  dictionaryName: String,
+  inLowerCase: Boolean = false,
+  eagerLoad: Boolean = true)
     extends IndexedDictionary[Map[String, Json], V](dictionaryName, inLowerCase, eagerLoad) {
 
   override protected def recordFieldNames(record: Map[String, Json]): Set[String] = record.keySet

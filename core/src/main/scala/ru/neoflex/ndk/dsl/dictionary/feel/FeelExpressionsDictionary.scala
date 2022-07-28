@@ -21,7 +21,7 @@ abstract class FeelExpressionsDictionary(dictionaryName: String, eagerLoad: Bool
   }
 
   def apply[T: ClassTag](name: String, version: String, parameters: (String, Any)*): DictionaryValue[T] =
-    DictionaryValue[T](dictionaryName) {
+    DictionaryValue[T](dictionaryName, name) {
       for {
         expressions     <- _expressions
         evaluatedResult <- evalExpression(expressions, name, version, parameters)
