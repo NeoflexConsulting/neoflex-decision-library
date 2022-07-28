@@ -5,7 +5,7 @@ import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
 import ru.neoflex.ndk.strategy.Functions.{ applicantCity, applicantRegion, hasEducation }
-import ru.neoflex.ndk.strategy.{Predictors, RegionRiskGrade}
+import ru.neoflex.ndk.strategy.dictionaries.{Predictors, RegionRiskGrade}
 import ru.neoflex.ndk.strategy.domain.result.{Score, ScoringDetails}
 import ru.neoflex.ndk.strategy.domain.Application
 

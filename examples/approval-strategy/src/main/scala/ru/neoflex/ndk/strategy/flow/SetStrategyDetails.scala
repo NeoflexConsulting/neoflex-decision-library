@@ -4,7 +4,7 @@ import ru.neoflex.ndk.dsl.Table
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
-import ru.neoflex.ndk.strategy.Predictors
+import ru.neoflex.ndk.strategy.dictionaries.Predictors
 import ru.neoflex.ndk.strategy.domain.Application
 import ru.neoflex.ndk.strategy.domain.result.ScoringResult
 
