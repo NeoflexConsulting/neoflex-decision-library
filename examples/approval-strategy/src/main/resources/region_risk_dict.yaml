@@ -1,0 +1,60 @@
+table:
+  - code: "80"
+    city: "N/A"
+    risk: 3
+  - code: "агинский бурятский"
+    city: "N/A"
+    risk: 3
+  - code: "75"
+    city: "N/A"
+    risk: 3
+  - code: "забайкальский"
+    city: "N/A"
+    risk: 3
+  - code: "85"
+    city: "N/A"
+    risk: 3
+  - code: "иркутская ордынский"
+    city: "N/A"
+    risk: 3
+  - code: "38"
+    city: "братск"
+    risk: 2
+  - code: "иркутская"
+    city: "братск"
+    risk: 2
+  - code: "38"
+    city: "N/A"
+    risk: 3
+  - code: "42"
+    city: "N/A"
+    risk: 3
+  - code: "кемеровская"
+    city: "N/A"
+    risk: 3
+  - code: "24"
+    city: "норильск"
+    risk: 1
+  - code: "красноярский"
+    city: "норильск"
+    risk: 1
+  - code: "24"
+    city: "красноярск"
+    risk: 2
+  - code: "красноярский"
+    city: "красноярск"
+    risk: 2
+  - code: "24"
+    city: "N/A"
+    risk: 3
+  - code: "красноярский"
+    city: "N/A"
+    risk: 3
+
+indexedFields:
+  - name: "code"
+    type: "like|eq"
+  - name: "city"
+    type: "like"
+
+valueField: "risk"

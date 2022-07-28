@@ -4,8 +4,8 @@ import ru.neoflex.ndk.dsl.Table
 import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
-import ru.neoflex.ndk.dsl.syntax.{ expressions, row }
-import ru.neoflex.ndk.strategy.Functions.isNewClient
+import ru.neoflex.ndk.dsl.syntax.{expressions, row}
+import ru.neoflex.ndk.strategy.Predictors
 import ru.neoflex.ndk.strategy.domain.Application
 import ru.neoflex.ndk.strategy.domain.result.Trial
 
@@ -17,7 +17,7 @@ final case class AssignStrategyDetails(application: Application, trial: Trial)
         "trialName" expr trial.name,
         "activeScOffer" expr application.applicantData.person.activeScOffer,
         "activeRdOffer" expr application.applicantData.person.activeRdOffer,
-        "isNewClient" expr isNewClient(application)
+        "isNewClient" expr Predictors("isNewClient", "1", "application" -> application)
       ) andConditions (
         row(eqv("TR_CL_STND"), any(), any(), eqv(true)).apply("Set strategy CashStreet New") {
           trial.strategyName = "CashStreet New"

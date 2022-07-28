@@ -4,7 +4,7 @@ import ru.neoflex.ndk.dsl.Table
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.dsl.implicits._
 import ru.neoflex.ndk.dsl.ImplicitConversions.stringToOption
-import ru.neoflex.ndk.strategy.Functions
+import ru.neoflex.ndk.strategy.Predictors
 import ru.neoflex.ndk.strategy.domain.Application
 import ru.neoflex.ndk.strategy.domain.result.ScoringResult
 
@@ -15,7 +15,7 @@ final case class SetStrategyDetails(application: Application, result: ScoringRes
       "ap-t-1",
       "Set strategy details",
       expressions(
-        "isNewClient" expr Functions.isNewClient(application),
+        "isNewClient" expr Predictors("isNewClient", "1", "application" -> application),
         "activeOffer" expr (application.applicantData.person.activeRdOffer == 1 || application.applicantData.person.activeScOffer == 1)
       ) andConditions (
         row(eqv(true), any()).apply("Street New") {
