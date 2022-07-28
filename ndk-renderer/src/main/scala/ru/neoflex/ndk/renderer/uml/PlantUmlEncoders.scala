@@ -1,6 +1,7 @@
 package ru.neoflex.ndk.renderer.uml
 
 import cats.implicits.catsSyntaxOptionId
+import ru.neoflex.ndk.NdkKeywords
 import ru.neoflex.ndk.dsl.Rule.Otherwise
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
@@ -57,8 +58,16 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     def otherwise(rb: RuleUmlBuilder, actionNum: Int): Unit = r.otherwise.foreach { o =>
       rb.otherwise(otherwiseName(o)).action(actionNum, makeLinkOrEmpty(o))
     }
-    def startIf(c: Rule.Condition): RuleUmlBuilder =
-      new RuleUmlBuilder().startIf(conditionOrRuleName(c)).action(1, makeLinkOrEmpty(c))
+    def startIf(c: Rule.Condition): RuleUmlBuilder = {
+      val builder = new RuleUmlBuilder()
+      val name =
+        c.expr match {
+          case DictLazyCondition(v, _) =>
+            conditionOrRuleName(c) + s""" [${NdkKeywords.UmlNdkData}:${DictionaryLink(v.dictionaryName, "yaml", v.key).stringValue}]"""
+          case _ => conditionOrRuleName(c)
+        }
+      builder.startIf(name).action(1, makeLinkOrEmpty(c))
+    }
 
     r.conditions.toList match {
       case head :: Nil =>
