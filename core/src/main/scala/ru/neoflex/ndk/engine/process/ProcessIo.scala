@@ -1,7 +1,9 @@
 package ru.neoflex.ndk.engine.process
 
-import java.io.{ BufferedReader, Closeable, InputStreamReader, PrintWriter }
-import scala.util.{ Failure, Success, Try }
+import ru.neoflex.ndk.NdkKeywords
+
+import java.io.{BufferedReader, Closeable, InputStreamReader, PrintWriter}
+import scala.util.{Failure, Success, Try}
 
 trait ProcessWriter extends Closeable {
   def writeData(data: String): Try[Unit] = writeData(Seq(data))
@@ -42,9 +44,9 @@ class BatchedWriter(process: Process) extends ProcessWriter {
 
   override def writeData(data: Seq[String]): Try[Unit] = {
     Try {
-      writer.println(ProtocolSyntax.BatchStartDirective)
+      writer.println(NdkKeywords.BatchStartDirective)
       data.foreach(writer.println)
-      writer.println(ProtocolSyntax.BatchEndDirective)
+      writer.println(NdkKeywords.BatchEndDirective)
       writer.flush()
     }
   }
@@ -76,15 +78,11 @@ class BatchedReader(process: Process) extends ProcessReader {
 
     for {
       firstLine <- readLine()
-      _         <- Either.cond(firstLine == ProtocolSyntax.BatchStartDirective, (), errorReadingBatchStart(firstLine)).toTry
-      result    <- readUnless(ProtocolSyntax.BatchEndDirective)
+      _         <- Either.cond(firstLine == NdkKeywords.BatchStartDirective, (), errorReadingBatchStart(firstLine)).toTry
+      result    <- readUnless(NdkKeywords.BatchEndDirective)
     } yield result
   }
 
   override def close(): Unit = reader.close()
 }
 
-object ProtocolSyntax {
-  val BatchStartDirective = "__ndk_bs"
-  val BatchEndDirective   = "__ndk_be"
-}
