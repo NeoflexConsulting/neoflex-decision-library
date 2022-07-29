@@ -56,7 +56,7 @@ lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
       "org.scalatest"  %% "scalatest"            % "3.2.11",
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.5.0"
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.6.0"
     ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
@@ -69,7 +69,8 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect"         % scalaVersion.value,
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.5.0"
+      "org.scala-lang.modules" %% "scala-xml"         % "2.1.0",
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.6.0"
     )
   )
 
@@ -94,7 +95,6 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
     name := "approval-strategy-example",
     version := "0.0.1-SNAPSHOT",
     publish / skip := true,
-    libraryDependencies += "org.springframework" % "spring-expression" % "5.3.21",
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }
