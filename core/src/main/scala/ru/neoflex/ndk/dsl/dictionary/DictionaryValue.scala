@@ -24,6 +24,8 @@ final case class DictionaryValue[T](var x: () => Either[NdkError, Option[T]], di
 }
 
 object DictionaryValue {
+  val DictFileExtension = "yaml"
+
   def apply[T](dictionaryName: String)(x: => Either[NdkError, Option[T]]): DictionaryValue[T] =
     new DictionaryValue[T](() => x, dictionaryName)
 

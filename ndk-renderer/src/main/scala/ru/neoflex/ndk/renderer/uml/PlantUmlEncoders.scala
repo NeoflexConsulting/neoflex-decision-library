@@ -5,11 +5,13 @@ import ru.neoflex.ndk.NdkKeywords
 import ru.neoflex.ndk.dsl.Rule.Otherwise
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
+import ru.neoflex.ndk.dsl.dictionary.DictionaryValue
 import ru.neoflex.ndk.dsl.implicits.CallableActionOps
 import ru.neoflex.ndk.dsl.syntax.OperatorOps
 import ru.neoflex.ndk.renderer.{ DepthLimitedEncoder, Encoder, Encoders, EncodingContext }
 
 import scala.collection.mutable
+import scala.util.Try
 
 trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder with LoopUmlBuilder {
   override val encoders: Encoders       = this
@@ -49,6 +51,16 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     addLink(ctx.op, s":$name;")
   }
 
+  private def toDictionaryLinkDirective(dv: DictionaryValue[_]): String = {
+    val link = DictionaryLink(dv.dictionaryName, DictionaryValue.DictFileExtension, dv.key)
+    s""" [${NdkKeywords.UmlNdkData}:${link.stringValue}]"""
+  }
+
+  private def toLinkReprIfDictCondition(c: LazyCondition): String = c match {
+    case DictLazyCondition(v, _) => toDictionaryLinkDirective(v)
+    case _                       => ""
+  }
+
   val rule: Encoder[RuleOp] = (ctx: EncodingContext[RuleOp]) => {
     val r                                              = ctx.op
     val ruleName                                       = r.name.getOrElse(s"$NoName rule")
@@ -58,14 +70,13 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
     def otherwise(rb: RuleUmlBuilder, actionNum: Int): Unit = r.otherwise.foreach { o =>
       rb.otherwise(otherwiseName(o)).action(actionNum, makeLinkOrEmpty(o))
     }
+    def appendDictLinkIfExists(c: Rule.Condition)(buildName: Rule.Condition => String): String = {
+      val name = buildName(c)
+      name + toLinkReprIfDictCondition(c.expr)
+    }
     def startIf(c: Rule.Condition): RuleUmlBuilder = {
       val builder = new RuleUmlBuilder()
-      val name =
-        c.expr match {
-          case DictLazyCondition(v, _) =>
-            conditionOrRuleName(c) + s""" [${NdkKeywords.UmlNdkData}:${DictionaryLink(v.dictionaryName, "yaml", v.key).stringValue}]"""
-          case _ => conditionOrRuleName(c)
-        }
+      val name    = appendDictLinkIfExists(c)(conditionOrRuleName)
       builder.startIf(name).action(1, makeLinkOrEmpty(c))
     }
 
@@ -79,7 +90,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
         val ruleBuilder = startIf(head)
         tail.foreach { c =>
           actionNum += 1
-          ruleBuilder.startElseIf(buildConditionName(c)).action(actionNum, makeLinkOrEmpty(c))
+          ruleBuilder.startElseIf(appendDictLinkIfExists(c)(buildConditionName)).action(actionNum, makeLinkOrEmpty(c))
         }
         otherwise(ruleBuilder, actionNum + 1)
         ruleBuilder.endIf()
@@ -98,7 +109,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
     g.whens.zipWithIndex.foreach {
       case (when, idx) =>
-        val whenName = when.name.getOrElse(s"Condition $idx")
+        val whenName = when.name.getOrElse(s"Condition $idx") + toLinkReprIfDictCondition(when.cond)
         gatewayBuilder.addCase(whenName, generic(ctx.withOperatorAndDepth(when.op)))
     }
 
@@ -108,6 +119,14 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
   }
 
   val table: Encoder[TableOp] = (ctx: EncodingContext[TableOp]) => {
+    def toCaseName(e: Table.Expression): String = {
+      val caseName = e.name
+      Try(e.f()).map {
+        case dv: DictionaryValue[_] => s"$caseName ${toDictionaryLinkDirective(dv)}"
+        case _                      => caseName
+      }.toOption.getOrElse(caseName)
+    }
+
     val t    = ctx.op
     val name = t.name.getOrElse(s"$NoName table")
     val r    = new mutable.StringBuilder()
@@ -116,7 +135,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
     t.expressions.foreach { e =>
       r ++= "|= "
-      r ++= e.name
+      r ++= toCaseName(e)
     }
     t.expressions.headOption.foreach { _ =>
       r ++= "|= action |\r\n"

@@ -11,7 +11,7 @@ import cats.syntax.option._
 
 object DictionaryLoader {
   def loadDictionary[T: Decoder](dictionaryName: String): Either[NdkError, T] = {
-    Using(new InputStreamReader(getClass.getResourceAsStream(s"/$dictionaryName.yaml")))(parse).toEither.joinRight
+    Using(new InputStreamReader(getClass.getResourceAsStream(s"/$dictionaryName.${DictionaryValue.DictFileExtension}")))(parse).toEither.joinRight
       .flatMap(implicitly[Decoder[T]].decodeJson)
       .leftMap { t =>
         DictionaryLoadingError(dictionaryName, t.getMessage, t.some)
