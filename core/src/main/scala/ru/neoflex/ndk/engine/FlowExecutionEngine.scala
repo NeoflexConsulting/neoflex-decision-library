@@ -1,14 +1,15 @@
 package ru.neoflex.ndk.engine
 
-import cats.MonadError
 import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
 import cats.syntax.applicative._
 import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
+import cats.{ ~>, MonadError }
 import ru.neoflex.ndk.dsl.RestServiceImplicits.RestServiceOps
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoName
+import ru.neoflex.ndk.engine.ExecutingOperator.Ops
 import ru.neoflex.ndk.engine.process.{ PooledProcess, ProcessPool }
 import ru.neoflex.ndk.error._
 import ru.neoflex.ndk.tools.Logging
@@ -17,39 +18,65 @@ import ru.neoflex.ndk.{ ExecutionConfig, RestConfig }
 import scala.util.Using.Releasable
 import scala.util.{ Try, Using }
 
-class FlowExecutionEngine[F[_]](
-  observer: FlowExecutionObserver[F],
+final case class ExecutingOperator[T <: FlowOp](op: T, root: FlowOp, parent: Option[FlowOp] = None) {
+  def id: String           = op.id
+  def name: Option[String] = op.name
+}
+object ExecutingOperator {
+  implicit class Ops[T <: FlowOp](op: T) {
+    def withParent(root: FlowOp, parent: FlowOp): ExecutingOperator[T] = ExecutingOperator(op, root, parent.some)
+    def withParentFrom(o: ExecutingOperator[T]): ExecutingOperator[T]  = ExecutingOperator(op, o.root, o.parent)
+  }
+}
+
+class FlowExecutionEngine[F[_], G[_]](
+  observer: FlowExecutionObserver[G],
   executionConfig: ExecutionConfig,
-  processPool: ProcessPool
+  processPool: ProcessPool,
+  liftG: G ~> F
 )(implicit monadError: MonadError[F, NdkError])
     extends FlowExecutor[F]
     with Logging {
 
-  override def execute(operator: FlowOp): F[Unit] = executeOperator(operator)
-
-  final protected def executeOperator(flowOp: FlowOp): F[Unit] = flowOp.tailRecM {
-    case action: Action     => executeAction(action).map(Either.right)
-    case rule: RuleOp       => executeRule(rule).map(Either.right)
-    case table: TableOp     => executeTable(table).map(Either.right)
-    case gateway: GatewayOp => findGatewayOperator(gateway).map(Either.left)
-    case op: WhileOp        => executeWhile(op).map(Either.right)
-    case op: ForEachOp      => executeForEach(op).map(Either.right)
-    case flow: Flow         => executeFlow(flow).map(Either.right)
-    case op: PythonOperatorOp[_, _] =>
-      executePythonOperator(op.asInstanceOf[PythonOperatorOp[Any, Any]]).map(Either.right)
-    case service: RestService[_, _] =>
-      callRemoteService(service.asInstanceOf[RestService[Any, Any]]).map(Either.right)
+  override def execute(operator: FlowOp): F[Unit] = {
+    observeExecution[FlowOp, Unit](
+      ExecutingOperator(operator, operator),
+      observer.executionStarted,
+      observer.executionFinished
+    ) { op =>
+      executeOperator(op, op)
+    }
   }
 
-  private def observeExecution[O <: FlowOp, T](op: O, start: O => F[O], finish: O => F[Unit])(exec: O => F[T]): F[T] = {
+  final protected def executeOperator(flowOp: FlowOp, root: FlowOp): F[Unit] = flowOp.tailRecM {
+    case action: Action     => executeAction(action.withParent(root, flowOp)).map(Either.right)
+    case rule: RuleOp       => executeRule(rule.withParent(root, flowOp)).map(Either.right)
+    case table: TableOp     => executeTable(table.withParent(root, flowOp)).map(Either.right)
+    case gateway: GatewayOp => findGatewayOperator(gateway.withParent(root, flowOp)).map(Either.left)
+    case op: WhileOp        => executeWhile(op.withParent(root, flowOp)).map(Either.right)
+    case op: ForEachOp      => executeForEach(op.withParent(root, flowOp)).map(Either.right)
+    case flow: Flow         => executeFlow(flow.withParent(root, flowOp)).map(Either.right)
+    case op: PythonOperatorOp[_, _] =>
+      executePythonOperator(op.asInstanceOf[PythonOperatorOp[Any, Any]].withParent(root, flowOp)).map(Either.right)
+    case service: RestService[_, _] =>
+      callRemoteService(service.asInstanceOf[RestService[Any, Any]].withParent(root, flowOp)).map(Either.right)
+  }
+
+  private def observeExecution[O <: FlowOp, T](
+    op: ExecutingOperator[O],
+    start: ExecutingOperator[O] => G[O],
+    finish: ExecutingOperator[O] => G[Unit]
+  )(
+    exec: O => F[T]
+  ): F[T] = {
     for {
-      tweakedOp <- start(op)
+      tweakedOp <- liftG(start(op))
       result    = exec(tweakedOp)
-      _         <- finish(tweakedOp)
+      _         <- liftG(finish(tweakedOp.withParentFrom(op)))
     } yield result
   }.flatten
 
-  protected def executePythonOperator(pyOperatorIn: PythonOperatorOp[Any, Any]): F[Unit] = {
+  protected def executePythonOperator(pyOperatorIn: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[Unit] = {
     logger.debug("Executing python operator: ({}, {})", pyOperatorIn.id, pyOperatorIn.name)
     implicit val pooledProcessIsReleasable: Releasable[PooledProcess] = processPool.release(_)
 
@@ -58,7 +85,7 @@ class FlowExecutionEngine[F[_]](
         val processWriter = p.getProcessWriter
         val processReader = p.getProcessReader
         for {
-          processInput  <- pyOperatorIn.encodedDataIn.leftMap(PyDataEncodeError(op, _))
+          processInput  <- pyOperatorIn.op.encodedDataIn.leftMap(PyDataEncodeError(op, _))
           _             <- processWriter.writeData(processInput).toEither.leftMap(PyOperatorWritingError(op, _))
           processOutput <- processReader.readSingleData().toEither.leftMap(OperatorExecutionError(op, _))
           _             <- op.collectResults(processOutput).leftMap(PyDataDecodeError(processOutput, op, _))
@@ -78,28 +105,28 @@ class FlowExecutionEngine[F[_]](
     }
   }
 
-  private def callRemoteService(rs: RestService[Any, Any]): F[Unit] = {
+  private def callRemoteService(rs: ExecutingOperator[RestService[Any, Any]]): F[Unit] = {
     observeExecution(rs, observer.restServiceStarted, observer.restServiceFinished) { op =>
       implicit val restConfig: RestConfig = executionConfig.rest
       op.executeRequest()
     }
   }
 
-  protected def executeFlow(flow: Flow): F[Unit] = {
+  protected def executeFlow(flow: ExecutingOperator[Flow]): F[Unit] = {
     logger.debug("Executing flow: ({}, {})", flow.id, flow.name)
     observeExecution(flow, observer.flowStarted, observer.flowFinished) {
-      _.ops.map(executeOperator).sequence.map(_ => ())
+      _.ops.map(executeOperator(_, flow.root)).sequence.map(_ => ())
     }
   }
 
-  protected def executeAction(action: Action): F[Unit] = {
+  protected def executeAction(action: ExecutingOperator[Action]): F[Unit] = {
     logger.debug("Executing action: ({}, {})", action.id, action.name)
     observeExecution(action, observer.actionStarted, observer.actionFinished) { tweakedAction =>
       execute(tweakedAction, tweakedAction, tweakedAction.name)
     }
   }
 
-  protected def executeWhile(op: WhileOp): F[Unit] = {
+  protected def executeWhile(op: ExecutingOperator[WhileOp]): F[Unit] = {
     logger.debug("Executing while loop: ({}, {})", op.id, op.name)
     observeExecution(op, observer.whileStarted, observer.whileFinished) { tweakedWhile =>
       tweakedWhile.tailRecM {
@@ -107,7 +134,7 @@ class FlowExecutionEngine[F[_]](
           logger.trace("Executing while loop[{}, {}] condition", id, name)
           execute(condition, tweakedWhile, name)
             .ifM(
-              executeOperator(body).map(_ => Either.left(tweakedWhile)),
+              executeOperator(body, op.root).map(_ => Either.left(tweakedWhile)),
               monadError.pure(Either.right(()))
             )
         case o => throw new MatchError(o)
@@ -115,18 +142,19 @@ class FlowExecutionEngine[F[_]](
     }
   }
 
-  protected def executeForEach(op: ForEachOp): F[Unit] = {
+  protected def executeForEach(op: ExecutingOperator[ForEachOp]): F[Unit] = {
     logger.debug("Executing forEach loop: ({}, {})", op.id, op.name)
     observeExecution(op, observer.forEachStarted, observer.forEachFinished) { tweakedForEach =>
-      tweakedForEach.collection().foldLeft(().pure) { (r, v) =>
-        r.flatMap(_ => executeOperator(tweakedForEach.body(v)))
+      tweakedForEach.collection().foldLeft(().pure[F]) { (r, v) =>
+        r.flatMap(_ => executeOperator(tweakedForEach.body(v), op.root))
       }
     }
   }
 
-  protected def executeTable(tableIn: TableOp): F[Unit] = new TableExecutor(tableIn, this, observer).execute()
+  protected def executeTable(tableIn: ExecutingOperator[TableOp]): F[Unit] =
+    new TableExecutor[F, G](tableIn, this, observer, liftG).execute()
 
-  protected def findGatewayOperator(gatewayIn: GatewayOp): F[FlowOp] =
+  protected def findGatewayOperator(gatewayIn: ExecutingOperator[GatewayOp]): F[FlowOp] =
     observeExecution(gatewayIn, observer.gatewayStarted, observer.gatewayFinished) { gateway =>
       logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
       val conditionsAndExecutionResult = gateway.whens
@@ -158,7 +186,7 @@ class FlowExecutionEngine[F[_]](
       foundOperator.liftTo[F]
     }
 
-  protected def executeRule(rule: RuleOp): F[Unit] =
+  protected def executeRule(rule: ExecutingOperator[RuleOp]): F[Unit] =
     observeExecution(rule, observer.ruleStarted, observer.ruleFinished) { tweakedRule =>
       import tweakedRule._
       logger.debug("Executing rule: ({}, {})", id, name)

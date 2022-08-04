@@ -3,6 +3,7 @@ package ru.neoflex.ndk.testkit
 import org.scalatest.Assertions
 import ru.neoflex.ndk.dsl.syntax.EitherError
 import org.scalactic.source
+import ru.neoflex.ndk.dsl.`type`.OperatorType
 
 trait FlowMatchers {
   def fired(): Matcher                = FiredOperatorMatcher(true)

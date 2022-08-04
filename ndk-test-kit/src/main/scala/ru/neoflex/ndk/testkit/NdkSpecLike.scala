@@ -2,6 +2,7 @@ package ru.neoflex.ndk.testkit
 
 import org.scalactic.source
 import ru.neoflex.ndk.dsl.FlowOp
+import ru.neoflex.ndk.dsl.`type`.OperatorType
 
 trait NdkSpecLike extends FlowMatchers with OperatorPatching {
   implicit class FlowOperatorTestingOps(op: FlowOp) extends FlowTestingRunner {

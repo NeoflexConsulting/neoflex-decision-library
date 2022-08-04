@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.testkit
 
+import cats.arrow.FunctionK
 import org.scalactic.source
 import org.scalatest.Assertions
 import ru.neoflex.ndk.ExecutionConfig
@@ -13,7 +14,8 @@ trait FlowTestingRunner {
   def run(op: FlowOp)(implicit pos: source.Position): NdkExecutionContext = {
     def errorToException(e: NdkError) = Assertions.fail(s"Failed to run operator: $op", e.toThrowable)
     val tracker                       = new FlowExecutionTracker[EitherError]()
-    val engine                        = new FlowExecutionEngine[EitherError](tracker, ExecutionConfig.Empty, new ProcessPool())
+    val engine =
+      new FlowExecutionEngine[EitherError, EitherError](tracker, ExecutionConfig.Empty, new ProcessPool(), FunctionK.id)
     engine.execute(op).fold(errorToException, _ => NdkExecutionContext(tracker))
   }
 }

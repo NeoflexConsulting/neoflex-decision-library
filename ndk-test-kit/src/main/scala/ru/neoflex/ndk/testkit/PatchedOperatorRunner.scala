@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.testkit
 
+import cats.arrow.FunctionK
 import org.scalactic.source
 import org.scalatest.Assertions
 import ru.neoflex.ndk.ExecutionConfig
@@ -17,7 +18,7 @@ class PatchedOperatorRunner(operator: FlowOp, operatorsToReplace: Map[String, Fl
       new FlowPatchingObserver[EitherError](operatorsToReplace),
       tracker
     )
-    val engine = new FlowExecutionEngine[EitherError](observer, ExecutionConfig.Empty, new ProcessPool())
+    val engine = new FlowExecutionEngine[EitherError, EitherError](observer, ExecutionConfig.Empty, new ProcessPool(), FunctionK.id)
     val ctx    = engine.execute(operator).fold(errorToException, _ => NdkExecutionContext(tracker))
     after(ctx)
   }

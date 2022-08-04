@@ -56,7 +56,7 @@ lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
       "org.scalatest"  %% "scalatest"            % "3.2.11",
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.6.0"
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT"
     ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
@@ -73,6 +73,16 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
       "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.6.0"
     )
   )
+
+lazy val ndkTrackerKafka = artifactModule("ndk-tracker-kafka", "ndk-tracker-kafka")
+  .settings(
+    name := "ndk-tracker-kafka",
+    resolvers ++= Repositories.resolvers,
+    libraryDependencies ++= Seq(
+      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
+      "org.apache.kafka" % "kafka-clients" % "3.2.1"
+    )
+)
 
 lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(
@@ -99,7 +109,7 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }
   )
-  .dependsOn(core, ndkRenderer)
+  .dependsOn(core, ndkRenderer, ndkTrackerKafka)
 
 lazy val restModelExample = (project in file("examples/rest-model"))
   .settings(

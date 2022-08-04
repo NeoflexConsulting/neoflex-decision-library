@@ -1,40 +1,37 @@
 package ru.neoflex.ndk.engine
 
 import cats.syntax.either._
-import cats.MonadError
+import cats.{MonadError, ~>}
 import cats.implicits.toTraverseOps
 import cats.syntax.applicative._
 import cats.syntax.applicativeError._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import ru.neoflex.ndk.dsl.Table.{ ActionDef, CallableAction }
+import ru.neoflex.ndk.dsl.Table.{ActionDef, CallableAction}
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.dictionary.DictionaryValue
-import ru.neoflex.ndk.error.{
-  ActionArgumentsMatchError,
-  ExpressionsAndConditionsNumberMatchError,
-  NdkError,
-  TableActionNotFound
-}
+import ru.neoflex.ndk.engine.ExecutingOperator.Ops
+import ru.neoflex.ndk.error.{ActionArgumentsMatchError, ExpressionsAndConditionsNumberMatchError, NdkError, TableActionNotFound}
 import ru.neoflex.ndk.tools.Logging
 
-class TableExecutor[F[_]](
-  tableIn: TableOp,
-  engine: FlowExecutionEngine[F],
-  observer: FlowExecutionObserver[F]
+class TableExecutor[F[_], G[_]](
+  tableIn: ExecutingOperator[TableOp],
+  engine: FlowExecutionEngine[F, G],
+  observer: FlowExecutionObserver[G],
+  liftG: G ~> F
 )(implicit monadError: MonadError[F, NdkError])
     extends Logging {
-  private val _table = observer.tableStarted(tableIn)
+  private val _table = liftG(observer.tableStarted(tableIn))
 
   def execute(): F[Unit] = {
     val result = for {
       table        <- _table
       rowsExecuted <- execute(table)
-      _            <- observer.tableFinished(table, rowsExecuted)
+      _            <- liftG(observer.tableFinished(table.withParentFrom(tableIn), rowsExecuted))
     } yield ()
 
     result.onError {
-      case _ => _table.flatMap(observer.tableFinished(_, 0))
+      case _ => _table.flatMap(x => liftG(observer.tableFinished(x.withParentFrom(tableIn), 0)))
     }
   }
 
@@ -84,7 +81,7 @@ class TableExecutor[F[_]](
     if (conditionResult) {
       executeAction(condition.callableAction).map(_ => 1)
     } else {
-      0.pure
+      0.pure[F]
     }
   }
 
@@ -96,7 +93,7 @@ class TableExecutor[F[_]](
           _ <- if (actionDef.argsCount != args.count) {
                 monadError.raiseError(ActionArgumentsMatchError(table, actionDef, args))
               } else {
-                ().pure
+                ().pure[F]
               }
           _ <- executeActionDef(actionDef, args)
         } yield ()
@@ -121,7 +118,7 @@ class TableExecutor[F[_]](
   private def checkExpressionsAndConditionsNumber() = _table.flatMap { table =>
     table.conditions
       .map(c => (c.operators.length == table.expressions.length, c))
-      .foldLeft(().pure) {
+      .foldLeft(().pure[F]) {
         case (finalResult, (result, c)) =>
           monadError.ensure(finalResult)(ExpressionsAndConditionsNumberMatchError(table, c))(_ => result)
       }

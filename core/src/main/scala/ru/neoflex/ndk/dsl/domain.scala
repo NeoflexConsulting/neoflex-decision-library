@@ -1,9 +1,10 @@
 package ru.neoflex.ndk.dsl
 
-import io.circe.{ Decoder, Encoder, Json, Printer }
+import io.circe.{Decoder, Encoder, Json, Printer}
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
-import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
+import ru.neoflex.ndk.dsl.Rule.{Condition, Otherwise}
+import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
+import ru.neoflex.ndk.dsl.`type`.OperatorType
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.syntax.NoId
 
@@ -19,15 +20,20 @@ sealed trait FlowOp {
   def name: Option[String] = None
 
   def isEmbedded: Boolean = false
+
+  def operatorType: OperatorType
 }
 
 trait Action extends FlowOp with (() => Unit) with DeclarationLocationSupport {
   val f: () => Unit
+
+  final override def operatorType: OperatorType = OperatorType.Action
 }
 
 trait RuleOp extends FlowOp {
   def conditions: Seq[Condition]
   def otherwise: Option[Otherwise]
+  final override def operatorType: OperatorType = OperatorType.Rule
 }
 
 abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val name: Option[String] = None)
@@ -43,6 +49,8 @@ abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val 
   def this(id: String, name: Option[String], ops: Seq[FlowOp]) = {
     this(id, ops, name)
   }
+
+  final override def operatorType: OperatorType = OperatorType.Flow
 }
 final case class SealedFlow(override val id: String, override val name: Option[String], override val ops: Seq[FlowOp])
     extends Flow(id, name, ops) {
@@ -57,22 +65,26 @@ trait TableOp extends FlowOp {
   val actions: List[ActionDef]
   val conditions: List[Table.Condition]
   val actionsByName: Map[String, ActionDef]
+  final override def operatorType: OperatorType = OperatorType.Table
 }
 
 trait GatewayOp extends FlowOp {
   val whens: Seq[When]
   val otherwise: FlowOp
+  final override def operatorType: OperatorType = OperatorType.Gateway
 }
 
 trait WhileOp extends FlowOp {
   def condition: () => Boolean
   def body: FlowOp
+  final override def operatorType: OperatorType = OperatorType.While
 }
 
 trait ForEachOp extends FlowOp {
   def collection: () => Iterable[Any]
   def body: Any => FlowOp
   def elementClass: Option[Class[_]]
+  final override def operatorType: OperatorType = OperatorType.ForEach
 }
 
 abstract class RestService[Req: Encoder, Resp: Decoder] extends FlowOp {
@@ -87,6 +99,7 @@ abstract class RestService[Req: Encoder, Resp: Decoder] extends FlowOp {
       io.circe.jawn.decode(response)(decoder).map(responseCollector)
     }.getOrElse(Right(()))
   }
+  final override def operatorType: OperatorType = OperatorType.RestService
 }
 
 object RestService {
@@ -106,6 +119,8 @@ abstract class PythonOperatorOp[In: Encoder, Out: Decoder] extends FlowOp {
   def collectResults(value: String): Either[Throwable, Unit] = {
     io.circe.jawn.decode[Out](value)(Decoder[Out]).map(resultCollector)
   }
+
+  final override def operatorType: OperatorType = OperatorType.PyOperator
 }
 
 trait FlowSyntax {
