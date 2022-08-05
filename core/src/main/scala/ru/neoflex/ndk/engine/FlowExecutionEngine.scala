@@ -2,6 +2,7 @@ package ru.neoflex.ndk.engine
 
 import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
 import cats.syntax.applicative._
+import cats.syntax.applicativeError._
 import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
@@ -18,17 +19,6 @@ import ru.neoflex.ndk.{ ExecutionConfig, RestConfig }
 import scala.util.Using.Releasable
 import scala.util.{ Try, Using }
 
-final case class ExecutingOperator[T <: FlowOp](op: T, root: FlowOp, parent: Option[FlowOp] = None) {
-  def id: String           = op.id
-  def name: Option[String] = op.name
-}
-object ExecutingOperator {
-  implicit class Ops[T <: FlowOp](op: T) {
-    def withParent(root: FlowOp, parent: FlowOp): ExecutingOperator[T] = ExecutingOperator(op, root, parent.some)
-    def withParentFrom(o: ExecutingOperator[T]): ExecutingOperator[T]  = ExecutingOperator(op, o.root, o.parent)
-  }
-}
-
 class FlowExecutionEngine[F[_], G[_]](
   observer: FlowExecutionObserver[G],
   executionConfig: ExecutionConfig,
@@ -39,12 +29,17 @@ class FlowExecutionEngine[F[_], G[_]](
     with Logging {
 
   override def execute(operator: FlowOp): F[Unit] = {
-    observeExecution[FlowOp, Unit](
-      ExecutingOperator(operator, operator),
-      observer.executionStarted,
-      observer.executionFinished
-    ) { op =>
-      executeOperator(op, op)
+    val executionResult = for {
+      tweakedOp <- liftG(observer.executionStarted(ExecutingOperator(operator, operator)))
+      _         <- executeOperator(tweakedOp, tweakedOp)
+      _         <- liftG(observer.executionFinished(ExecutingOperator(tweakedOp, tweakedOp), None))
+    } yield ()
+
+    executionResult.onError {
+      case e =>
+        liftG {
+          observer.executionFinished(ExecutingOperator(operator, operator), e.some)
+        }
     }
   }
 

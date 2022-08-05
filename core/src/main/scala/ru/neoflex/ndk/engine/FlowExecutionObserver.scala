@@ -7,7 +7,7 @@ import ru.neoflex.ndk.error.NdkError
 
 trait FlowExecutionObserver[F[_]] {
   def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O]
-  def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[Unit]
+  def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O], error: Option[NdkError]): F[Unit]
 
   def flowStarted(flow: ExecutingOperator[Flow]): F[Flow]
   def flowFinished(flow: ExecutingOperator[Flow]): F[Unit]
@@ -57,5 +57,5 @@ class NoOpFlowExecutionObserver[F[_]](implicit monadError: MonadError[F, NdkErro
   override def restServiceStarted(svc: ExecutingOperator[RestService[Any, Any]]): F[RestService[Any, Any]] = svc.op.pure
   override def restServiceFinished(op: ExecutingOperator[RestService[Any, Any]]): F[Unit] = ().pure
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O] = executingOperator.op.pure
-  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[Unit] = ().pure
+  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O], error: Option[NdkError]): F[Unit] = ().pure
 }

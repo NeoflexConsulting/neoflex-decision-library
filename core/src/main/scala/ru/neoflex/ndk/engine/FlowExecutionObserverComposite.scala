@@ -55,5 +55,5 @@ class FlowExecutionObserverComposite[F[_]](
 
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O] = callObservers(executingOperator, _.executionStarted)
 
-  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[Unit] = callObservers(_.executionFinished(executingOperator))
+  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O], error: Option[NdkError]): F[Unit] = callObservers(_.executionFinished(executingOperator, error))
 }

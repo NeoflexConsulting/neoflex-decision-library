@@ -5,7 +5,7 @@ import cats.syntax.applicative._
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.`type`.OperatorType
-import ru.neoflex.ndk.engine.{ExecutingOperator, FlowExecutionObserver}
+import ru.neoflex.ndk.engine.{ ExecutingOperator, FlowExecutionObserver }
 import ru.neoflex.ndk.error.NdkError
 
 class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) extends FlowExecutionObserver[F] {
@@ -57,14 +57,18 @@ class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) e
     }
     ().pure
   }
-  override def pyOperatorStarted(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[PythonOperatorOp[Any, Any]] = started(op)
-  override def pyOperatorFinished(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[Unit]                      = finished(op)
+  override def pyOperatorStarted(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[PythonOperatorOp[Any, Any]] =
+    started(op)
+  override def pyOperatorFinished(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[Unit] = finished(op)
 
   override def restServiceStarted(op: ExecutingOperator[RestService[Any, Any]]): F[RestService[Any, Any]] = started(op)
   override def restServiceFinished(op: ExecutingOperator[RestService[Any, Any]]): F[Unit]                 = finished(op)
 
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O] = executingOperator.op.pure
-  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[Unit] = ().pure
+  override def executionFinished[O <: FlowOp](
+    executingOperator: ExecutingOperator[O],
+    error: Option[NdkError]
+  ): F[Unit] = ().pure
 }
 
 sealed trait ExecutionDetails {

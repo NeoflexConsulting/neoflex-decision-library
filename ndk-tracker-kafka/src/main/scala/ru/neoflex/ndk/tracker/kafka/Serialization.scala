@@ -1,17 +1,18 @@
 package ru.neoflex.ndk.tracker.kafka
 
 import io.circe.Printer
-import org.apache.kafka.common.serialization.{ Serializer, StringSerializer }
+import org.apache.kafka.common.serialization.{Serializer, StringSerializer}
 import ru.neoflex.ndk.dsl.`type`.OperatorType
-import ru.neoflex.ndk.engine.tracking.OperatorTrackedEvent
+import ru.neoflex.ndk.engine.tracking.{ExecutionError, OperatorTrackedEvent, OperatorTrackedEventRoot}
 import ru.neoflex.ndk.tracker.kafka.JsonSerialization._
 
 import java.nio.charset.StandardCharsets
 
 object Serialization {
   implicit val string: Serializer[String] = new StringSerializer
-  implicit val operatorTrackedEventJson: Serializer[OperatorTrackedEvent] = { (_: String, data: OperatorTrackedEvent) =>
-    Printer.spaces2.print(operatorTrackedEventEncoder(data)).getBytes(StandardCharsets.UTF_8)
+  implicit val operatorTrackedEventRootJson: Serializer[OperatorTrackedEventRoot] = {
+    (_: String, data: OperatorTrackedEventRoot) =>
+      Printer.spaces2.print(operatorTrackedEventRootEncoder(data)).getBytes(StandardCharsets.UTF_8)
   }
 }
 
@@ -22,5 +23,8 @@ object JsonSerialization {
   implicit val operatorTypeEncoder: Encoder[OperatorType] = Encoder.instance[OperatorType] { operatorType =>
     Encoder.encodeString(operatorType.toString)
   }
+  implicit val executionErrorEncoder: Encoder[ExecutionError] = deriveEncoder[ExecutionError]
   implicit val operatorTrackedEventEncoder: Encoder[OperatorTrackedEvent] = deriveEncoder[OperatorTrackedEvent]
+  implicit val operatorTrackedEventRootEncoder: Encoder[OperatorTrackedEventRoot] =
+    deriveEncoder[OperatorTrackedEventRoot]
 }

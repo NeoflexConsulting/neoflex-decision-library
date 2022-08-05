@@ -48,5 +48,5 @@ class FlowPatchingObserver[F[_]](operatorsToReplace: Map[String, FlowOp])(implic
   override def restServiceFinished(op: ExecutingOperator[RestService[Any, Any]]): F[Unit] = ().pure
 
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O] = executingOperator.op.pure
-  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[Unit] = ().pure
+  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O], error: Option[NdkError]): F[Unit] = ().pure
 }

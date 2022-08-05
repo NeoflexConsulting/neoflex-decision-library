@@ -5,12 +5,11 @@ import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.dsl.syntax.EitherError
 import ru.neoflex.ndk.engine.FlowExecutionEngine
 import ru.neoflex.ndk.engine.process.ProcessPoolFactory
-import ru.neoflex.ndk.engine.tracking.OperatorTrackedEvent
+import ru.neoflex.ndk.engine.tracking.OperatorTrackedEventRoot
 import ru.neoflex.ndk.tools.Futures
 import ru.neoflex.ndk.tracker.config.{ AllConfigs, TrackingConfigReader }
-import ru.neoflex.ndk.tracker.kafka.Serialization
 import ru.neoflex.ndk.tracker.kafka.Serialization.string
-import ru.neoflex.ndk.tracker.kafka.{ KafkaFlowTracker, KafkaProducerFactory }
+import ru.neoflex.ndk.tracker.kafka.{ KafkaFlowTracker, KafkaProducerFactory, Serialization }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -34,7 +33,8 @@ trait KafkaFlowTrackingRunner extends TrackingConfigReader[EitherError] {
 
   def run(op: FlowOp): Unit = engine.flatMap(_.execute(op)).fold(e => throw e.toThrowable, x => x)
 
-  implicit def trackingEventSerializer: Serializer[OperatorTrackedEvent] = Serialization.operatorTrackedEventJson
+  implicit def trackingEventSerializer: Serializer[OperatorTrackedEventRoot] =
+    Serialization.operatorTrackedEventRootJson
 }
 
 trait KafkaFlowTrackingApp extends KafkaFlowTrackingRunner with App

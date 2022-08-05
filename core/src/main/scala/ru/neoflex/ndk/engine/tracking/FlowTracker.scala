@@ -1,29 +1,45 @@
 package ru.neoflex.ndk.engine.tracking
 
-import cats.implicits.catsSyntaxOptionId
+import cats.Id
+import cats.implicits.{ catsSyntaxFlatMapIdOps, catsSyntaxOptionId }
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoId
+import ru.neoflex.ndk.engine.ExecutingOperator
 import ru.neoflex.ndk.engine.tracking.TrackingOperatorCursor.toEvent
-import ru.neoflex.ndk.engine.{ tracking, ExecutingOperator }
+import ru.neoflex.ndk.error.NdkError
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.jdk.CollectionConverters.ConcurrentMapHasAsScala
 
 final case class Cursor(previous: Option[Cursor], op: TrackingOperator)
 
-final case class TrackingOperator(op: FlowOp, children: Seq[TrackingOperator] = Seq.empty)
+final case class TrackingOperator(op: FlowOp, children: List[TrackingOperator] = List.empty)
 final case class TrackingOperatorCursor(rootOperator: FlowOp, cursor: Cursor)
 object TrackingOperatorCursor {
-  implicit def toEvent(tracker: TrackingOperatorCursor): OperatorTrackedEvent = {
+  implicit def toEvent(tracker: TrackingOperatorCursor, error: Option[NdkError]): OperatorTrackedEventRoot = {
     def toEvent(to: TrackingOperator): OperatorTrackedEvent = {
       val operator = to.op
-      val children = to.children.toList.map { to =>
+      val children = to.children.map { to =>
         toEvent(to)
       }
-      tracking.OperatorTrackedEvent(operator.id, operator.name, operator.operatorType, children)
+      OperatorTrackedEvent(operator.id, operator.name, operator.operatorType, children)
     }
 
-    toEvent(tracker.cursor.op)
+    val rootCursor = tracker.cursor.tailRecM[Id, Cursor] { c =>
+      c.previous match {
+        case Some(value) => Left(value)
+        case None        => Right(c)
+      }
+    }
+
+    val rootOperator = rootCursor.op.op
+    OperatorTrackedEventRoot(
+      rootOperator.id,
+      rootOperator.name,
+      rootOperator.operatorType,
+      error,
+      rootCursor.op.children.map(toEvent)
+    )
   }
 }
 
@@ -71,15 +87,18 @@ final class FlowTracker {
 
   def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): O = executingOperator.op
 
-  def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): Option[OperatorTrackedEvent] = {
+  def executionFinished[O <: FlowOp](
+    executingOperator: ExecutingOperator[O],
+    error: Option[NdkError]
+  ): Option[OperatorTrackedEventRoot] = {
     import executingOperator.root
-    if (root.id != NoId && root.id.nonEmpty) {
-      val operatorCursor = trackingFlows(root.id)
-      trackingFlows -= root.id
-      toEvent(operatorCursor).some
-    } else {
-      None
-    }
+    Option(root.id)
+      .filter(id => id != NoId && id.nonEmpty)
+      .flatMap(trackingFlows.get)
+      .map { operatorCursor =>
+        trackingFlows -= root.id
+        toEvent(operatorCursor, error)
+      }
   }
 
   def flowStarted(flow: ExecutingOperator[Flow]): Flow                                                 = started(flow)

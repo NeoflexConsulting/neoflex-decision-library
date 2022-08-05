@@ -1,20 +1,21 @@
 package ru.neoflex.ndk.tracker.kafka
 
-import org.apache.kafka.clients.producer.{ Callback, KafkaProducer, ProducerRecord, RecordMetadata }
+import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import ru.neoflex.ndk.dsl._
-import ru.neoflex.ndk.engine.tracking.{ FlowTracker, OperatorTrackedEvent }
-import ru.neoflex.ndk.engine.{ ExecutingOperator, FlowExecutionObserver }
+import ru.neoflex.ndk.engine.tracking.{FlowTracker, OperatorTrackedEventRoot}
+import ru.neoflex.ndk.engine.{ExecutingOperator, FlowExecutionObserver}
+import ru.neoflex.ndk.error.NdkError
 import ru.neoflex.ndk.tools.Logging
-import ru.neoflex.ndk.tracker.config.{ FireAndForget, TrackingEventSendType, WaitResponse }
+import ru.neoflex.ndk.tracker.config.{FireAndForget, TrackingEventSendType, WaitResponse}
 
 import scala.concurrent.Future.successful
-import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.Try
 
 class KafkaFlowTracker(
   eventsTopic: String,
   sendType: TrackingEventSendType,
-  producer: KafkaProducer[String, OperatorTrackedEvent]
+  producer: KafkaProducer[String, OperatorTrackedEventRoot]
 )(implicit ec: ExecutionContext)
     extends FlowExecutionObserver[Future]
     with Logging {
@@ -23,7 +24,7 @@ class KafkaFlowTracker(
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): Future[O] =
     successful(flowTracker.executionStarted(executingOperator))
 
-  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O]): Future[Unit] = {
+  override def executionFinished[O <: FlowOp](executingOperator: ExecutingOperator[O], error: Option[NdkError]): Future[Unit] = {
     def logError(e: Throwable): Unit =
       logger.warn(s"Error has occurred while sending tracking event to kafka. Operator: ${executingOperator.id}", e)
 
@@ -35,8 +36,8 @@ class KafkaFlowTracker(
       case WaitResponse(_)                            => future
     }
 
-    def sendEvent(event: OperatorTrackedEvent): Future[Unit] = {
-      val record  = new ProducerRecord[String, OperatorTrackedEvent](eventsTopic, event.id, event)
+    def sendEvent(event: OperatorTrackedEventRoot): Future[Unit] = {
+      val record  = new ProducerRecord[String, OperatorTrackedEventRoot](eventsTopic, event.id, event)
       val promise = Promise[Unit]()
 
       def send() = producer.send(
@@ -54,7 +55,7 @@ class KafkaFlowTracker(
       wrapWithSendType(promise.future)
     }
 
-    flowTracker.executionFinished(executingOperator).map(sendEvent).getOrElse(Future.successful(()))
+    flowTracker.executionFinished(executingOperator, error).map(sendEvent).getOrElse(Future.successful(()))
   }
 
   override def flowStarted(flow: ExecutingOperator[Flow]): Future[Flow] =
