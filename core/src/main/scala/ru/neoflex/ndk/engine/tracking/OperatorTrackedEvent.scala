@@ -7,8 +7,11 @@ import ru.neoflex.ndk.error.NdkError
 
 final case class OperatorTrackedEventRoot(
   id: String,
+  entityId: Option[String],
   name: Option[String],
   `type`: OperatorType,
+  runAtEpochMs: Long,
+  finishedAtEpochMs: Option[Long],
   error: Option[ExecutionError],
   ops: List[OperatorTrackedEvent])
 
@@ -16,6 +19,8 @@ final case class OperatorTrackedEvent(
   id: String,
   name: Option[String],
   `type`: OperatorType,
+  runAtEpochMs: Long,
+  finishedAtEpochMs: Option[Long],
   ops: List[OperatorTrackedEvent])
 
 final case class ExecutionError(`type`: String, message: String)

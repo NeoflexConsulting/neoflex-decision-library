@@ -1,7 +1,6 @@
 package ru.neoflex.ndk.engine.tracking
 
-import cats.Id
-import cats.implicits.{ catsSyntaxFlatMapIdOps, catsSyntaxOptionId }
+import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.engine.ExecutingOperator
@@ -11,39 +10,7 @@ import ru.neoflex.ndk.error.NdkError
 import java.util.concurrent.ConcurrentHashMap
 import scala.jdk.CollectionConverters.ConcurrentMapHasAsScala
 
-final case class Cursor(previous: Option[Cursor], op: TrackingOperator)
-
-final case class TrackingOperator(op: FlowOp, children: List[TrackingOperator] = List.empty)
-final case class TrackingOperatorCursor(rootOperator: FlowOp, cursor: Cursor)
-object TrackingOperatorCursor {
-  implicit def toEvent(tracker: TrackingOperatorCursor, error: Option[NdkError]): OperatorTrackedEventRoot = {
-    def toEvent(to: TrackingOperator): OperatorTrackedEvent = {
-      val operator = to.op
-      val children = to.children.map { to =>
-        toEvent(to)
-      }
-      OperatorTrackedEvent(operator.id, operator.name, operator.operatorType, children)
-    }
-
-    val rootCursor = tracker.cursor.tailRecM[Id, Cursor] { c =>
-      c.previous match {
-        case Some(value) => Left(value)
-        case None        => Right(c)
-      }
-    }
-
-    val rootOperator = rootCursor.op.op
-    OperatorTrackedEventRoot(
-      rootOperator.id,
-      rootOperator.name,
-      rootOperator.operatorType,
-      error,
-      rootCursor.op.children.map(toEvent)
-    )
-  }
-}
-
-final class FlowTracker {
+final class FlowTracker(clock: Clock = JavaDefaultClock) {
   private val trackingFlows = new ConcurrentHashMap[String, TrackingOperatorCursor]().asScala
 
   private def update(operatorCursor: (String, TrackingOperatorCursor)): Unit = trackingFlows += operatorCursor
@@ -54,11 +21,11 @@ final class FlowTracker {
       trackingFlows
         .get(root.id)
         .map { operatorCursor =>
-          val nextCursor = Cursor(operatorCursor.cursor.some, TrackingOperator(executingOperator.op))
+          val nextCursor = Cursor(operatorCursor.cursor.some, TrackingOperator(executingOperator.op, clock.now()))
           operatorCursor.copy(cursor = nextCursor)
         }
         .getOrElse {
-          TrackingOperatorCursor(root, Cursor(None, TrackingOperator(root)))
+          TrackingOperatorCursor(root, Cursor(None, TrackingOperator(root, clock.now())))
         }
 
     if (root.id != NoId && root.id.nonEmpty) {
@@ -72,16 +39,19 @@ final class FlowTracker {
     import executingOperator.root
     def updatedOperatorCursor = {
       val operatorCursor = trackingFlows(root.id)
-      operatorCursor.cursor.previous.map { c =>
-        val newCurrentCursor = Cursor(c.previous, c.op.copy(children = c.op.children :+ operatorCursor.cursor.op))
+      val currentCursor  = operatorCursor.cursor
+      currentCursor.previous.map { prevCursor =>
+        val updatedOperator = currentCursor.op.copy(finishedAt = clock.now().some)
+        val newCurrentCursor =
+          Cursor(prevCursor.previous, prevCursor.op.copy(children = prevCursor.op.children :+ updatedOperator))
         operatorCursor.copy(cursor = newCurrentCursor)
+      }.getOrElse {
+        operatorCursor.copy(cursor = currentCursor.copy(op = currentCursor.op.copy(finishedAt = clock.now().some)))
       }
     }
 
     if (root.id != NoId && root.id.nonEmpty) {
-      updatedOperatorCursor.foreach { c =>
-        update(root.id -> c)
-      }
+      update(root.id -> updatedOperatorCursor)
     }
   }
 

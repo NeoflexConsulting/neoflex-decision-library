@@ -1,9 +1,9 @@
 package ru.neoflex.ndk.dsl
 
-import io.circe.{Decoder, Encoder, Json, Printer}
+import io.circe.{ Decoder, Encoder, Json, Printer }
 import ru.neoflex.ndk.dsl.Gateway.When
-import ru.neoflex.ndk.dsl.Rule.{Condition, Otherwise}
-import ru.neoflex.ndk.dsl.Table.{ActionDef, Expression}
+import ru.neoflex.ndk.dsl.Rule.{ Condition, Otherwise }
+import ru.neoflex.ndk.dsl.Table.{ ActionDef, Expression }
 import ru.neoflex.ndk.dsl.`type`.OperatorType
 import ru.neoflex.ndk.dsl.declaration.DeclarationLocationSupport
 import ru.neoflex.ndk.dsl.syntax.NoId
@@ -18,6 +18,11 @@ trait Constants {
 sealed trait FlowOp {
   def id: String           = NoId
   def name: Option[String] = None
+
+  /**
+   * User defined unique identifier of the entity at the flow input
+   */
+  def entityId: Option[String] = None
 
   def isEmbedded: Boolean = false
 
@@ -36,7 +41,11 @@ trait RuleOp extends FlowOp {
   final override def operatorType: OperatorType = OperatorType.Rule
 }
 
-abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val name: Option[String] = None)
+abstract class Flow(
+  override val id: String,
+  val ops: Seq[FlowOp],
+  override val name: Option[String] = None,
+  override val entityId: Option[String] = None)
     extends FlowOp {
   def this(id: String, op: FlowOp) = {
     this(id, Seq(op))
@@ -50,10 +59,18 @@ abstract class Flow(override val id: String, val ops: Seq[FlowOp], override val 
     this(id, ops, name)
   }
 
+  def this(id: String, name: Option[String], entityId: Option[String], ops: Seq[FlowOp]) = {
+    this(id, ops, name, entityId)
+  }
+
   final override def operatorType: OperatorType = OperatorType.Flow
 }
-final case class SealedFlow(override val id: String, override val name: Option[String], override val ops: Seq[FlowOp])
-    extends Flow(id, name, ops) {
+final case class SealedFlow(
+  override val id: String,
+  override val name: Option[String],
+  override val entityId: Option[String],
+  override val ops: Seq[FlowOp])
+    extends Flow(id, name, entityId, ops) {
 
   def apply(ops: FlowOp*): SealedFlow = copy(ops = ops)
 
@@ -124,7 +141,9 @@ abstract class PythonOperatorOp[In: Encoder, Out: Decoder] extends FlowOp {
 }
 
 trait FlowSyntax {
-  def flow: SealedFlow                                          = SealedFlow(NoId, None, Seq.empty)
-  def flow(id: String, name: Option[String] = None): SealedFlow = SealedFlow(id, name, Seq.empty)
-  def flowOps(ops: FlowOp*): Seq[FlowOp]                        = ops
+  def flow: SealedFlow = SealedFlow(NoId, None, None, Seq.empty)
+  def flow(id: String, name: Option[String] = None, entityId: Option[String] = None): SealedFlow =
+    SealedFlow(id, name, entityId, Seq.empty)
+
+  def flowOps(ops: FlowOp*): Seq[FlowOp] = ops
 }
