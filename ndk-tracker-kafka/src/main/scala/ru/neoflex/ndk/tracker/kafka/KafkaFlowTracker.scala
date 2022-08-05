@@ -59,58 +59,58 @@ class KafkaFlowTracker(
   }
 
   override def flowStarted(flow: ExecutingOperator[Flow]): Future[Flow] =
-    successful(flowTracker.flowStarted(flow))
+    successful(flowTracker.started(flow))
 
   override def flowFinished(flow: ExecutingOperator[Flow]): Future[Unit] =
-    successful(flowTracker.flowFinished(flow))
+    successful(flowTracker.finished(flow))
 
   override def actionStarted(action: ExecutingOperator[Action]): Future[Action] =
-    successful(flowTracker.actionStarted(action))
+    successful(flowTracker.started(action))
 
   override def actionFinished(action: ExecutingOperator[Action]): Future[Unit] =
-    successful(flowTracker.actionFinished(action))
+    successful(flowTracker.finished(action))
 
   override def gatewayStarted(gateway: ExecutingOperator[GatewayOp]): Future[GatewayOp] =
-    successful(flowTracker.gatewayStarted(gateway))
+    successful(flowTracker.started(gateway))
 
   override def gatewayFinished(gateway: ExecutingOperator[GatewayOp]): Future[Unit] =
-    successful(flowTracker.gatewayFinished(gateway))
+    successful(flowTracker.finished(gateway))
 
   override def whileStarted(loop: ExecutingOperator[WhileOp]): Future[WhileOp] =
-    successful(flowTracker.whileStarted(loop))
+    successful(flowTracker.started(loop))
 
   override def whileFinished(loop: ExecutingOperator[WhileOp]): Future[Unit] =
-    successful(flowTracker.whileFinished(loop))
+    successful(flowTracker.finished(loop))
 
   override def forEachStarted(forEach: ExecutingOperator[ForEachOp]): Future[ForEachOp] =
-    successful(flowTracker.forEachStarted(forEach))
+    successful(flowTracker.started(forEach))
 
   override def forEachFinished(forEach: ExecutingOperator[ForEachOp]): Future[Unit] =
-    successful(flowTracker.forEachFinished(forEach))
+    successful(flowTracker.finished(forEach))
 
   override def ruleStarted(rule: ExecutingOperator[RuleOp]): Future[RuleOp] =
-    successful(flowTracker.ruleStarted(rule))
+    successful(flowTracker.started(rule))
 
   override def ruleFinished(rule: ExecutingOperator[RuleOp]): Future[Unit] =
-    successful(flowTracker.ruleFinished(rule))
+    successful(flowTracker.finished(rule))
 
   override def tableStarted(table: ExecutingOperator[TableOp]): Future[TableOp] =
-    successful(flowTracker.tableStarted(table))
+    successful(flowTracker.started(table))
 
   override def tableFinished(table: ExecutingOperator[TableOp], executedRows: Int): Future[Unit] =
-    successful(flowTracker.tableFinished(table))
+    successful(flowTracker.finished(table))
 
   override def pyOperatorStarted(
     op: ExecutingOperator[PythonOperatorOp[Any, Any]]
   ): Future[PythonOperatorOp[Any, Any]] =
-    successful(flowTracker.pyOperatorStarted(op))
+    successful(flowTracker.started(op))
 
   override def pyOperatorFinished(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): Future[Unit] =
-    successful(flowTracker.pyOperatorFinished(op))
+    successful(flowTracker.finished(op))
 
   override def restServiceStarted(op: ExecutingOperator[RestService[Any, Any]]): Future[RestService[Any, Any]] =
-    successful(flowTracker.restServiceStarted(op))
+    successful(flowTracker.started(op))
 
   override def restServiceFinished(op: ExecutingOperator[RestService[Any, Any]]): Future[Unit] =
-    successful(flowTracker.restServiceFinished(op))
+    successful(flowTracker.finished(op))
 }
