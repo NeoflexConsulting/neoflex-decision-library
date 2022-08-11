@@ -1,5 +1,6 @@
 package ru.neoflex.ndk.dsl.`type`
 
+import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl.{
   Action,
   Flow,
@@ -35,5 +36,18 @@ object OperatorType {
     case _: ForEachOp              => ForEach
     case _: PythonOperatorOp[_, _] => PyOperator
     case _: RestService[_, _]      => RestService
+  }
+
+  def fromString(value: String): Option[OperatorType] = value match {
+    case "Action"      => Action.some
+    case "Rule"        => Rule.some
+    case "Gateway"     => Gateway.some
+    case "Table"       => Table.some
+    case "ForEach"     => ForEach.some
+    case "While"       => While.some
+    case "Flow"        => Flow.some
+    case "PyOperator"  => PyOperator.some
+    case "RestService" => RestService.some
+    case _             => None
   }
 }
