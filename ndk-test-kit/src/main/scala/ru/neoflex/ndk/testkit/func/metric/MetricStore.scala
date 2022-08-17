@@ -1,11 +1,10 @@
 package ru.neoflex.ndk.testkit.func.metric
 
 import ru.neoflex.ndk.testkit.func.Sink
-import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
 
 final case class MetricStore[A](
   accumulators: Map[String, MeasurementAccumulator[A]] = Map.empty[String, MeasurementAccumulator[A]],
-  sink: Sink[Map[String, MetricValueType]] = Sink.ignore)
+  sink: Sink[RunMetrics] = Sink.ignore)
 
 object MetricStore {
   trait MetricBuilder[T] {
@@ -18,7 +17,7 @@ object MetricStore {
       ms.copy(accumulators = ms.accumulators.updated(name, acc))
     }
 
-    def toSink(s: Sink[Map[String, MetricValueType]]): MetricStore[A] = {
+    def toSink(s: Sink[RunMetrics]): MetricStore[A] = {
       ms.copy(sink = s)
     }
   }

@@ -1,16 +1,15 @@
 package ru.neoflex.ndk.testkit.func.metric
 
-import akka.stream.{ Attributes, FlowShape, Inlet, Outlet }
 import akka.stream.stage.{ GraphStage, GraphStageLogic, InHandler, OutHandler }
-import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
+import akka.stream.{ Attributes, FlowShape, Inlet, Outlet }
 
-final case class MetricStage[A](metricStore: MetricStore[A])
-    extends GraphStage[FlowShape[A, Map[String, MetricValueType]]] {
+final case class MetricStage[A](runId: String, metricStore: MetricStore[A])
+    extends GraphStage[FlowShape[A, RunMetrics]] {
 
   private val in  = Inlet[A]("MetricStage.in")
-  private val out = Outlet[Map[String, MetricValueType]]("MetricStage.out")
+  private val out = Outlet[RunMetrics]("MetricStage.out")
 
-  override val shape: FlowShape[A, Map[String, MetricValueType]] = FlowShape(in, out)
+  override val shape: FlowShape[A, RunMetrics] = FlowShape(in, out)
 
   override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
     new GraphStageLogic(shape) with InHandler with OutHandler {
@@ -35,7 +34,8 @@ final case class MetricStage[A](metricStore: MetricStore[A])
               case DoubleMetric(value) => value
             })
         }
-        push(out, metrics)
+        push(out, RunMetrics(runId, metrics))
+        super.onUpstreamFinish()
       }
 
       setHandlers(in, out, this)
