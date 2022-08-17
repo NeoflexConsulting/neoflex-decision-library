@@ -11,7 +11,7 @@ abstract class NdkFuncSpec extends AnyFlatSpec with BeforeAndAfterAll {
   protected implicit val actorSystem: ActorSystem = ActorSystem(getClass.getSimpleName)
 
   override def afterAll(): Unit = {
-    super.afterAll()
     Await.ready(actorSystem.terminate(), 5 minutes span)
+    super.afterAll()
   }
 }

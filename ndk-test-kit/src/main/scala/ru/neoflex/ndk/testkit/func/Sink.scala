@@ -4,17 +4,20 @@ import akka.stream.scaladsl.{ FileIO, Keep, Flow => AkkaFlow, Sink => AkkaSink }
 import akka.util.ByteString
 import cats.effect.IO
 import cats.effect.unsafe.IORuntime
+import cats.implicits.toFoldableOps
 import doobie.Fragment
-import doobie.util.Write
 import doobie.implicits._
+import doobie.util.Write
 import doobie.util.transactor.Transactor
 import io.circe.{ Encoder, Printer }
 import ru.neoflex.ndk.engine.tracking.OperatorTrackedEventRoot
 import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
 import ru.neoflex.ndk.testkit.func.metric.RunMetrics
 import ru.neoflex.ndk.testkit.func.sink.{ BatchedSqlSink, FragmentedSqlSink, JsonArrayWrapStage, SingleSqlSink }
+import shapeless.{ Generic, HList, HNil, :: => :-: }
 
 import java.nio.file.Paths
+import scala.annotation.tailrec
 import scala.concurrent.Future
 
 final case class Sink[A](private[func] val s: AkkaSink[A, Future[_]])
@@ -30,18 +33,60 @@ object Sink {
     }
   }
 
-  def sqlMetricsRows(table: String = "metrics_data")(implicit xa: Transactor[IO], ioRuntime: IORuntime): Sink[RunMetrics] = {
-    def buildQueries(m: RunMetrics) = {
+  def sqlTable[A: Write, L <: HList](
+    table: String,
+    batchSize: Int = 500
+  )(implicit xa: Transactor[IO],
+    IORuntime: IORuntime,
+    gen: Generic.Aux[A, L]
+  ): Sink[A] = {
+    def buildQuery(a: A): String = {
+      @tailrec
+      def length(h: HList, num: Int): Int = h match {
+        case _ :-: tail => length(tail, num + 1)
+        case HNil       => num
+      }
+      val parametersNum = length(gen.to(a), 0)
+      val parameters    = ("?" * parametersNum).toList.map(_.toString).intercalate(",")
+      s"INSERT INTO $table VALUES ($parameters)"
+    }
+
+    Sink {
+      AkkaFlow[A].toMat(new BatchedSqlSink[A](buildQuery _, batchSize))(Keep.right)
+    }
+  }
+
+  def sql[A: Write](insertQuery: String)(implicit xa: Transactor[IO], ioRuntime: IORuntime): Sink[A] = Sink {
+    AkkaFlow[A].toMat(new SingleSqlSink[A](_ => insertQuery))(Keep.right)
+  }
+
+  def sql[A](buildQueries: A => List[Fragment])(implicit xa: Transactor[IO], ioRuntime: IORuntime): Sink[A] = Sink {
+    AkkaFlow[A].toMat(new FragmentedSqlSink[A](buildQueries))(Keep.right)
+  }
+
+  def sqlBatch[A: Write](
+    insertQuery: String,
+    batchSize: Int = 500
+  )(implicit xa: Transactor[IO],
+    ioRuntime: IORuntime
+  ): Sink[A] = Sink {
+    AkkaFlow[A]
+      .toMat(new BatchedSqlSink[A](insertQuery, batchSize))(Keep.right)
+  }
+
+  def sqlMetricsRows(
+    table: String = "metrics_data"
+  )(implicit xa: Transactor[IO],
+    ioRuntime: IORuntime
+  ): Sink[RunMetrics] = {
+    def buildQueries(m: RunMetrics): List[Fragment] = {
       m.metrics.toList.map {
         case (name, value) =>
           sql"INSERT INTO " ++ Fragment.const(table) ++ sql"(run_id, name, value) VALUES (${m.runId}, $name, $value)"
       }
     }
 
-    Sink {
-      AkkaFlow[RunMetrics]
-        .toMat(AkkaSink.fromGraph(new FragmentedSqlSink[RunMetrics](buildQueries)))(Keep.right)
-    }
+    sql[RunMetrics](buildQueries _)
   }
 
   def sqlMetricsJson(
@@ -90,21 +135,6 @@ object Sink {
       (e.runId, e.event)
     }
     sqlBatch[RunFlowTraceEvent](insertQuery)
-  }
-
-  def sqlBatch[A: Write](
-    insertQuery: String,
-    batchSize: Int = 500
-  )(implicit xa: Transactor[IO],
-    ioRuntime: IORuntime
-  ): Sink[A] = Sink {
-    AkkaFlow[A]
-      .toMat(AkkaSink.fromGraph(new BatchedSqlSink[A](insertQuery, batchSize)))(Keep.right)
-  }
-
-  def sql[A: Write](insertQuery: String)(implicit xa: Transactor[IO], ioRuntime: IORuntime): Sink[A] = Sink {
-    AkkaFlow[A]
-      .toMat(AkkaSink.fromGraph(new SingleSqlSink[A](insertQuery)))(Keep.right)
   }
 
   def ignore[A]: Sink[A] = Sink(AkkaSink.ignore)
