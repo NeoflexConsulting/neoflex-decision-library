@@ -71,6 +71,6 @@ object WithMetricsResult {
 
 final case class RunResult(f: Future[_]) {
   def awaitResult(timeout: scala.concurrent.duration.Duration = 5 minutes span): Unit = {
-    scala.concurrent.Await.ready(f, timeout)
+    scala.concurrent.Await.result(f, timeout)
   }
 }

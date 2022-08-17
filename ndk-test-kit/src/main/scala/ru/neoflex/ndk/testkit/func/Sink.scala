@@ -1,6 +1,8 @@
 package ru.neoflex.ndk.testkit.func
 
-import akka.stream.scaladsl.{ FileIO, Keep, Flow => AkkaFlow, Sink => AkkaSink }
+import akka.stream.alpakka.csv.scaladsl.{ CsvFormatting, CsvQuotingStyle }
+import akka.stream.alpakka.csv.scaladsl.CsvFormatting.{ Backslash, Comma, DoubleQuote }
+import akka.stream.scaladsl.{ FileIO, Keep, Flow => AkkaFlow, Sink => AkkaSink, Source => AkkaSource }
 import akka.util.ByteString
 import cats.effect.IO
 import cats.effect.unsafe.IORuntime
@@ -10,12 +12,14 @@ import doobie.implicits._
 import doobie.util.Write
 import doobie.util.transactor.Transactor
 import io.circe.{ Encoder, Printer }
+import purecsv.unsafe.converter.RawFieldsConverter
 import ru.neoflex.ndk.engine.tracking.OperatorTrackedEventRoot
 import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
 import ru.neoflex.ndk.testkit.func.metric.RunMetrics
 import ru.neoflex.ndk.testkit.func.sink.{ BatchedSqlSink, FragmentedSqlSink, JsonArrayWrapStage, SingleSqlSink }
 import shapeless.{ Generic, HList, HNil, :: => :-: }
 
+import java.nio.charset.{ Charset, StandardCharsets }
 import java.nio.file.Paths
 import scala.annotation.tailrec
 import scala.concurrent.Future
@@ -23,6 +27,31 @@ import scala.concurrent.Future
 final case class Sink[A](private[func] val s: AkkaSink[A, Future[_]])
 
 object Sink {
+  def csv[A: RawFieldsConverter](
+    path: String,
+    delimiter: Char = Comma,
+    quoteChar: Char = DoubleQuote,
+    escapeChar: Char = Backslash,
+    endOfLine: String = "\r\n",
+    quotingStyle: CsvQuotingStyle = CsvQuotingStyle.Required,
+    charset: Charset = StandardCharsets.UTF_8,
+    headers: List[String] = List.empty
+  ): Sink[A] = Sink {
+    val headersSource = if (headers.nonEmpty) {
+      AkkaSource.single(headers)
+    } else {
+      AkkaSource.empty[Seq[String]]
+    }
+    
+    AkkaFlow[A]
+      .map(x => RawFieldsConverter[A].to(x))
+      .prepend(headersSource)
+      .via(
+        CsvFormatting.format(delimiter, quoteChar, escapeChar, endOfLine, quotingStyle, charset)
+      )
+      .toMat(FileIO.toPath(Paths.get(path)))(Keep.right)
+  }
+
   def json[A: Encoder](path: String, singleValue: Boolean = false): Sink[A] = {
     Sink {
       AkkaFlow[A]
