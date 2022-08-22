@@ -2,14 +2,14 @@ package ru.neoflex.ndk.integration.rest
 
 import cats.MonadError
 import cats.syntax.either._
-import com.typesafe.config.ConfigFactory
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
+import ru.neoflex.ndk.ConfigReaderBase
 import ru.neoflex.ndk.error.{ ConfigLoadError, NdkError }
 
-trait RestAppConfigLoader {
+trait RestAppConfigReader extends ConfigReaderBase {
   def readRestAppConfig[F[_]](implicit monadError: MonadError[F, NdkError]): F[RestConfig] = {
-    val source = ConfigSource.fromConfig(ConfigFactory.load())
+    val source = ConfigSource.fromConfig(rootConfig)
     source.at("application.rest").load[RestConfig].leftMap(ConfigLoadError).liftTo[F]
   }
 }

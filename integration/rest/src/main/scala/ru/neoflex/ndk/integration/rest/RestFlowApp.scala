@@ -3,13 +3,13 @@ package ru.neoflex.ndk.integration.rest
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
+import ru.neoflex.ndk.FlowRunnerBase
 import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.dsl.syntax.EitherError
 
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
-trait RestFlowApp extends RestAppConfigLoader {
-  def run(op: FlowOp): Unit
+trait RestFlowApp extends RestAppConfigReader with FlowRunnerBase {
   def routes: SealedPath
 
   private def startHttpServer(config: RestConfig, routes: Route)(implicit system: ActorSystem): Unit = {
@@ -26,9 +26,11 @@ trait RestFlowApp extends RestAppConfigLoader {
     }
   }
 
+  def appName: String = getClass.getSimpleName.replaceAll("[^a-zA-Z\\d]", "")
+
   final def main(args: Array[String]): Unit = {
     val config                       = readRestAppConfig[EitherError].fold(e => throw e.toThrowable, c => c)
-    implicit val system: ActorSystem = ActorSystem(getClass.getSimpleName.replaceAll("[^a-zA-Z\\d]", ""))
+    implicit val system: ActorSystem = ActorSystem(appName)
     startHttpServer(config, routes.buildRoute(run))
   }
 }

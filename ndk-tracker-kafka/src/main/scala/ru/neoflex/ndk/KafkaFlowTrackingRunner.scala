@@ -18,12 +18,12 @@ trait KafkaFlowTrackingRunner extends TrackingConfigReader[EitherError] {
   implicit val ec: ExecutionContext = ExecutionContext.global
 
   val engine: EitherError[FlowExecutionEngine[EitherError, Future]] = readAllConfigs.map {
-    case AllConfigs(executionConfig, trackingConfig, kafkaConfig) =>
+    case AllConfigs(executionConfig, trackingConfig) =>
       new FlowExecutionEngine[EitherError, Future](
         new KafkaFlowTracker(
           trackingConfig.eventsTopic,
           trackingConfig.sendType,
-          KafkaProducerFactory.create(kafkaConfig.bootstrapServers, kafkaConfig.producerConfigs)
+          KafkaProducerFactory.create(trackingConfig.bootstrapServers, trackingConfig.producerConfigs)
         ),
         executionConfig,
         ProcessPoolFactory.create(executionConfig.processPool),

@@ -68,9 +68,9 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
     name := "ndk-renderer",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect"         % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-xml"         % "2.1.0",
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.6.0"
+      "org.scala-lang"         % "scala-reflect"         % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-xml"            % "2.1.0",
+      "ru.neoflex.ndk"         %% "neoflex-decision-kit" % "1.6.0"
     )
   )
 
@@ -79,10 +79,35 @@ lazy val ndkTrackerKafka = artifactModule("ndk-tracker-kafka", "ndk-tracker-kafk
     name := "ndk-tracker-kafka",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
-      "org.apache.kafka" % "kafka-clients" % "3.2.1"
+      "ru.neoflex.ndk"   %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
+      "org.apache.kafka" % "kafka-clients"         % "3.2.1"
     )
-)
+  )
+
+lazy val ndkIntegrationRest = artifactModule("ndk-integration-rest", "ndk-integration-rest")
+  .settings(
+    name := "ndk-integration-rest",
+    resolvers ++= Repositories.resolvers,
+    libraryDependencies ++= Seq(
+      "ru.neoflex.ndk"    %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
+      "com.typesafe.akka" %% "akka-http"            % "10.2.9",
+      "com.typesafe.akka" %% "akka-actor"           % "2.6.19",
+      "com.typesafe.akka" %% "akka-stream"          % "2.6.19",
+      "io.circe"          %% "circe-parser"         % "0.14.1"
+    )
+  )
+
+lazy val ndkIntegrationKafka = artifactModule("ndk-integration-kafka", "ndk-integration-kafka")
+  .settings(
+    name := "ndk-integration-kafka",
+    resolvers ++= Repositories.resolvers,
+    libraryDependencies ++= Seq(
+      "ru.neoflex.ndk"    %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
+      "com.typesafe.akka" %% "akka-stream"          % "2.6.19",
+      "io.circe"          %% "circe-parser"         % "0.14.1",
+      "com.typesafe.akka" %% "akka-stream-kafka"    % "3.0.0"
+    )
+  )
 
 lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(
