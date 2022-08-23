@@ -1,6 +1,5 @@
 package ru.neoflex.ndk.testkit.func
 
-import akka.stream.Attributes
 import akka.stream.alpakka.csv.scaladsl.CsvParsing
 import akka.stream.alpakka.csv.scaladsl.CsvParsing._
 import akka.stream.scaladsl.{ FileIO, JsonFraming, Flow => AkkaFlow, Source => AkkaSource }

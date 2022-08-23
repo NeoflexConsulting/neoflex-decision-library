@@ -1,4 +1,5 @@
 import sbt.Keys.libraryDependencies
+import Dependencies._
 
 ThisBuild / credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 ThisBuild / organization := "ru.neoflex.ndk"
@@ -13,17 +14,17 @@ lazy val root = (project in file("."))
 lazy val core = artifactModule("neoflex-decision-kit", "core")
   .settings(
     name := "neoflex-decision-kit",
-    libraryDependencies += "org.typelevel"         %% "cats-core"           % "2.7.0",
-    libraryDependencies += "org.slf4j"             % "slf4j-api"            % "1.7.9",
-    libraryDependencies += "ch.qos.logback"        % "logback-classic"      % "1.2.11",
-    libraryDependencies += "org.http4s"            %% "http4s-dsl"          % "0.23.12",
-    libraryDependencies += "org.http4s"            %% "http4s-ember-client" % "0.23.12",
-    libraryDependencies += "org.http4s"            %% "http4s-circe"        % "0.23.12",
-    libraryDependencies += "io.circe"              %% "circe-generic"       % "0.14.2",
-    libraryDependencies += "com.github.pureconfig" %% "pureconfig"          % "0.17.1",
-    libraryDependencies += "org.camunda.feel"      % "feel-engine"          % "1.14.2",
-    libraryDependencies += "io.circe"              %% "circe-yaml"          % "0.14.1",
-    libraryDependencies += "org.scalatest"         %% "scalatest"           % "3.2.12" % Test
+    libraryDependencies += CatsCore,
+    libraryDependencies += "org.slf4j"      % "slf4j-api"       % "1.7.9",
+    libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.11",
+    libraryDependencies += Http4s.Dsl,
+    libraryDependencies += Http4s.EmberClient,
+    libraryDependencies += Http4s.Circe,
+    libraryDependencies += CirceGeneric,
+    libraryDependencies += Pureconfig,
+    libraryDependencies += FeelEngine,
+    libraryDependencies += CirceYaml,
+    libraryDependencies += Scalatest % Test
   )
 
 lazy val preparePythonVenv     = taskKey[Unit]("Prepare python virtual environment")
@@ -55,8 +56,17 @@ lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
     name := "ndk-test-kit",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "org.scalatest"  %% "scalatest"            % "3.2.11",
-      "ru.neoflex.ndk" %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT"
+      Scalatest,
+      Internal.Core,
+      CirceParser,
+      Akka.Stream,
+      Akka.AlpakkaCsv,
+      Purecsv,
+      Doobie.Core,
+      Doobie.Hikari,
+      Doobie.Specs2,
+      Nanoid,
+      Doobie.Postgres % Test
     ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
@@ -68,9 +78,9 @@ lazy val ndkRenderer = artifactModule("ndk-renderer", "ndk-renderer")
     name := "ndk-renderer",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "org.scala-lang"         % "scala-reflect"         % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-xml"            % "2.1.0",
-      "ru.neoflex.ndk"         %% "neoflex-decision-kit" % "1.6.0"
+      "org.scala-lang"         % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-xml"    % "2.1.0",
+      Internal.Core
     )
   )
 
@@ -79,8 +89,8 @@ lazy val ndkTrackerKafka = artifactModule("ndk-tracker-kafka", "ndk-tracker-kafk
     name := "ndk-tracker-kafka",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "ru.neoflex.ndk"   %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
-      "org.apache.kafka" % "kafka-clients"         % "3.2.1"
+      Internal.Core,
+      KafkaClients
     )
   )
 
@@ -89,11 +99,11 @@ lazy val ndkIntegrationRest = artifactModule("ndk-integration-rest", "integratio
     name := "ndk-integration-rest",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "ru.neoflex.ndk"    %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
-      "com.typesafe.akka" %% "akka-http"            % "10.2.9",
-      "com.typesafe.akka" %% "akka-actor"           % "2.6.19",
-      "com.typesafe.akka" %% "akka-stream"          % "2.6.19",
-      "io.circe"          %% "circe-parser"         % "0.14.1"
+      Internal.Core,
+      Akka.Http,
+      Akka.Actor,
+      Akka.Stream,
+      CirceParser
     )
   )
 
@@ -102,10 +112,10 @@ lazy val ndkIntegrationKafka = artifactModule("ndk-integration-kafka", "integrat
     name := "ndk-integration-kafka",
     resolvers ++= Repositories.resolvers,
     libraryDependencies ++= Seq(
-      "ru.neoflex.ndk"    %% "neoflex-decision-kit" % "1.7.0-SNAPSHOT",
-      "com.typesafe.akka" %% "akka-stream"          % "2.6.19",
-      "io.circe"          %% "circe-parser"         % "0.14.1",
-      "com.typesafe.akka" %% "akka-stream-kafka"    % "3.0.0"
+      Internal.Core,
+      Akka.Stream,
+      CirceParser,
+      Akka.StreamKafka
     )
   )
 
