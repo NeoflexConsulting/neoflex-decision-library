@@ -84,7 +84,7 @@ lazy val ndkTrackerKafka = artifactModule("ndk-tracker-kafka", "ndk-tracker-kafk
     )
   )
 
-lazy val ndkIntegrationRest = artifactModule("ndk-integration-rest", "ndk-integration-rest")
+lazy val ndkIntegrationRest = artifactModule("ndk-integration-rest", "integration/rest")
   .settings(
     name := "ndk-integration-rest",
     resolvers ++= Repositories.resolvers,
@@ -97,7 +97,7 @@ lazy val ndkIntegrationRest = artifactModule("ndk-integration-rest", "ndk-integr
     )
   )
 
-lazy val ndkIntegrationKafka = artifactModule("ndk-integration-kafka", "ndk-integration-kafka")
+lazy val ndkIntegrationKafka = artifactModule("ndk-integration-kafka", "integration/kafka")
   .settings(
     name := "ndk-integration-kafka",
     resolvers ++= Repositories.resolvers,
@@ -108,6 +108,14 @@ lazy val ndkIntegrationKafka = artifactModule("ndk-integration-kafka", "ndk-inte
       "com.typesafe.akka" %% "akka-stream-kafka"    % "3.0.0"
     )
   )
+
+lazy val integrationExamples = (project in file("integration/examples"))
+  .settings(
+    name := "integration-examples",
+    version := "0.0.1-SNAPSHOT",
+    publish / skip := true
+  )
+  .dependsOn(ndkIntegrationRest, ndkIntegrationKafka, ndkTrackerKafka)
 
 lazy val underwritingExample = (project in file("examples/underwriting"))
   .settings(

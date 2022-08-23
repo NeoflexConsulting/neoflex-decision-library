@@ -4,7 +4,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import ru.neoflex.ndk.FlowRunnerBase
-import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.dsl.syntax.EitherError
 
 import scala.util.{Failure, Success}

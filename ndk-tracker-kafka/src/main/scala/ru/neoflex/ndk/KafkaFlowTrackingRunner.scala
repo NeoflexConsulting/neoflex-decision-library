@@ -13,7 +13,7 @@ import ru.neoflex.ndk.tracker.kafka.{ KafkaFlowTracker, KafkaProducerFactory, Se
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-trait KafkaFlowTrackingRunner extends TrackingConfigReader[EitherError] {
+trait KafkaFlowTrackingRunner extends TrackingConfigReader[EitherError] with FlowRunnerBase {
 
   implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -31,7 +31,7 @@ trait KafkaFlowTrackingRunner extends TrackingConfigReader[EitherError] {
       )
   }
 
-  def run(op: FlowOp): Unit = engine.flatMap(_.execute(op)).fold(e => throw e.toThrowable, x => x)
+  override def run(op: FlowOp): Unit = engine.flatMap(_.execute(op)).fold(e => throw e.toThrowable, x => x)
 
   implicit def trackingEventSerializer: Serializer[OperatorTrackedEventRoot] =
     Serialization.operatorTrackedEventRootJson
