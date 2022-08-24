@@ -1,7 +1,7 @@
 package ru.neoflex.ndk.testkit.func
 
-import akka.stream.alpakka.csv.scaladsl.{ CsvFormatting, CsvQuotingStyle }
 import akka.stream.alpakka.csv.scaladsl.CsvFormatting.{ Backslash, Comma, DoubleQuote }
+import akka.stream.alpakka.csv.scaladsl.{ CsvFormatting, CsvQuotingStyle }
 import akka.stream.scaladsl.{ FileIO, Keep, Flow => AkkaFlow, Sink => AkkaSink, Source => AkkaSource }
 import akka.util.ByteString
 import cats.effect.IO
@@ -17,11 +17,10 @@ import ru.neoflex.ndk.engine.tracking.OperatorTrackedEventRoot
 import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
 import ru.neoflex.ndk.testkit.func.metric.RunMetrics
 import ru.neoflex.ndk.testkit.func.sink.{ BatchedSqlSink, FragmentedSqlSink, JsonArrayWrapStage, SingleSqlSink }
-import shapeless.{ Generic, HList, HNil, :: => :-: }
+import shapeless.HList
 
 import java.nio.charset.{ Charset, StandardCharsets }
 import java.nio.file.Paths
-import scala.annotation.tailrec
 import scala.concurrent.Future
 
 final case class Sink[A](private[func] val s: AkkaSink[A, Future[_]])
@@ -42,7 +41,7 @@ object Sink {
     } else {
       AkkaSource.empty[Seq[String]]
     }
-    
+
     AkkaFlow[A]
       .map(x => RawFieldsConverter[A].to(x))
       .prepend(headersSource)
@@ -64,24 +63,16 @@ object Sink {
 
   def sqlTable[A: Write, L <: HList](
     table: String,
+    numberOfParameters: Int,
     batchSize: Int = 500
   )(implicit xa: Transactor[IO],
-    IORuntime: IORuntime,
-    gen: Generic.Aux[A, L]
+    IORuntime: IORuntime
   ): Sink[A] = {
-    def buildQuery(a: A): String = {
-      @tailrec
-      def length(h: HList, num: Int): Int = h match {
-        case _ :-: tail => length(tail, num + 1)
-        case HNil       => num
-      }
-      val parametersNum = length(gen.to(a), 0)
-      val parameters    = ("?" * parametersNum).toList.map(_.toString).intercalate(",")
-      s"INSERT INTO $table VALUES ($parameters)"
-    }
+    val parameters = ("?" * numberOfParameters).toList.map(_.toString).intercalate(",")
+    val query      = s"INSERT INTO $table VALUES ($parameters)"
 
     Sink {
-      AkkaFlow[A].toMat(new BatchedSqlSink[A](buildQuery _, batchSize))(Keep.right)
+      AkkaFlow[A].toMat(new BatchedSqlSink[A](query, batchSize))(Keep.right)
     }
   }
 
@@ -111,7 +102,7 @@ object Sink {
     def buildQueries(m: RunMetrics): List[Fragment] = {
       m.metrics.toList.map {
         case (name, value) =>
-          sql"INSERT INTO " ++ Fragment.const(table) ++ sql"(run_id, name, value) VALUES (${m.runId}, $name, $value)"
+          sql"INSERT INTO " ++ Fragment.const(table) ++ sql"(run_id, metric_name, metric_value) VALUES (${m.runId}, $name, $value)"
       }
     }
 

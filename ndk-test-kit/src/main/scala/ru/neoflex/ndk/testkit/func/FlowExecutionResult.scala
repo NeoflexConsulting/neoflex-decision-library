@@ -3,7 +3,7 @@ package ru.neoflex.ndk.testkit.func
 import akka.actor.ActorSystem
 import akka.stream.FlowShape
 import akka.stream.scaladsl.GraphDSL.Implicits._
-import akka.stream.scaladsl.{ Broadcast, GraphDSL, Flow => AkkaFlow, Source => AkkaSource }
+import akka.stream.scaladsl.{ Broadcast, GraphDSL, Keep, Flow => AkkaFlow, Source => AkkaSource }
 import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.testkit.func.metric.{ MetricStage, MetricStore }
 
@@ -44,10 +44,11 @@ object WithMetricsResult {
     def runWithSink(sink: Sink[B])(implicit actorSystem: ActorSystem, runIdGenerator: RunIdGenerator): RunResult = {
       val runId      = runIdGenerator.next
       val resultFlow = m.result
-      val alsoToMetric = GraphDSL.createGraph(new MetricStage[B](runId, m.metricStore)) { implicit b => r =>
+      val alsoToMetric = GraphDSL.createGraph(m.metricStore.sink.s) { implicit b => s =>
         val bcast = b.add(Broadcast[B](2, eagerCancel = true))
+        val r     = b.add(new MetricStage[B](runId, m.metricStore))
         bcast.out(1) ~> r.in
-        r ~> m.metricStore.sink.s
+        r.out ~> s
         FlowShape(bcast.in, bcast.out(0))
       }
 
@@ -55,8 +56,14 @@ object WithMetricsResult {
       val futureResult = resultFlow.source
         .via(processFlow)
         .via(resultFlow.flow)
-        .via(alsoToMetric)
-        .runWith(sink.s)
+        .viaMat(alsoToMetric)(Keep.right)
+        .toMat(sink.s)(Keep.both)
+        .mapMaterializedValue {
+          case (f1, f2) =>
+            import actorSystem.dispatcher
+            f1.flatMap(r1 => f2.map(r2 => r1 -> r2))
+        }
+        .run()
 
       val finalResult = killSwitch.map { ks =>
         futureResult.map { _ =>
@@ -64,13 +71,14 @@ object WithMetricsResult {
         }(actorSystem.dispatcher)
       }.getOrElse(futureResult)
 
-      RunResult(finalResult)
+      RunResult(finalResult, runId)
     }
   }
 }
 
-final case class RunResult(f: Future[_]) {
-  def awaitResult(timeout: scala.concurrent.duration.Duration = 5 minutes span): Unit = {
+final case class RunResult(f: Future[_], runId: String) {
+  def awaitResult(timeout: scala.concurrent.duration.Duration = 5 minutes span): String = {
     scala.concurrent.Await.result(f, timeout)
+    runId
   }
 }

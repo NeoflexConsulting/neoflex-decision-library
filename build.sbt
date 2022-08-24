@@ -66,7 +66,7 @@ lazy val testKit = artifactModule("ndk-test-kit", "ndk-test-kit")
       Doobie.Hikari,
       Doobie.Specs2,
       Nanoid,
-      Doobie.Postgres % Test
+      "com.h2database" % "h2" % "2.1.214" % Test
     ),
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))

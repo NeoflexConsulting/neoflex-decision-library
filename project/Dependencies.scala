@@ -7,7 +7,7 @@ object Version {
 }
 
 object Dependencies {
-  lazy val CirceYaml    = "io.circe"      %% "circe-yaml"    % Version.Circe
+  lazy val CirceYaml    = "io.circe"      %% "circe-yaml"    % "0.14.1"
   lazy val CirceGeneric = "io.circe"      %% "circe-generic" % Version.Circe
   lazy val CirceParser  = "io.circe"      %% "circe-parser"  % Version.Circe
   lazy val Scalatest    = "org.scalatest" %% "scalatest"     % "3.2.12"
