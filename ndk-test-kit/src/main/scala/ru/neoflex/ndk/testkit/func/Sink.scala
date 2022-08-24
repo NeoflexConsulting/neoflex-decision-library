@@ -14,10 +14,11 @@ import doobie.util.transactor.Transactor
 import io.circe.{ Encoder, Printer }
 import purecsv.unsafe.converter.RawFieldsConverter
 import ru.neoflex.ndk.engine.tracking.OperatorTrackedEventRoot
+import ru.neoflex.ndk.testkit.func.RecLength.ToRecLengthOps
 import ru.neoflex.ndk.testkit.func.metric.Metric.MetricValueType
 import ru.neoflex.ndk.testkit.func.metric.RunMetrics
 import ru.neoflex.ndk.testkit.func.sink.{ BatchedSqlSink, FragmentedSqlSink, JsonArrayWrapStage, SingleSqlSink }
-import shapeless.HList
+import shapeless.{ Generic, HList }
 
 import java.nio.charset.{ Charset, StandardCharsets }
 import java.nio.file.Paths
@@ -63,16 +64,20 @@ object Sink {
 
   def sqlTable[A: Write, L <: HList](
     table: String,
-    numberOfParameters: Int,
     batchSize: Int = 500
   )(implicit xa: Transactor[IO],
-    IORuntime: IORuntime
+    IORuntime: IORuntime,
+    gen: Generic.Aux[A, L],
+    rl: RecLength[L]
   ): Sink[A] = {
-    val parameters = ("?" * numberOfParameters).toList.map(_.toString).intercalate(",")
-    val query      = s"INSERT INTO $table VALUES ($parameters)"
+    def buildQuery(a: A): String = {
+      val numberOfParameters = a.recordLength
+      val parameters         = ("?" * numberOfParameters).toList.map(_.toString).intercalate(",")
+      s"INSERT INTO $table VALUES ($parameters)"
+    }
 
     Sink {
-      AkkaFlow[A].toMat(new BatchedSqlSink[A](query, batchSize))(Keep.right)
+      AkkaFlow[A].toMat(new BatchedSqlSink[A](buildQuery _, batchSize))(Keep.right)
     }
   }
 

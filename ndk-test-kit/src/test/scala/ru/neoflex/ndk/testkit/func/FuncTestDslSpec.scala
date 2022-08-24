@@ -173,7 +173,7 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .result
       .filter(_.result.data.executed)
       .map(r => (r.runId, r.result.data.status, r.result.data.sex))
-      .runWithSink(Sink.sqlTable("executed_flow_result", 3))
+      .runWithSink(Sink.sqlTable("executed_flow_result"))
       .awaitResult()
 
     val insertedResultRows =
@@ -189,7 +189,7 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .result
       .map(r => r.copy(result = r.result.data))
       .withFlowTraceSink(Sink.sqlTracesJson())
-      .runWithSink(Sink.sqlTable("flow_run_result", 5))
+      .runWithSink(Sink.sqlTable("flow_run_result"))
       .awaitResult()
 
     val runId = Source
@@ -216,7 +216,7 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .result
       .map(r => r.copy(result = r.result.data))
       .withFlowTraceSink(Sink.sqlTracesJson())
-      .runWithSink(Sink.sqlTable("flow_run_result", 5))
+      .runWithSink(Sink.sqlTable("flow_run_result"))
       .awaitResult()
 
     Source
