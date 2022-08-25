@@ -2,7 +2,7 @@ package ru.neoflex.ndk.testkit.func
 
 import akka.stream.alpakka.csv.scaladsl.CsvParsing
 import akka.stream.alpakka.csv.scaladsl.CsvParsing._
-import akka.stream.scaladsl.{ FileIO, JsonFraming, Flow => AkkaFlow, Source => AkkaSource }
+import akka.stream.scaladsl.{FileIO, JsonFraming, Flow => AkkaFlow, Source => AkkaSource}
 import akka.util.ByteString
 import cats.effect._
 import cats.effect.unsafe.IORuntime
@@ -16,7 +16,7 @@ import purecsv.unsafe.converter.RawFieldsConverter
 import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.testkit.func.source.Fs2StreamAdapter
 
-import java.nio.file.Paths
+import java.io.File
 
 final case class Source[A](s: AkkaSource[A, _])
 
@@ -42,7 +42,7 @@ object Source {
 
     Source {
       FileIO
-        .fromPath(Paths.get(path))
+        .fromPath(new File(path).toPath)
         .via(CsvParsing.lineScanner(delimiter, quoteChar, escapeChar, maximumLineLength))
         .statefulMapConcat(skipFirstLine)
         .map(_.map(_.utf8String))
@@ -54,7 +54,7 @@ object Source {
 
   def json[A: Decoder](path: String): Source[A] = Source {
     FileIO
-      .fromPath(Paths.get(path))
+      .fromPath(new File(path).toPath)
       .via(JsonFraming.objectScanner(Integer.MAX_VALUE))
       .map { bs =>
         decode(new String(bs.toArrayUnsafe()))

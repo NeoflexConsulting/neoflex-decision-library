@@ -54,11 +54,11 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
           }
           .toSink(Sink.sqlMetricsRows())
       }
-      .withFlowTraceSink(Sink.json[RunFlowTraceEvent]("/tmp/traces.json"))
+      .withFlowTraceSink(Sink.json[RunFlowTraceEvent]("traces.json".inTmpDir))
       .runWithSink(Sink.console[SimpleData])
       .awaitResult()
 
-    "/tmp/traces.json" should exist
+    "traces.json".inTmpDir should exist
   }
 
   "json source pipeline" should "be resulted in table with json traces and flow data in flat table" in {
@@ -199,11 +199,11 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .map(r => (r.runId, r.result.data.sex, r.result.data.status))
       .runWithSink(
         Sink
-          .csv("/tmp/result-data.csv", headers = List("run_id", "sex", "status"))
+          .csv("result-data.csv".inTmpDir, headers = List("run_id", "sex", "status"))
       )
       .awaitResult()
 
-    "/tmp/result-data.csv" should exist
+    "result-data.csv".inTmpDir should exist
   }
 
   override protected def datasourceConfig: DataSourceConfig = DataSourceConfig(
@@ -244,6 +244,8 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
 
   implicit class StringAsPath(s: String) {
     def resourcePath: String = getClass.getResource(s"/$s").getFile
+
+    def inTmpDir: String = s"${scala.util.Properties.tmpDir}/$s"
   }
 
   private implicit val filePathExistence: Existence[String] = (thing: String) => Files.exists(Paths.get(thing))
