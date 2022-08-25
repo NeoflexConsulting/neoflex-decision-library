@@ -21,7 +21,7 @@ trait PlantUmlEncoders extends Encoders with Constants with DepthLimitedEncoder 
 
   def encode(ctx: EncodingContext[FlowOp]): String = {
     val flowUml = apply(ctx)
-    val title   = ctx.op.name.getOrElse("")
+    val title   = ctx.op.name.getOrElse(s"$NoName flow")
     new UmlBuilder()
       .startUml()
       .start()
