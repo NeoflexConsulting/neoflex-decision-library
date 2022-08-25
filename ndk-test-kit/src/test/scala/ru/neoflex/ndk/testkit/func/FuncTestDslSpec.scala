@@ -15,48 +15,6 @@ import java.nio.file.{ Files, Paths }
 import scala.util.Random
 
 class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues with Matchers {
-  override protected def datasourceConfig: DataSourceConfig = DataSourceConfig(
-    "org.h2.Driver",
-    "jdbc:h2:~/ndk-test",
-    "sa",
-    "sa"
-  )
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-
-    sql"DROP ALL OBJECTS".update.run.transact(xa).unsafeRunSync()
-
-    sql"""CREATE TABLE metrics_data(
-            run_id character varying,
-            metric_name character varying,
-            metric_value numeric
-         )""".update.run.transact(xa).unsafeRunSync()
-
-    sql"""CREATE TABLE flow_run_result(
-            run_id character varying,
-            age integer,
-            executed bool,
-            status character varying,
-            sex char
-          )
-         """.update.run.transact(xa).unsafeRunSync()
-
-    sql"CREATE TABLE flow_trace_json(run_id character varying, trace_event character varying)".update.run
-      .transact(xa)
-      .unsafeRunSync()
-
-    sql"CREATE TABLE executed_flow_result(run_id character varying, status character varying, sex char)".update.run
-      .transact(xa)
-      .unsafeRunSync()
-  }
-
-  implicit class StringAsPath(s: String) {
-    def resourcePath: String = getClass.getResource(s"/$s").getFile
-  }
-
-  private implicit val filePathExistence: Existence[String] = (thing: String) => Files.exists(Paths.get(thing))
-
   "json source pipeline" should "be resulted in sql metrics and json traces" in {
     Source
       .json[SimpleData]("input_data.json".resourcePath)
@@ -103,7 +61,7 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
     "/tmp/traces.json" should exist
   }
 
-  "json source pipeline" should "be resulted in table with json metrics and flow data in flat table" in {
+  "json source pipeline" should "be resulted in table with json traces and flow data in flat table" in {
     val runId = Source
       .json[SimpleData]("input_data.json".resourcePath)
       .filter(_.age != 10)
@@ -200,7 +158,7 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .result
       .filter(_.result.data.executed)
       .map(r => (r.runId, r.result.data.status, r.result.data.sex))
-      .runWithSink(Sink.sqlTable("executed_flow_result", 3))
+      .runWithSink(Sink.sqlTable("executed_flow_result"))
       .awaitResult()
 
     val insertedResultRows =
@@ -247,6 +205,48 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
 
     "/tmp/result-data.csv" should exist
   }
+
+  override protected def datasourceConfig: DataSourceConfig = DataSourceConfig(
+    "org.h2.Driver",
+    "jdbc:h2:~/ndk-test",
+    "sa",
+    "sa"
+  )
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+
+    sql"DROP ALL OBJECTS".update.run.transact(xa).unsafeRunSync()
+
+    sql"""CREATE TABLE metrics_data(
+            run_id character varying,
+            metric_name character varying,
+            metric_value numeric
+         )""".update.run.transact(xa).unsafeRunSync()
+
+    sql"""CREATE TABLE flow_run_result(
+            run_id character varying,
+            age integer,
+            executed bool,
+            status character varying,
+            sex char
+          )
+         """.update.run.transact(xa).unsafeRunSync()
+
+    sql"CREATE TABLE flow_trace_json(run_id character varying, trace_event character varying)".update.run
+      .transact(xa)
+      .unsafeRunSync()
+
+    sql"CREATE TABLE executed_flow_result(run_id character varying, status character varying, sex char)".update.run
+      .transact(xa)
+      .unsafeRunSync()
+  }
+
+  implicit class StringAsPath(s: String) {
+    def resourcePath: String = getClass.getResource(s"/$s").getFile
+  }
+
+  private implicit val filePathExistence: Existence[String] = (thing: String) => Files.exists(Paths.get(thing))
 }
 
 final case class SimpleData(var age: Int = -1, var executed: Boolean = false, var status: String = "", sex: String)
