@@ -1,4 +1,15 @@
-# NDK Syntax by examples
+# NDK — Business rules DSL with auxiliary tools
+
+## NDK modules
+
+- core — core module, contains DSL definition and execution engine
+- ndk-integration-rest — auxiliary module, adds functionality to wrap business flow with REST API 
+- ndk-integration-kafka — auxiliary module, adds functionality to wrap business flow with Kafka streaming topic to topic transformation 
+- ndk-test-kit — test kit, containing utility classes and DSL for convenient tests writing 
+- ndk-tracker-kafka — additional module, that adds functionality to track flow execution and send traces into Kafka topic 
+- ndk-renderer — auxiliary module, necessary for flow rendering in case of ndk-idea-plugin is also used
+
+## NDK Syntax by examples
 
 The NDK syntax is a set of different operators. Each operator can contain the attributes `id` and `name`, where name is an optional attribute.
 The `name` attribute is used for logging and flow rendering purposes. The `id` attribute is used to track flow execution and testing. 
@@ -435,3 +446,105 @@ val testFlow = TestFlow(applicant, response) withOperators (
   }
 )
 ```
+
+## Functional testing
+
+There are many examples of DSL for constructing functional testing pipelines. They could be found in the test class `ru.neoflex.ndk.testkit.func.FuncTestDslSpec` in ndk-test-kit module. 
+
+First you need to extend basic class `ru.neoflex.ndk.testkit.func.NdkFuncSpec` to write a functional test and add some imports:
+
+```scala
+import ru.neoflex.ndk.testkit.func._
+import ru.neoflex.ndk.testkit.func.implicits._
+```
+
+if you are going to use SQL sources or sinks:
+```scala
+import doobie.implicits._
+```
+
+if you are going to use JSON containing sources or sinks:
+```scala
+import io.circe.generic.auto._
+```
+
+Simple example of the functional testing transformation pipeline:
+```scala
+Source
+  .json[SimpleData]("input_data.json") // Read test data from the input_data.json file and transform it to objects of the SimpleData class
+  .filter(_.age > 15) // filter only those objects where field age has a value greater than 15
+  .map(SimpleFlow)  // wrap SimpleData object to SimpleFlow object which is business flow definition
+  .result // get the result of the flow execution
+  .filter(_.result.data.executed) // filter rows that have already been executed
+  .map(r => (r.runId, r.result.data.status, r.result.data.sex)) // transform result to simple tuple of three values
+  .runWithSink(Sink.sqlTable("executed_flow_result")) // run execution and save result from the previous row into the SQL DB table executed_flow_result
+  .awaitResult() // wait while execution has not finished
+```
+
+If you want to work with SQL DBs(sources or sinks) you need to do some actions:
+1. Extend test class with `ru.neoflex.ndk.testkit.func.SqlDbBinders`
+2. Override method datasourceConfig with actual database connection configuration. For example:
+```scala
+override protected def datasourceConfig: DataSourceConfig = DataSourceConfig(
+    "org.h2.Driver",
+    "jdbc:h2:~/ndk-test",
+    "sa",
+    "sa"
+  )
+```
+Also, you need to add JDCB driver library to the project with your tests, for example for PostgreSQL: `"org.postgresql" % "postgresql" % "42.5.0"`
+
+### How to define metrics on the functional pipeline
+
+Simple example of defining some metrics:
+
+```scala
+ Source
+      .json[SimpleData]("input_data.json")
+      .map(SimpleFlow)
+      .result
+      .map(r => r.copy(result = r.result.data))
+      .withMetrics {  // call to define which metrics should be collected
+        _.metric("cover") // define metric with name 'cover'
+        .as { r =>  // define metric calculation - percentage of all proved applications
+          r.filter(_.result.status == "APPROVED").count() / r.totalElements * 100 // count rows with "APPROVED" status only, divide it to the number of all elements and multiply to 100
+        }
+        .metric("declined") // define metric declined - total number of the all declined applications
+        .as {
+          _.filter(_.result.status == "DECLINED").count() // filter rows with "DECLINED" status only
+        }
+        .toSink(Sink.sqlMetricsRows())  // save these two metrics into SQL DB table(one row for each metric)
+      }
+      .runWithSink(Sing.ignore)
+      .awaitResult()
+```
+
+Each test execution contains unique identifier called `runId` with which you can match metrics, traces and execution results of the particular run.
+
+### How to get trace of the particular flow execution
+
+Previous example could be completed with one additional row:
+
+```scala
+ Source
+      .json[SimpleData]("input_data.json")
+      .map(SimpleFlow)
+      .result
+      .map(r => r.copy(result = r.result.data))
+      .withMetrics {  // call to define which metrics should be collected
+        _.metric("cover") // define metric with name 'cover'
+        .as { r =>  // define metric calculation - percentage of all proved applications
+          r.filter(_.result.status == "APPROVED").count() / r.totalElements * 100 // count rows with "APPROVED" status only, divide it to the number of all elements and multiply to 100
+        }
+        .metric("declined") // define metric declined - total number of the all declined applications
+        .as {
+          _.filter(_.result.status == "DECLINED").count() // filter rows with "DECLINED" status only
+        }
+        .toSink(Sink.sqlMetricsRows())  // save these two metrics into SQL DB table(one row for each metric)
+      }
+      .withFlowTraceSink(Sink.json[RunFlowTraceEvent]("traces.json")) // here we define where to save tracking information about flow execution. It will be saved in the traces.json file
+      .runWithSink(Sing.ignore)
+      .awaitResult()
+```
+
+Each trace event will contain particular `runId` that equals to the `runId` in the metrics data, and you can match these data with common identifier. 
