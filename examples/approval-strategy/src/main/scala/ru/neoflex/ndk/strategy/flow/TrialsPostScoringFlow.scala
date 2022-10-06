@@ -13,7 +13,7 @@ final case class TrialsPostScoringFlow(application: Application, result: Scoring
       forEachOp("TrialsPostScoringFlow-l-1", "Has more trials?", result.trials) { trial =>
         flow(
           AssignStrategyDetails(application, trial),
-          HCTable(trial),
+          HardChecksFlow(application, trial),
           RGSelectorFlow(trial),
           WFSelector(trial)
         )
