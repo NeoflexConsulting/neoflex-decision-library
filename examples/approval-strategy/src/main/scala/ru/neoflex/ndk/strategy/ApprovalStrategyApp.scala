@@ -1,14 +1,14 @@
 package ru.neoflex.ndk.strategy
 
-import ru.neoflex.ndk.FlowRunnerApp
-import ru.neoflex.ndk.strategy.domain._
 import ru.neoflex.ndk.dsl.ImplicitConversions.{ charToOption, intToOption }
+import ru.neoflex.ndk.strategy.domain._
 import ru.neoflex.ndk.strategy.domain.result.ScoringResult
 import ru.neoflex.ndk.strategy.flow.ApprovalStrategyFlow
+import ru.neoflex.ndk.strategy.tracking.JsonFileTrackingRunner
 
 import java.time.{ LocalDate, LocalDateTime }
 
-object ApprovalStrategyApp extends FlowRunnerApp {
+object ApprovalStrategyApp extends JsonFileTrackingRunner with App {
   val address = Address(77, None, "Москва")
   val person  = Person(43498797, 1, 1, LocalDate.parse("1990-02-20"), '3', address)
 
@@ -25,7 +25,7 @@ object ApprovalStrategyApp extends FlowRunnerApp {
     Product("PF_CC_HOMER_POLZA", "RD")
   )
 
-  val creditData  = Seq(CreditData(0, 0))
+  val creditData  = Seq(CreditData(0, LocalDate.now(), 0, 0))
   val credit      = Credit(CreditBureau(creditData))
   val application = Application(applicantData, SalesPoint(products), LocalDateTime.now(), credit)
   val result      = ScoringResult()

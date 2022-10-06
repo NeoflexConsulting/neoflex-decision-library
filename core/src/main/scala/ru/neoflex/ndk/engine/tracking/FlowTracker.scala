@@ -4,6 +4,7 @@ import cats.implicits.catsSyntaxOptionId
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.engine.ExecutingOperator
+import ru.neoflex.ndk.engine.observer.ExecutionDetails
 import ru.neoflex.ndk.engine.tracking.TrackingOperatorCursor.toEvent
 import ru.neoflex.ndk.error.NdkError
 
@@ -35,18 +36,20 @@ final class FlowTracker(clock: Clock = JavaDefaultClock) {
     executingOperator.op
   }
 
-  def finished[O <: FlowOp](executingOperator: ExecutingOperator[O]): Unit = {
+  def finished[O <: FlowOp](executingOperator: ExecutingOperator[O], details: Option[ExecutionDetails] = None): Unit = {
     import executingOperator.root
     def updatedOperatorCursor = {
       val operatorCursor = trackingFlows(root.id)
       val currentCursor  = operatorCursor.cursor
       currentCursor.previous.map { prevCursor =>
-        val updatedOperator = currentCursor.op.copy(finishedAt = clock.now().some)
+        val updatedOperator = currentCursor.op.copy(finishedAt = clock.now().some, executionDetails = details)
         val newCurrentCursor =
           Cursor(prevCursor.previous, prevCursor.op.copy(children = prevCursor.op.children :+ updatedOperator))
         operatorCursor.copy(cursor = newCurrentCursor)
       }.getOrElse {
-        operatorCursor.copy(cursor = currentCursor.copy(op = currentCursor.op.copy(finishedAt = clock.now().some)))
+        operatorCursor.copy(cursor =
+          currentCursor.copy(op = currentCursor.op.copy(finishedAt = clock.now().some, executionDetails = details))
+        )
       }
     }
 

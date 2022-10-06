@@ -1,26 +1,16 @@
 package ru.neoflex.ndk.engine.tracking
 
-import cats.MonadError
+import cats.Monad
 import cats.implicits.catsSyntaxApplicativeId
-import ru.neoflex.ndk.dsl.{
-  Action,
-  Flow,
-  FlowOp,
-  ForEachOp,
-  GatewayOp,
-  PythonOperatorOp,
-  RestService,
-  RuleOp,
-  TableOp,
-  WhileOp
-}
-import ru.neoflex.ndk.engine.{ ExecutingOperator, FlowExecutionObserver }
+import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.engine.ExecutingOperator
+import ru.neoflex.ndk.engine.observer.{ ExecutedBranch, FlowExecutionObserver, TableExecutionResult }
 import ru.neoflex.ndk.error.NdkError
 
 final class FlowTrackingObserver[F[_]](
   tracker: FlowTracker,
   eventHandler: OperatorTrackedEventRoot => F[Unit]
-)(implicit monadError: MonadError[F, NdkError])
+)(implicit monadError: Monad[F])
     extends FlowExecutionObserver[F] {
 
   override def executionStarted[O <: FlowOp](executingOperator: ExecutingOperator[O]): F[O] =
@@ -40,7 +30,8 @@ final class FlowTrackingObserver[F[_]](
   override def actionFinished(action: ExecutingOperator[Action]): F[Unit]  = tracker.finished(action).pure
 
   override def gatewayStarted(gateway: ExecutingOperator[GatewayOp]): F[GatewayOp] = tracker.started(gateway).pure
-  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp]): F[Unit]     = tracker.finished(gateway).pure
+  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp], executedBranch: Option[ExecutedBranch]): F[Unit] =
+    tracker.finished(gateway).pure
 
   override def whileStarted(loop: ExecutingOperator[WhileOp]): F[WhileOp] = tracker.started(loop).pure
   override def whileFinished(loop: ExecutingOperator[WhileOp]): F[Unit]   = tracker.finished(loop).pure
@@ -49,11 +40,15 @@ final class FlowTrackingObserver[F[_]](
   override def forEachFinished(forEach: ExecutingOperator[ForEachOp]): F[Unit]     = tracker.finished(forEach).pure
 
   override def ruleStarted(rule: ExecutingOperator[RuleOp]): F[RuleOp] = tracker.started(rule).pure
-  override def ruleFinished(rule: ExecutingOperator[RuleOp]): F[Unit]  = tracker.finished(rule).pure
+  override def ruleFinished(rule: ExecutingOperator[RuleOp], executedBranch: Option[ExecutedBranch]): F[Unit] =
+    tracker.finished(rule, executedBranch).pure
 
   override def tableStarted(table: ExecutingOperator[TableOp]): F[TableOp] = tracker.started(table).pure
-  override def tableFinished(table: ExecutingOperator[TableOp], executedRows: Int): F[Unit] =
-    tracker.finished(table).pure
+  override def tableFinished(
+    table: ExecutingOperator[TableOp],
+    executionResult: Option[TableExecutionResult]
+  ): F[Unit] =
+    tracker.finished(table, executionResult).pure
 
   override def pyOperatorStarted(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[PythonOperatorOp[Any, Any]] =
     tracker.started(op).pure

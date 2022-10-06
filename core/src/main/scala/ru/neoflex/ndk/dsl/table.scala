@@ -78,7 +78,9 @@ object Table {
     def apply(index: Int): Any = value(index)
   }
 
-  sealed trait CallableAction
+  sealed trait CallableAction {
+    def name: String
+  }
   final case class ActionRef(name: String, args: Args)            extends CallableAction
   final case class SealedAction(f: () => Unit, name: String = "") extends CallableAction
   sealed trait Operator                                           extends (Any => Boolean)

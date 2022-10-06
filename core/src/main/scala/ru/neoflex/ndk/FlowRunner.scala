@@ -4,7 +4,8 @@ import cats.arrow.FunctionK
 import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.dsl.syntax._
 import ru.neoflex.ndk.engine.process.ProcessPoolFactory
-import ru.neoflex.ndk.engine.{ FlowExecutionEngine, NoOpFlowExecutionObserver }
+import ru.neoflex.ndk.engine.FlowExecutionEngine
+import ru.neoflex.ndk.engine.observer.NoOpFlowExecutionObserver
 
 trait FlowRunnerBase {
   def run(op: FlowOp): Unit

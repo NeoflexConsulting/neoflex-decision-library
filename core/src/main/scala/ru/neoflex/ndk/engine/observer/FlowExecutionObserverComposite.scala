@@ -1,12 +1,13 @@
-package ru.neoflex.ndk.engine
+package ru.neoflex.ndk.engine.observer
 
 import cats.MonadError
 import cats.syntax.applicative._
-import cats.syntax.functor._
 import cats.syntax.flatMap._
+import cats.syntax.functor._
 import ru.neoflex.ndk.dsl._
-import ru.neoflex.ndk.error.NdkError
+import ru.neoflex.ndk.engine.ExecutingOperator
 import ru.neoflex.ndk.engine.ExecutingOperator.Ops
+import ru.neoflex.ndk.error.NdkError
 
 class FlowExecutionObserverComposite[F[_]](
   observers: FlowExecutionObserver[F]*
@@ -32,16 +33,20 @@ class FlowExecutionObserverComposite[F[_]](
   override def actionStarted(action: ExecutingOperator[Action]): F[Action]         = callObservers(action, _.actionStarted)
   override def actionFinished(action: ExecutingOperator[Action]): F[Unit]          = callObservers(_.actionFinished(action))
   override def gatewayStarted(gateway: ExecutingOperator[GatewayOp]): F[GatewayOp] = callObservers(gateway, _.gatewayStarted)
-  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp]): F[Unit]     = callObservers(_.gatewayFinished(gateway))
+  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp], executedBranch: Option[ExecutedBranch]): F[Unit]     =
+    callObservers(_.gatewayFinished(gateway, executedBranch))
+
   override def whileStarted(loop: ExecutingOperator[WhileOp]): F[WhileOp]          = callObservers(loop, _.whileStarted)
   override def whileFinished(loop: ExecutingOperator[WhileOp]): F[Unit]            = callObservers(_.whileFinished(loop))
   override def forEachStarted(forEach: ExecutingOperator[ForEachOp]): F[ForEachOp] = callObservers(forEach, _.forEachStarted)
   override def forEachFinished(forEach: ExecutingOperator[ForEachOp]): F[Unit]     = callObservers(_.forEachFinished(forEach))
   override def ruleStarted(rule: ExecutingOperator[RuleOp]): F[RuleOp]             = callObservers(rule, _.ruleStarted)
-  override def ruleFinished(rule: ExecutingOperator[RuleOp]): F[Unit]              = callObservers(_.ruleFinished(rule))
+  override def ruleFinished(rule: ExecutingOperator[RuleOp], executedBranch: Option[ExecutedBranch]): F[Unit]              =
+    callObservers(_.ruleFinished(rule, executedBranch))
+
   override def tableStarted(table: ExecutingOperator[TableOp]): F[TableOp]         = callObservers(table, _.tableStarted)
-  override def tableFinished(table: ExecutingOperator[TableOp], executedRows: Int): F[Unit] =
-    callObservers(_.tableFinished(table, executedRows))
+  override def tableFinished(table: ExecutingOperator[TableOp], executionResult: Option[TableExecutionResult]): F[Unit] =
+    callObservers(_.tableFinished(table, executionResult))
 
   override def pyOperatorStarted(op: ExecutingOperator[PythonOperatorOp[Any, Any]]): F[PythonOperatorOp[Any, Any]] =
     callObservers(op, _.pyOperatorStarted)

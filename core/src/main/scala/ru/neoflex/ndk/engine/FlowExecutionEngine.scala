@@ -1,6 +1,6 @@
 package ru.neoflex.ndk.engine
 
-import cats.implicits.{ catsSyntaxOptionId, toTraverseOps }
+import cats.implicits.{ catsSyntaxOptionId, none, toTraverseOps }
 import cats.syntax.applicative._
 import cats.syntax.applicativeError._
 import cats.syntax.either._
@@ -9,8 +9,10 @@ import cats.syntax.functor._
 import cats.{ ~>, MonadError }
 import ru.neoflex.ndk.dsl.RestServiceImplicits.RestServiceOps
 import ru.neoflex.ndk.dsl._
+import ru.neoflex.ndk.dsl.dictionary._
 import ru.neoflex.ndk.dsl.syntax.NoName
 import ru.neoflex.ndk.engine.ExecutingOperator.Ops
+import ru.neoflex.ndk.engine.observer.{ DictConditionDetails, ExecutedBranch, FlowExecutionObserver }
 import ru.neoflex.ndk.engine.process.{ PooledProcess, ProcessPool }
 import ru.neoflex.ndk.error._
 import ru.neoflex.ndk.tools.Logging
@@ -150,7 +152,7 @@ class FlowExecutionEngine[F[_], G[_]](
     new TableExecutor[F, G](tableIn, this, observer, liftG).execute()
 
   protected def findGatewayOperator(gatewayIn: ExecutingOperator[GatewayOp]): F[FlowOp] =
-    observeExecution(gatewayIn, observer.gatewayStarted, observer.gatewayFinished) { gateway =>
+    liftG(observer.gatewayStarted(gatewayIn)).flatMap { gateway =>
       logger.debug("Executing gateway: ({}, {})", gateway.id, gateway.name)
       val conditionsAndExecutionResult = gateway.whens
         .map(c => c.cond.eval().map(r => (r, c)))
@@ -169,26 +171,60 @@ class FlowExecutionEngine[F[_], G[_]](
             gateway.name,
             when.name
           )
-          when.op
+          val executedBranch = ExecutedBranch(when.name.getOrElse(NoName), extractConditionDetails(when.cond.some))
+          (when.op, executedBranch)
         case None =>
           logger.debug(
             "No 'when' branches were found within gateway[{}, {}], the 'otherwise' branch will be selected",
             gateway.id,
             gateway.name
           )
-          gateway.otherwise
+          val executedBranch = ExecutedBranch("otherwise", None)
+          (gateway.otherwise, executedBranch)
       }
-      foundOperator.liftTo[F]
+      foundOperator.liftTo[F].flatMap {
+        case (op, executedBranch) =>
+          liftG(observer.gatewayFinished(gateway.withParentFrom(gatewayIn), executedBranch.some)).map(_ => op)
+      }
     }
 
-  protected def executeRule(rule: ExecutingOperator[RuleOp]): F[Unit] =
-    observeExecution(rule, observer.ruleStarted, observer.ruleFinished) { tweakedRule =>
+  private def extractConditionDetails(condition: Option[LazyCondition]) = condition.flatMap { c =>
+    c match {
+      case DictLazyCondition(v, cond) =>
+        val left = v.get.toOption.flatten.map(_.toString).getOrElse("")
+        val conditionView =
+          cond match {
+            case EqCondExpression(right)   => s"$left == $right"
+            case GtCondExpression(right)   => s"$left > $right"
+            case LtCondExpression(right)   => s"$left < $right"
+            case GtEqCondExpression(right) => s"$left >= $right"
+            case LtEqCondExpression(right) => s"$left <= $right"
+          }
+        DictConditionDetails(v.dictionaryName, v.key, conditionView).some
+      case _ => none
+    }
+  }
+
+  protected def executeRule(rule: ExecutingOperator[RuleOp]): F[Unit] = {
+    liftG(observer.ruleStarted(rule)).flatMap { tweakedRule =>
       import tweakedRule._
       logger.debug("Executing rule: ({}, {})", id, name)
 
-      def executeBranch(r: NamedAction) = {
-        logger.trace("Executing {} branch of the rule: ({}, {})", r.name, id, name)
-        execute(r.body, tweakedRule, r.name)
+      def executeBranch(conditionOrOtherwise: Either[Rule.Condition, Option[Rule.Otherwise]]) = {
+        conditionOrOtherwise.left.map { c =>
+          NamedAction(c.name.getOrElse(NoName), c.body, c.expr.some).some
+        }.map { otherwise =>
+          otherwise.map { o =>
+            NamedAction(o.name.getOrElse("otherwise"), o.body, none)
+          }
+        }.fold(a1 => a1, a2 => a2)
+          .map { r =>
+            logger.trace("Executing {} branch of the rule: ({}, {})", r.name, id, name)
+            execute(r.body, tweakedRule, r.name).map { _ =>
+              ExecutedBranch(r.name, extractConditionDetails(r.condition)).some
+            }
+          }
+          .getOrElse(none[ExecutedBranch].pure)
       }
 
       def executeConditions() =
@@ -200,15 +236,14 @@ class FlowExecutionEngine[F[_], G[_]](
           .liftTo[F]
 
       for {
-        conditionAndResult   <- executeConditions()
-        maybeTrueCondition   = conditionAndResult.find(_._2).map(_._1)
-        maybeConditionAction = maybeTrueCondition.map(c => NamedAction(c.name.getOrElse(NoName), c.body)).map(_.some)
-        maybeRuleAction = maybeConditionAction.getOrElse {
-          otherwise.map(o => NamedAction(o.name.getOrElse(NoName), o.body))
-        }
-        _ <- maybeRuleAction.map(executeBranch).getOrElse(().pure)
+        conditionAndResult  <- executeConditions()
+        maybeTrueCondition  = conditionAndResult.find(_._2).map(_._1)
+        trueCondOrOtherwise = maybeTrueCondition.toLeft(otherwise)
+        executedBranch      <- executeBranch(trueCondOrOtherwise)
+        _                   <- liftG(observer.ruleFinished(tweakedRule.withParentFrom(rule), executedBranch))
       } yield ()
     }
+  }
 
   private[engine] def execute[T](action: () => T, operator: FlowOp, details: Any*): F[T] = {
     pureFromTry(Try(action()), operator, details: _*)
@@ -219,4 +254,4 @@ class FlowExecutionEngine[F[_], G[_]](
   }
 }
 
-private[engine] final case class NamedAction(name: String, body: () => Unit)
+private[engine] final case class NamedAction(name: String, body: () => Unit, condition: Option[LazyCondition])

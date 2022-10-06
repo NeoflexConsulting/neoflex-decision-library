@@ -22,6 +22,7 @@ object TrackingOperatorCursor {
         operator.operatorType,
         to.runAt.toEpochMilli,
         to.finishedAt.map(_.toEpochMilli),
+        to.executionDetails,
         children
       )
     }
@@ -41,6 +42,7 @@ object TrackingOperatorCursor {
       rootOperator.operatorType,
       rootCursor.op.runAt.toEpochMilli,
       rootCursor.op.finishedAt.map(_.toEpochMilli),
+      rootCursor.op.executionDetails,
       error,
       rootCursor.op.children.map(toEvent)
     )

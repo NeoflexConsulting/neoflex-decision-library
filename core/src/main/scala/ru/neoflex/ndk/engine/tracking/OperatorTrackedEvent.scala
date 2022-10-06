@@ -3,6 +3,7 @@ package ru.neoflex.ndk.engine.tracking
 import cats.Monad
 import cats.syntax.functor._
 import ru.neoflex.ndk.dsl.`type`.OperatorType
+import ru.neoflex.ndk.engine.observer.ExecutionDetails
 import ru.neoflex.ndk.error.NdkError
 
 final case class OperatorTrackedEventRoot(
@@ -12,6 +13,7 @@ final case class OperatorTrackedEventRoot(
   `type`: OperatorType,
   runAtEpochMs: Long,
   finishedAtEpochMs: Option[Long],
+  details: Option[ExecutionDetails],
   error: Option[ExecutionError],
   ops: List[OperatorTrackedEvent])
 
@@ -21,6 +23,7 @@ final case class OperatorTrackedEvent(
   `type`: OperatorType,
   runAtEpochMs: Long,
   finishedAtEpochMs: Option[Long],
+  details: Option[ExecutionDetails],
   ops: List[OperatorTrackedEvent])
 
 final case class ExecutionError(`type`: String, message: String)

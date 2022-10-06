@@ -1,17 +1,24 @@
 package ru.neoflex.ndk.engine
 
-import cats.syntax.either._
-import cats.{MonadError, ~>}
-import cats.implicits.toTraverseOps
+import cats.implicits.{ catsSyntaxOptionId, none, toTraverseOps }
 import cats.syntax.applicative._
 import cats.syntax.applicativeError._
+import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import ru.neoflex.ndk.dsl.Table.{ActionDef, CallableAction}
+import cats.{ ~>, MonadError }
+import ru.neoflex.ndk.dsl.Table.{ ActionDef, CallableAction }
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.dictionary.DictionaryValue
+import ru.neoflex.ndk.dsl.syntax.NoName
 import ru.neoflex.ndk.engine.ExecutingOperator.Ops
-import ru.neoflex.ndk.error.{ActionArgumentsMatchError, ExpressionsAndConditionsNumberMatchError, NdkError, TableActionNotFound}
+import ru.neoflex.ndk.engine.observer._
+import ru.neoflex.ndk.error.{
+  ActionArgumentsMatchError,
+  ExpressionsAndConditionsNumberMatchError,
+  NdkError,
+  TableActionNotFound
+}
 import ru.neoflex.ndk.tools.Logging
 
 class TableExecutor[F[_], G[_]](
@@ -25,24 +32,24 @@ class TableExecutor[F[_], G[_]](
 
   def execute(): F[Unit] = {
     val result = for {
-      table        <- _table
-      rowsExecuted <- execute(table)
-      _            <- liftG(observer.tableFinished(table.withParentFrom(tableIn), rowsExecuted))
+      table           <- _table
+      executionResult <- execute(table)
+      _               <- liftG(observer.tableFinished(table.withParentFrom(tableIn), executionResult.some))
     } yield ()
 
     result.onError {
-      case _ => _table.flatMap(x => liftG(observer.tableFinished(x.withParentFrom(tableIn), 0)))
+      case _ => _table.flatMap(x => liftG(observer.tableFinished(x.withParentFrom(tableIn), none)))
     }
   }
 
-  private def execute(table: TableOp): F[Int] = {
+  private def execute(table: TableOp): F[TableExecutionResult] = {
     logger.debug("Executing table: ({}, {})", table.id, table.name)
     for {
       _                 <- checkExpressionsAndConditionsNumber()
       expressionResults <- executeExpressions(table.expressions)
       conditionsResults <- table.conditions.map(c => checkCondition(expressionResults, c).map((_, c))).sequence
-      executedRows      <- conditionsResults.map { case (r, c) => executeActionIf(r, c) }.sequence.map(_.sum)
-    } yield executedRows
+      executedActions   <- conditionsResults.map { case (r, c) => executeActionIf(r, c) }.sequence.map(_.flatten)
+    } yield TableExecutionResult(expressionResults.map(_.details), executedActions)
   }
 
   private def executeExpressions(expressions: Seq[Table.Expression]) = _table.flatMap { table =>
@@ -50,10 +57,19 @@ class TableExecutor[F[_], G[_]](
       engine
         .execute(expr.f, table, expr.name)
         .flatMap {
-          case dv: DictionaryValue[_] => dv.get.liftTo[F].asInstanceOf[F[Any]]
-          case r                      => r.pure[F]
+          case dv: DictionaryValue[_] =>
+            val dictValue   = dv.get
+            val resultValue = dictValue.liftTo[F].map(_.map(_.asInstanceOf[AnyRef])).map(_.orNull)
+            val stringValue = dictValue.toOption.flatten.map(_.toString).getOrElse("")
+            resultValue.map { v =>
+              ExecutedExprValue(
+                v,
+                TableExpressionValue(expr.name, ExpressionDictValue(dv.dictionaryName, dv.key, stringValue))
+              )
+            }
+          case r =>
+            ExecutedExprValue(r, TableExpressionValue(expr.name, ExpressionSimpleValue(r.toString))).pure[F]
         }
-        .map((expr.name, _))
     }.toList.sequence
   }
 
@@ -79,9 +95,13 @@ class TableExecutor[F[_], G[_]](
 
   private def executeActionIf(conditionResult: Boolean, condition: Table.Condition) = {
     if (conditionResult) {
-      executeAction(condition.callableAction).map(_ => 1)
+      val actionName = condition.callableAction.name.some
+        .filter(_.nonEmpty)
+        .map(Option.apply)
+        .getOrElse(NoName.some)
+      executeAction(condition.callableAction).map(_ => actionName)
     } else {
-      0.pure[F]
+      none[String].pure[F]
     }
   }
 
@@ -103,13 +123,13 @@ class TableExecutor[F[_], G[_]](
     }
   }
 
-  private def checkCondition(expressionResults: List[(String, Any)], condition: Table.Condition) = _table.flatMap {
+  private def checkCondition(expressionResults: List[ExecutedExprValue], condition: Table.Condition) = _table.flatMap {
     table =>
       expressionResults
         .zip(condition.operators)
         .map {
-          case ((exprName, exprValue), operator) =>
-            engine.execute(() => operator(exprValue), table, exprName, operator)
+          case (exprValue, operator) =>
+            engine.execute(() => operator(exprValue.v), table, exprValue.details.name, operator)
         }
         .sequence
         .map(_.forall(x => x))
@@ -124,3 +144,5 @@ class TableExecutor[F[_], G[_]](
       }
   }
 }
+
+final case class ExecutedExprValue(v: Any, details: TableExpressionValue)
