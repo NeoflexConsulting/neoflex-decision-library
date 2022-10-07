@@ -5,7 +5,8 @@ import cats.syntax.applicative._
 import ru.neoflex.ndk.dsl.syntax.NoId
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.dsl.`type`.OperatorType
-import ru.neoflex.ndk.engine.{ ExecutingOperator, FlowExecutionObserver }
+import ru.neoflex.ndk.engine.ExecutingOperator
+import ru.neoflex.ndk.engine.observer.{ExecutedBranch, FlowExecutionObserver, TableExecutionResult}
 import ru.neoflex.ndk.error.NdkError
 
 class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) extends FlowExecutionObserver[F] {
@@ -47,13 +48,14 @@ class FlowExecutionTracker[F[_]](implicit monadError: MonadError[F, NdkError]) e
   override def forEachStarted(forEach: ExecutingOperator[ForEachOp]): F[ForEachOp] = started(forEach)
   override def forEachFinished(forEach: ExecutingOperator[ForEachOp]): F[Unit]     = finished(forEach)
   override def ruleStarted(rule: ExecutingOperator[RuleOp]): F[RuleOp]             = started(rule)
-  override def ruleFinished(rule: ExecutingOperator[RuleOp]): F[Unit]              = finished(rule)
+  override def ruleFinished(rule: ExecutingOperator[RuleOp], executedBranch: Option[ExecutedBranch]): F[Unit]              = finished(rule)
   override def gatewayStarted(gateway: ExecutingOperator[GatewayOp]): F[GatewayOp] = started(gateway)
-  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp]): F[Unit]     = finished(gateway)
+  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp], executedBranch: Option[ExecutedBranch]): F[Unit]     = finished(gateway)
   override def tableStarted(table: ExecutingOperator[TableOp]): F[TableOp]         = started(table)
-  override def tableFinished(table: ExecutingOperator[TableOp], executedRows: Int): F[Unit] = {
+  override def tableFinished(table: ExecutingOperator[TableOp], executionResult: Option[TableExecutionResult]): F[Unit] = {
     ifHasId(table.id) {
-      executionDetails((OperatorType.Table, table.id)) = TableExecutionDetails(Finished, executedRows)
+      executionDetails((OperatorType.Table, table.id)) =
+        TableExecutionDetails(Finished, executionResult.map(_.executedRows.length).getOrElse(0))
     }
     ().pure
   }

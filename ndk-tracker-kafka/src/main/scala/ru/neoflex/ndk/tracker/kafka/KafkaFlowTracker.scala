@@ -3,7 +3,8 @@ package ru.neoflex.ndk.tracker.kafka
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import ru.neoflex.ndk.dsl._
 import ru.neoflex.ndk.engine.tracking.{FlowTracker, OperatorTrackedEventRoot}
-import ru.neoflex.ndk.engine.{ExecutingOperator, FlowExecutionObserver}
+import ru.neoflex.ndk.engine.ExecutingOperator
+import ru.neoflex.ndk.engine.observer.{ExecutedBranch, FlowExecutionObserver, TableExecutionResult}
 import ru.neoflex.ndk.error.NdkError
 import ru.neoflex.ndk.tools.Logging
 import ru.neoflex.ndk.tracker.config.{FireAndForget, TrackingEventSendType, WaitResponse}
@@ -73,8 +74,8 @@ class KafkaFlowTracker(
   override def gatewayStarted(gateway: ExecutingOperator[GatewayOp]): Future[GatewayOp] =
     successful(flowTracker.started(gateway))
 
-  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp]): Future[Unit] =
-    successful(flowTracker.finished(gateway))
+  override def gatewayFinished(gateway: ExecutingOperator[GatewayOp], executedBranch: Option[ExecutedBranch]): Future[Unit] =
+    successful(flowTracker.finished(gateway, executedBranch))
 
   override def whileStarted(loop: ExecutingOperator[WhileOp]): Future[WhileOp] =
     successful(flowTracker.started(loop))
@@ -91,14 +92,14 @@ class KafkaFlowTracker(
   override def ruleStarted(rule: ExecutingOperator[RuleOp]): Future[RuleOp] =
     successful(flowTracker.started(rule))
 
-  override def ruleFinished(rule: ExecutingOperator[RuleOp]): Future[Unit] =
-    successful(flowTracker.finished(rule))
+  override def ruleFinished(rule: ExecutingOperator[RuleOp], executedBranch: Option[ExecutedBranch]): Future[Unit] =
+    successful(flowTracker.finished(rule, executedBranch))
 
   override def tableStarted(table: ExecutingOperator[TableOp]): Future[TableOp] =
     successful(flowTracker.started(table))
 
-  override def tableFinished(table: ExecutingOperator[TableOp], executedRows: Int): Future[Unit] =
-    successful(flowTracker.finished(table))
+  override def tableFinished(table: ExecutingOperator[TableOp], executionResult: Option[TableExecutionResult]): Future[Unit] =
+    successful(flowTracker.finished(table, executionResult))
 
   override def pyOperatorStarted(
     op: ExecutingOperator[PythonOperatorOp[Any, Any]]

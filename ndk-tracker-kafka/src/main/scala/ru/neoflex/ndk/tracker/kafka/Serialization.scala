@@ -3,6 +3,7 @@ package ru.neoflex.ndk.tracker.kafka
 import io.circe.Printer
 import org.apache.kafka.common.serialization.{Serializer, StringSerializer}
 import ru.neoflex.ndk.dsl.`type`.OperatorType
+import ru.neoflex.ndk.engine.observer.{DictConditionDetails, ExecutionDetails, ExpressionValueDetails, TableExpressionValue}
 import ru.neoflex.ndk.engine.tracking.{ExecutionError, OperatorTrackedEvent, OperatorTrackedEventRoot}
 import ru.neoflex.ndk.tracker.kafka.JsonSerialization._
 
@@ -23,6 +24,10 @@ object JsonSerialization {
   implicit val operatorTypeEncoder: Encoder[OperatorType] = Encoder.instance[OperatorType] { operatorType =>
     Encoder.encodeString(operatorType.toString)
   }
+  implicit val expressionValueDetailsEncoder: Encoder[ExpressionValueDetails] = deriveEncoder[ExpressionValueDetails]
+  implicit val tableExpressionValueEncoder: Encoder[TableExpressionValue] = deriveEncoder[TableExpressionValue]
+  implicit val dictConditionDetailsEncoder: Encoder[DictConditionDetails] = deriveEncoder[DictConditionDetails]
+  implicit val executionDetailsEncoder: Encoder[ExecutionDetails] = deriveEncoder[ExecutionDetails]
   implicit val executionErrorEncoder: Encoder[ExecutionError] = deriveEncoder[ExecutionError]
   implicit val operatorTrackedEventEncoder: Encoder[OperatorTrackedEvent] = deriveEncoder[OperatorTrackedEvent]
   implicit val operatorTrackedEventRootEncoder: Encoder[OperatorTrackedEventRoot] =

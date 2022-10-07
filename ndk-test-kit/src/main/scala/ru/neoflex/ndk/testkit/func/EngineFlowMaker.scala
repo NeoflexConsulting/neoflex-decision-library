@@ -9,7 +9,8 @@ import ru.neoflex.ndk.dsl.FlowOp
 import ru.neoflex.ndk.dsl.syntax.EitherError
 import ru.neoflex.ndk.engine.process.ProcessPoolFactory
 import ru.neoflex.ndk.engine.tracking.{ FlowTracker, FlowTrackingObserver, OperatorTrackedEventRoot }
-import ru.neoflex.ndk.engine.{ FlowExecutionEngine, NoOpFlowExecutionObserver }
+import ru.neoflex.ndk.engine.FlowExecutionEngine
+import ru.neoflex.ndk.engine.observer.NoOpFlowExecutionObserver
 import ru.neoflex.ndk.error.WrappedError
 import ru.neoflex.ndk.{ ExecutionConfig, ProcessPoolConfig }
 
