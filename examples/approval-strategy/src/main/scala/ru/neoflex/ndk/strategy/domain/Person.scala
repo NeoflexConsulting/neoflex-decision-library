@@ -6,8 +6,8 @@ final case class Person(
   cuid: Int,
   activeRdOffer: Int,
   activeScOffer: Int,
-  birthDate: LocalDate,
+  birth: LocalDate,
   education: Option[Char],
   registeredAddress: Address)
 
-final case class Address(region: Option[Int], regionName: Option[String], town: String)
+final case class Address(region: Option[Int], regionName: Option[String], townCode: String)

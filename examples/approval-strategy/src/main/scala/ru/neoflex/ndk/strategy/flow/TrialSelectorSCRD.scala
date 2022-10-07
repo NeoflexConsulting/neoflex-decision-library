@@ -12,7 +12,7 @@ final case class TrialSelectorSCRD(application: Application, result: ScoringResu
       "ts-t-1",
       "Trial selector SCRD",
       expressions(
-        "activeScOffer" expr application.applicantData.person.activeScOffer,
+        "activeScOffer" expr application.person.activeScOffer,
         "productFamilies" expr application.salesPoint.products.map(_.productFamily)
       ) andConditions (
         row(eqv(1), contains("PF_CL_STND")).apply("Add TR_CL_STND") {

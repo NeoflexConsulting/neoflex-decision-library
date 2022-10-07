@@ -15,8 +15,8 @@ final case class AssignStrategyDetails(application: Application, trial: Trial)
       "AssignStrategyDetails",
       expressions(
         "trialName" expr trial.name,
-        "activeScOffer" expr application.applicantData.person.activeScOffer,
-        "activeRdOffer" expr application.applicantData.person.activeRdOffer,
+        "activeScOffer" expr application.person.activeScOffer,
+        "activeRdOffer" expr application.person.activeRdOffer,
         "isNewClient" expr Predictors("isNewClient", "1", "application" -> application)
       ) andConditions (
         row(eqv("TR_CL_STND"), any(), any(), eqv(true)).apply("Set strategy CashStreet New") {

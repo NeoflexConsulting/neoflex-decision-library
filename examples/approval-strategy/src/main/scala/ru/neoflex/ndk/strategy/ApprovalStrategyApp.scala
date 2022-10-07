@@ -10,13 +10,15 @@ import java.time.{ LocalDate, LocalDateTime }
 
 object ApprovalStrategyApp extends JsonFileTrackingRunner with App {
   val address = Address(77, None, "Москва")
-  val person  = Person(43498797, 1, 1, LocalDate.parse("1990-02-20"), '3', address)
+  val person =
+    Person(43498797, 1, 1, LocalDate.parse("1990-02-20"), '3', address)
 
   val applicantData = ApplicantData(
-    person,
     PreviousApplications(
-      Some(LocalDateTime.parse("2021-09-27T13:36:14")),
-      Seq.empty
+      Seq(
+        PreviousAppPerson(43498797, Some(LocalDateTime.parse("2021-09-27T13:36:14"))
+        )
+      )
     )
   )
   val products = Seq(
@@ -27,7 +29,7 @@ object ApprovalStrategyApp extends JsonFileTrackingRunner with App {
 
   val creditData  = Seq(CreditData(0, LocalDate.now(), 0, 0))
   val credit      = Credit(CreditBureau(creditData))
-  val application = Application(applicantData, SalesPoint(products), LocalDateTime.now(), credit)
+  val application = Application(Seq(person), applicantData, SalesPoint(products), LocalDateTime.now(), credit)
   val result      = ScoringResult()
 
   val flow = ApprovalStrategyFlow(application, result)

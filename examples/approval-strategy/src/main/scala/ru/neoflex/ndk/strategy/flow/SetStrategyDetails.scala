@@ -16,7 +16,7 @@ final case class SetStrategyDetails(application: Application, result: ScoringRes
       "Set strategy details",
       expressions(
         "isNewClient" expr Predictors("isNewClient", "1", "application" -> application),
-        "activeOffer" expr (application.applicantData.person.activeRdOffer == 1 || application.applicantData.person.activeScOffer == 1)
+        "activeOffer" expr (application.person.activeRdOffer == 1 || application.person.activeScOffer == 1)
       ) andConditions (
         row(eqv(true), any()).apply("Street New") {
           result.strategyName = "MultiApproval_Street New"

@@ -148,6 +148,7 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
     name := "approval-strategy-example",
     version := "0.0.1-SNAPSHOT",
     publish / skip := true,
+    libraryDependencies += Dependencies.CirceParser,
     tpolecatCiModeOptions ~= { options =>
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }

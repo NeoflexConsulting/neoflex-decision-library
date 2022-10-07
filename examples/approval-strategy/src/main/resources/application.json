@@ -1,0 +1,2796 @@
+{
+  "applicantData": {
+    "creditAmountPrefered": "500000",
+    "creditTypePrefered": "SC",
+    "maxValueRd": "123456",
+    "maxValueSc": "2180000",
+    "typeProcess": "isProcess=>5Fields;isTypeApplication=>Short;PDN_Process",
+    "expense": {
+      "persons": [
+        {
+          "cuid": "43498797"
+        }
+      ]
+    },
+    "previousApplications": {
+      "isTwPartnerLimitAvailable": "0",
+      "approvalData": {
+        "lastApprovalDateCardsStreet": "27.09.2021 13:36:14",
+        "lastApprovalDateCardsXsell": "12.01.2022 10:32:34",
+        "lastApprovalDateFullApplication": "12.01.2022 10:32:34"
+      },
+      "appArray": [
+        {
+          "evidSrv": "2390689728",
+          "credit": {
+            "creditAmount": "0",
+            "creditType": "MS",
+            "creditTypePrefered": "RD",
+            "debt": "0",
+            "endDate": "11.01.2022 00:06:53",
+            "status": "t",
+            "typeSp": "x"
+          },
+          "firstApprovalStart": "10.01.2022 23:55:09",
+          "person": {
+            "mainOccupationIncome": "450000"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "751520"
+          }
+        },
+        {
+          "credit": {
+            "creditAmount": "0",
+            "creditType": "MS",
+            "creditTypePrefered": "SC",
+            "debt": "0",
+            "endDate": "11.01.2022 00:06:53",
+            "status": "t",
+            "typeSp": "q"
+          },
+          "evidSrv": "2389718086",
+          "firstApprovalStart": "29.12.2021 11:35:39",
+          "person": {
+            "education": "3",
+            "employment": {
+              "employedFrom": "2021-10-01"
+            },
+            "familyState": "1",
+            "incomeType": "2",
+            "mainOccupationIncome": "450000"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "751520"
+          }
+        },
+        {
+          "credit": {
+            "creditAmount": "0",
+            "creditType": "MS",
+            "creditTypePrefered": "SC",
+            "debt": "0",
+            "endDate": "10.12.2021 19:04:11",
+            "status": "t",
+            "typeSp": "x"
+          },
+          "evidSrv": "2386919923",
+          "firstApprovalStart": "03.12.2021 18:09:51",
+          "person": {
+            "mainOccupationIncome": "450000"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "751520"
+          }
+        },
+        {
+          "credit": {
+            "annuity": "24166.67",
+            "creditAmount": "290000",
+            "creditType": "RD",
+            "creditTypePrefered": "RD",
+            "debt": "290000",
+            "endDate": "3000-01-01",
+            "openDate": "12.01.2022 10:34:45",
+            "prodCode": "3TWS290",
+            "scoreGroup": "222",
+            "status": "a",
+            "typeSp": "x"
+          },
+          "evidSrv": "2390689906",
+          "firstApprovalStart": "11.01.2022 00:06:54",
+          "person": {
+            "education": "3",
+            "employment": {
+              "employedFrom": "01.10.2021 03:00:00"
+            },
+            "familyState": "1",
+            "incomeType": "a",
+            "mainOccupationIncome": "450000"
+          },
+          "product": {
+            "productFamily": "PF_CC_TW_2L",
+            "productFamilyType": "RD"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "108976"
+          }
+        },
+        {
+          "credit": {
+            "annuity": "34416.67",
+            "creditAmount": "700000",
+            "creditType": "RD",
+            "creditTypePrefered": "RD",
+            "debt": "700000",
+            "endDate": "3000-01-01",
+            "openDate": "24.10.2021 13:15:48",
+            "prodCode": "0110S700",
+            "scoreGroup": "57",
+            "status": "a",
+            "typeSp": "x"
+          },
+          "evidSrv": "2382979992",
+          "firstApprovalStart": "23.10.2021 18:56:09",
+          "person": {
+            "education": "3",
+            "employment": {
+              "employedFrom": "01.10.2021 03:00:00"
+            },
+            "familyState": "1",
+            "incomeType": "2",
+            "mainOccupationIncome": "450000"
+          },
+          "product": {
+            "productFamily": "PF_CC_HOMER_POLZA",
+            "productFamilyType": "RD"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "108976"
+          }
+        },
+        {
+          "credit": {
+            "annuity": "3300",
+            "creditAmount": "110000",
+            "creditType": "RD",
+            "creditTypePrefered": "RD",
+            "debt": "0",
+            "endDate": "3000-01-01",
+            "openDate": "27.09.2021 13:36:20",
+            "prodCode": "0701Y110",
+            "scoreGroup": "266",
+            "status": "a",
+            "typeSp": "x"
+          },
+          "evidSrv": "2380027951",
+          "firstApprovalStart": "23.09.2021 14:51:43",
+          "person": {
+            "education": "3",
+            "employment": {
+              "employedFrom": "2021-04-01"
+            },
+            "familyState": "1",
+            "incomeType": "2",
+            "mainOccupationIncome": "450000"
+          },
+          "product": {
+            "productFamily": "PF_CC_TW_LG",
+            "productFamilyType": "RD"
+          },
+          "salesPoint": {
+            "sellerplaceCode": "103443"
+          }
+        }
+      ],
+      "persons": [
+        {
+          "FZcnt": "0",
+          "cntContractActiveCar": "0",
+          "cntContractActiveCash": "0",
+          "cntContractActivePos": "0",
+          "cntContractActiveRevolving": "3",
+          "cntContractActiveRevolvingHomer": "0",
+          "cntContractActiveRevolvingTW": "3",
+          "cntContractActiveRevolvingTWPolza": "1",
+          "cuid": "43498797",
+          "dateEmployedFrom": "01.10.2021 03:00:00",
+          "daysFromPreviousCredit": "7",
+          "firstADateNotRD": "2015-08-02",
+          "firstaCreditAmount": "110000",
+          "firstaDate": "2021-09-27T13:36:14",
+          "firstaDownpayment": "0",
+          "lastActiveCreditAmount": "290000",
+          "lastApplicationDate": "11.01.2022 00:06:54",
+          "lastApprovalDate": "12.01.2022 10:32:34",
+          "lastApprovalDateNotRD": "2015-08-02",
+          "lastApprovedEducation": "3",
+          "lastBirth": "1990-02-20",
+          "lastCarOwner": "0",
+          "lastChildNum": "0",
+          "lastContactAddress": "105082,\u041c\u043e\u0441\u043a\u0432\u0430 \u0433, \u0443\u043b \u0411\u043e\u043b\u044c\u0448\u0430\u044f \u041f\u043e\u0447\u0442\u043e\u0432\u0430\u044f, \u0434. 18/20, \u043a\u043e\u0440\u043f. 15, \u043a\u0432. 32",
+          "lastContactMobilePhone": "9154712517",
+          "lastCreditAmount": "290000",
+          "lastEducation": "3",
+          "lastEmail": "grigorpetrunkin@gmail.com",
+          "lastEmploymentAddress": "107078,\u041c\u043e\u0441\u043a\u0432\u0430 \u0433, \u0443\u043b \u041a\u0430\u043b\u0430\u043d\u0447\u0435\u0432\u0441\u043a\u0430\u044f, \u0434. 27",
+          "lastEmploymentName": "\u041e\u041e\u041e \"\u0425\u041a\u0424 \u0411\u0410\u041d\u041a\"",
+          "lastExistingCreditType": "RD",
+          "lastFamilyState": "1",
+          "lastFieldExperience": "12",
+          "lastFlatCnt": "0",
+          "lastHouseType": "3",
+          "lastIdent": "123123123",
+          "lastInitPay": "0",
+          "lastMainOccupationIncome": "450000",
+          "lastMobil": "9154712517",
+          "lastMobilePhoneChangeDate": "02.08.2015 17:12:55",
+          "lastOccupation": "\u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0438\u043a \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
+          "lastOccupationSector": "10",
+          "lastPaymentNum": "12",
+          "lastPhone": "4992614254",
+          "lastPhoneEmp": "4957888878",
+          "lastRegisteredAddress": "105082,\u041c\u043e\u0441\u043a\u0432\u0430 \u0433, \u0443\u043b \u0411\u043e\u043b\u044c\u0448\u0430\u044f \u041f\u043e\u0447\u0442\u043e\u0432\u0430\u044f, \u0434. 18/20, \u043a\u043e\u0440\u043f. 15",
+          "lastSellerplaceName": "\u041e\u041e\u041e \"\u0425\u041a\u0424 \u0411\u0430\u043d\u043a\" \u041c\u043e\u0439 \u041a\u0440\u0435\u0434\u0438\u0442 \u0422\u041b\u041c",
+          "lastStatus": "a"
+        }
+      ],
+      "personContact": [
+        {
+          "contact": "9150119495",
+          "relationShipToClient": "1"
+        }
+      ]
+    },
+    "previousApplicationsFraud": {
+      "persons": [
+        {
+          "lastApplicationDate": "11.01.2022 00:06:54",
+          "lastCreditAmount": "290000",
+          "lastCreditCount1m": "0",
+          "lastDeliveryChannel": "c",
+          "lastEvidSrv": "2390689906",
+          "lastExistingCreditType": "RD",
+          "lastProdCode": "3TWS290",
+          "lastSellerplaceCode": "108976",
+          "lastStatus": "a",
+          "lastTypeProcess": "isProcess=>5Fields;isTypeApplication=>Short+Full;isLinked=False;PDN_Process",
+          "lastTypeSp": "x"
+        }
+      ]
+    },
+    "cars": [
+      {
+        "cuid": "50734826"
+      }
+    ],
+    "campaigns": [
+      {
+        "cmGuarantedLimit": "123456",
+        "cmProductMinInterestRate": "18.5",
+        "cmSubtype": "CL-HOOK-SETA"
+      },
+      {
+        "cmGuarantedLimit": "2190000",
+        "cmProductMinInterestRate": "14.9",
+        "cmSubtype": "CL-REFRESH-EMP"
+      },
+      {
+        "cmGuarantedLimit": "123456",
+        "cmProductMinInterestRate": "34.8",
+        "cmSubtype": "CC-SHC"
+      }
+    ]
+  },
+  "bombInBank": "0",
+  "idCredit": "1366761352",
+  "randomNumber1": "0.66667517",
+  "randomNumber2": "0.25490856",
+  "sysdate": "2022-01-19T11:43:06",
+  "timeZone": "0",
+  "application": {
+    "signMethodOptions": "SMS_SIGN, SIGN_DBO, PERSONAL",
+    "signMethodSelected": "PERSONAL"
+  },
+  "credit": {
+    "KMBCard": "0",
+    "accountStatement": "0",
+    "avgPartnerTerm": "12",
+    "avgRevTerm": "1",
+    "cardIdentValidity": "1",
+    "cardValidity": "1",
+    "cashOnNncLimit": "0",
+    "coefDualRDLimitUse": "1",
+    "creditAmount": "0",
+    "creditAmountNext": "0",
+    "creditAmountPrevious": "0",
+    "creditType": "MS",
+    "dateReview": "19.01.2022 11:43:06",
+    "deferredPayments": "0",
+    "flexiPaymentNumReduction": "0",
+    "insurancePremium": "0",
+    "insurancePremiumExist": "0",
+    "insurancePremiumGoods": "0",
+    "insurancePremiumGoodsExist": "0",
+    "insurancePremiumUnemp": "0",
+    "insurancePremiumUnempExist": "0",
+    "isDesireTw": "0",
+    "isDynamic": "0",
+    "isMultiSelect": "1",
+    "isPosOnCard": "0",
+    "isPseudo": "0",
+    "isPseudoQuickNo": "0",
+    "isTW": "0",
+    "lostThingsFeeAmount": "0",
+    "mfo": "bank",
+    "monthlyFeeDebt": "0",
+    "photoExists": "0",
+    "price": "0",
+    "priceNoDiscount": "0",
+    "refinCashCreditAmount": "0",
+    "scansAttached": "0",
+    "scansChanged": "0",
+    "scoringTypeCode": "OLD_SCORING_TYPE",
+    "secondInterestRateType": "0",
+    "typeSp": "2",
+    "creditProduct": {
+      "scansMinSum": "0",
+      "scansRequired": "0"
+    },
+    "quickNoResult": "inProcess",
+    "quickNoStatus": "extQNapproval",
+    "onlineApp": {
+      "applicationDate": "19.01.2022 11:43:05",
+      "channel": "MyCreditMob_Q5F",
+      "channelGroup": "MyCredit/Mobile",
+      "onlineRequestId": "53612055"
+    },
+    "parentId": "1366761352",
+    "fps": {
+      "responseStatusApplication": "0",
+      "responseStatusFlag": "0",
+      "mainRules": "1.11=>0;1.12=>0;1.13=>0;1.14=>0;1.15=>0;1.16=>0;1.17=>0;1.18=>0;1.19=>0;1.20=>0;1.21=>0;1.41=>0;1.42=>0;2.11=>0;2.12=>0;2.13=>0;2.14=>0;2.15=>0;2.16=>0;2.17=>0;2.18=>0;2.19=>0;2.20=>0;2.21=>0;2.22=>0;2.23=>0;2.24=>0;2.25=>0;2.26=>0;2.27=>0;2.28=>0;2.29=>0;2.30=>0;2.31=>0;2.32=>0;2.33=>0;2.34=>0;2.35=>0;2.36=>0;2.37=>0;2.38=>0;2.41=>0.0055;2.42=>0.2934;2.44=>0.3626;5.1=>0;5.2=>0;5.3=>0;5.4=>0;6.1=>0;6.2=>0;7.1=>0;7.2=>0;7.3=>0;7.4=>0;7.5=>0;7.6=>0;7.7=>0;7.8=>0;7.9=>0;7.10=>0;7.11=>0;7.12=>0;7.13=>0;7.14=>0;7.15=>0;7.16=>0;7.17=>0;7.18=>0;7.19=>0;7.20=>0;7.87=>0;7.88=>0;7.97=>0;7.98=>0;7.99=>0;7.100=>0;7.101=>0;",
+      "mainScoreValue": "0",
+      "numApplicationsFound": "15",
+      "responseStatusVector": "0",
+      "specificRules": "1.901=>1;1.2001=>0;1.2002=>0;2.901=>1;2.902=>0;2.903=>0;2.904=>4;2.905=>1;2.906=>4;2.907=>1;2.908=>0;2.909=>0;2.910=>2;2.911=>0;2.912=>2;2.913=>1;2.914=>0;2.915=>0;2.916=>0;2.917=>0;2.918=>1;2.919=>0;2.920=>0;2.921=>3;2.922=>0;2.923=>0;2.924=>1;2.925=>1;2.926=>0;2.927=>0;2.928=>0;2.929=>0;2.930=>0;2.931=>0;2.932=>8;2.933=>0;2.934=>0;2.935=>0;2.936=>0;2.937=>2;2.938=>3;2.939=>1;2.940=>1;2.941=>3;2.942=>0;2.943=>4;2.944=>1;2.945=>1;2.946=>0;2.947=>0;2.948=>1;2.949=>0;2.950=>0;2.951=>0;2.952=>2;2.953=>0;2.954=>0;2.1001=>0;2.1002=>0;2.1003=>0;2.1004=>0;2.1005=>0;2.1006=>0;2.1007=>0;2.1008=>-1;2.1009=>0;2.1010=>0;2.2001=>0;2.2002=>0;2.2003=>0;2.2004=>0;2.3001=>0;2.3002=>1;3.901=>0;3.902=>0;3.903=>0;4.1001=>0;7.95=>-1;7.961=>-1;7.1001=>0;7.1011=>-1;8.901=>0;8.902=>0;"
+    },
+    "creditBureau": {
+      "bureauResponse": [
+        {
+          "cache_use": "0",
+          "cbId": "nbk",
+          "code": "1"
+        },
+        {
+          "cache_use": "0",
+          "cbId": "equ",
+          "code": "1"
+        },
+        {
+          "cache_use": "0",
+          "cbId": "exp",
+          "code": "1"
+        },
+        {
+          "cache_use": "1",
+          "cbId": "nbk",
+          "code": "1"
+        },
+        {
+          "cache_use": "1",
+          "cbId": "equ",
+          "code": "1"
+        },
+        {
+          "cache_use": "1",
+          "cbId": "equ",
+          "code": "25"
+        },
+        {
+          "cache_use": "1",
+          "cbId": "exp",
+          "code": "1"
+        },
+        {
+          "cache_use": "1",
+          "cbId": "exp",
+          "code": "1"
+        },
+        {
+          "cache_use": "0",
+          "cbId": "AFS",
+          "code": "0"
+        }
+      ],
+      "persons": [
+        {
+          "bkiListQuery": "equ,nbk,exp",
+          "extra": {
+            "est_cbrf_avg_income_12m": "45970.67",
+            "est_cbrf_avg_income_24m": "41925.42"
+          },
+          "querySource": "BANK",
+          "addresses": {
+            "address": [
+              {
+                "act_type": "act",
+                "address_type": "reg",
+                "full_address": ", \u0413 \u041c\u041e\u0421\u041a\u0412\u0410 \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411 \u0414 18 20 \u041a\u041e\u0420\u041f 15 \u041a\u0412 32, 105082 \u0413 \u041c\u041e\u0421\u041a\u0412\u0410 \u0423\u041b \u0411\u041e\u041b\u042c\u0428\u0410\u042f \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0414\u041e\u041c 18 20 \u041a\u041e\u0420\u041f 15 \u041a\u0412 32, , \u0413 \u041c\u041e\u0421\u041a\u0412\u0410 \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411 \u0414 18 20 \u041a\u041e\u0420\u041f 15 \u041a\u0412 32, 18/20, 15, 15, 32"
+              },
+              {
+                "act_type": "act",
+                "address_type": "fact",
+                "full_address": ", 77 \u041c\u041e\u0421\u041a\u0412\u0410 \u0413 2356 \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411 \u0423\u041b 18 20 15 32, 105082 \u0413 \u041c\u041e\u0421\u041a\u0412\u0410 \u0423\u041b \u0411\u041e\u041b\u042c\u0428\u0410\u042f \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0414\u041e\u041c 18 20 \u041a\u041e\u0420\u041f 15 \u041a\u0412 32, , 77 \u041c\u041e\u0421\u041a\u0412\u0410 \u0413 2356 \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411 \u0423\u041b 18 20 15 32, 18/20, 15, 15, 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-12-18",
+                "address_type": "fact",
+                "full_address": "RU 105082 45 \u0413 \u0414\u0423\u0411\u041d\u0410 \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411. 18/20 15 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-12-18",
+                "address_type": "reg",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18/20, \u041a\u041e\u0420\u041f 15, \u041a\u0412 15"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2022-01-10",
+                "address_type": "fact",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18/20, \u041a\u041e\u0420\u041f 15, \u041a\u0412 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2022-01-10",
+                "address_type": "reg",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18/20, \u041a\u041e\u0420\u041f 15, \u041a\u0412 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-06-14",
+                "address_type": "fact",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18, \u041a\u041e\u0420\u041f 15, \u041a\u0412 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-06-14",
+                "address_type": "reg",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18, \u041a\u041e\u0420\u041f 15, \u041a\u0412 32"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-08-08",
+                "address_type": "fact",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18/20"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2018-08-08",
+                "address_type": "reg",
+                "full_address": "105082, \u0413 \u041c\u041e\u0421\u041a\u0412\u0410, \u0423\u041b \u041f\u041e\u0427\u0422\u041e\u0412\u0410\u042f \u0411., \u0414\u041e\u041c 18/20"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2019-05-28",
+                "address_type": "fact",
+                "full_address": "RU 000000 45 \u041c\u041e\u0421\u041a\u0412\u0410"
+              },
+              {
+                "act_type": "his",
+                "actuality_date": "2019-05-28",
+                "address_type": "reg",
+                "full_address": "RU 000000 45 \u041c\u041e\u0421\u041a\u0412\u0410 -"
+              }
+            ]
+          },
+          "requests": {
+            "request": [
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "5",
+                "partner_type": "0",
+                "timeslot": "4"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "4"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "5",
+                "partner_type": "0",
+                "timeslot": "5"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "5",
+                "partner_type": "0",
+                "timeslot": "5"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "100000",
+                "cred_type": "4",
+                "partner_type": "1",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "4"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "4"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "5"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "5"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "0",
+                "timeslot": "6"
+              },
+              {
+                "cred_currency": "rur",
+                "cred_sum": "0",
+                "cred_type": "99",
+                "partner_type": "1",
+                "timeslot": "6"
+              }
+            ]
+          },
+          "cuid": "43498797",
+          "queryDate": "19.01.2022 11:43:22"
+        }
+      ],
+      "creditData": [
+        {
+          "cbId": "equ",
+          "cbOverdueLine": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC0000000000000000000000000000000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "0",
+          "creditCollateral": "0",
+          "creditCostRate": "22.14",
+          "creditCurrency": "rur",
+          "creditDate": "2016-06-03",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2046-06-22",
+          "creditEndDateFact": "2019-01-20",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "0",
+          "creditSumDebt": "0",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2019-01-20",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "exp",
+          "cbOverdueLine": "000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostPrice": "444648",
+          "creditCostRate": "23.078",
+          "creditCurrency": "rur",
+          "creditDate": "2021-10-24",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "700000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "700000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "14",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-12-24",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "bf031616-3419-11ec-85d7-15943e928844-7"
+        },
+        {
+          "cbId": "equ",
+          "cbOverdueLine": "00000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "27.522",
+          "creditCurrency": "rur",
+          "creditDate": "2021-09-27",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "110000",
+          "creditSumDebt": "40024",
+          "creditSumLimit": "69976",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-01-16",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "12642",
+            "est_payment_sum_24m": "12642"
+          },
+          "uuid": "a0c6246c-1c64-11ec-a3b2-35784f85f152-5"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "exp",
+          "cbOverdueLine": "0000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostPrice": "75808",
+          "creditCostRate": "27.522",
+          "creditCurrency": "rur",
+          "creditDate": "2021-09-27",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "110000",
+          "creditSumDebt": "19936",
+          "creditSumLimit": "90064",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "14",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-12-25",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "12791",
+            "est_payment_sum_24m": "12791"
+          },
+          "uuid": "a0c6246c-1c64-11ec-a3b2-35784f85f152-5"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "nbk",
+          "cbOverdueLine": "000-",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "27.522",
+          "creditCurrency": "rur",
+          "creditDate": "2021-09-27",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "110000",
+          "creditSumDebt": "40024",
+          "creditSumLimit": "69976",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-01-16",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "12791",
+            "est_payment_sum_24m": "12791"
+          },
+          "uuid": "a0c6246c-1c64-11ec-a3b2-35784f85f152-5"
+        },
+        {
+          "cbAnnuity": "48987",
+          "cbId": "nbk",
+          "cbOverdueLine": "000000000000000000-",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "6.568",
+          "creditCurrency": "rur",
+          "creditDate": "2020-06-23",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2050-06-05",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "7999000",
+          "creditSumDebt": "7860337",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "3",
+          "creditTypeUni": "3",
+          "creditUpdate": "2022-01-10",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "8919283c-b5e3-11ea-8b27-cc8c2727f320-7"
+        },
+        {
+          "cbAnnuity": "48987",
+          "cbId": "exp",
+          "cbOverdueLine": "00000000000000-000-",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "6.568",
+          "creditCurrency": "rur",
+          "creditDate": "2020-06-23",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2050-06-05",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "7999000",
+          "creditSumDebt": "7860337",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "3",
+          "creditTypeUni": "3",
+          "creditUpdate": "2022-01-13",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "8919283c-b5e3-11ea-8b27-cc8c2727f320-7"
+        },
+        {
+          "cbId": "equ",
+          "cbOverdueLine": "-000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "23.078",
+          "creditCurrency": "rur",
+          "creditDate": "2021-10-24",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "700000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "700000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-12-24",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "bf031616-3419-11ec-85d7-15943e928844-7"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "exp",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostPrice": "0",
+          "creditCostRate": "0",
+          "creditCurrency": "rur",
+          "creditDate": "2022-12-01",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "290000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "290000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "14",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-12-01",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "3e72f69b-7259-11ec-8b29-bf7dc8f3b731-a"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "nbk",
+          "cbOverdueLine": "---",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "23.078",
+          "creditCurrency": "rur",
+          "creditDate": "2021-10-24",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "700000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "700000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-12-24",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "bf031616-3419-11ec-85d7-15943e928844-7"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "exp",
+          "cbOverdueLine": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC-------------------------------",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "0",
+          "creditCollateral": "0",
+          "creditCostRate": "22.14",
+          "creditCurrency": "rur",
+          "creditDate": "2016-06-03",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2046-06-22",
+          "creditEndDateFact": "2019-01-20",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "0",
+          "creditSumDebt": "0",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2019-01-25",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbId": "equ",
+          "cbOverdueLine": "0",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCurrency": "rur",
+          "creditDate": "2022-12-01",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "290000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "290000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-12-01",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "3e72f69b-7259-11ec-8b29-bf7dc8f3b731-a"
+        },
+        {
+          "cbId": "equ",
+          "cbOverdueLine": "00000000000000000000",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "6.568",
+          "creditCurrency": "rur",
+          "creditDate": "2020-06-23",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2050-06-05",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "7999000",
+          "creditSumDebt": "7860337",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "3",
+          "creditTypeUni": "3",
+          "creditUpdate": "2022-01-10",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "538857",
+            "est_payment_sum_24m": "783792"
+          },
+          "uuid": "8919283c-b5e3-11ea-8b27-cc8c2727f320-7"
+        },
+        {
+          "cbId": "rst",
+          "cbOverdueLine": "--------------------------------------------------------------------------",
+          "contractSource": "vki",
+          "creditActive": "1",
+          "creditCurrency": "rur",
+          "creditDate": "2013-06-08",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2018-02-28",
+          "creditJoint": "0",
+          "creditOwner": "0",
+          "creditSum": "1000",
+          "creditSumDebt": "0",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2015-05-02",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbId": "nbk",
+          "cbOverdueLine": "C0CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC-------------------------------",
+          "contractSource": "vki",
+          "creditActive": "0",
+          "creditCurrency": "rur",
+          "creditDate": "2016-06-03",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2046-06-22",
+          "creditEndDateFact": "2016-09-12",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditSum": "0",
+          "creditSumDebt": "0",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-11-11",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbAnnuity": "14500",
+          "cbId": "nbk",
+          "cbOverdueLine": "-",
+          "contractSource": "vki",
+          "creditActive": "1",
+          "creditCurrency": "rur",
+          "creditDate": "2022-12-01",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "0",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditSum": "290000",
+          "creditSumDebt": "290000",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-01-15",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbOverdueLine": "---",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "23.078",
+          "creditCurrency": "rur",
+          "creditDate": "2021-10-24",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "1",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "700000",
+          "creditSumDebt": "0",
+          "creditSumLimit": "700000",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-12-24",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "0",
+            "est_payment_sum_24m": "0"
+          },
+          "uuid": "bf031616-3419-11ec-85d7-15943e928844-7"
+        },
+        {
+          "cbAnnuity": "48987",
+          "cbOverdueLine": "00000000000000-000-",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "6.568",
+          "creditCurrency": "rur",
+          "creditDate": "2020-06-23",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2050-06-05",
+          "creditJoint": "1",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditProlong": "0",
+          "creditSum": "7999000",
+          "creditSumDebt": "7860337",
+          "creditSumLimit": "0",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "3",
+          "creditTypeUni": "3",
+          "creditUpdate": "2022-01-13",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "538857",
+            "est_payment_sum_24m": "783792"
+          },
+          "uuid": "8919283c-b5e3-11ea-8b27-cc8c2727f320-7"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbOverdueLine": "000-",
+          "contractSource": "cb",
+          "cred_ratio": "0",
+          "creditActive": "1",
+          "creditCollateral": "0",
+          "creditCostRate": "27.522",
+          "creditCurrency": "rur",
+          "creditDate": "2021-09-27",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "1",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditProlong": "0",
+          "creditSum": "110000",
+          "creditSumDebt": "40024",
+          "creditSumLimit": "69976",
+          "creditSumOverdue": "0",
+          "creditSumType": "1",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-01-16",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay5": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0",
+          "extra": {
+            "est_payment_sum_12m": "12791",
+            "est_payment_sum_24m": "12791"
+          },
+          "uuid": "a0c6246c-1c64-11ec-a3b2-35784f85f152-5"
+        },
+        {
+          "cbAnnuity": "0",
+          "cbOverdueLine": "C0CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC-------------------------------",
+          "contractSource": "vki",
+          "creditActive": "0",
+          "creditCurrency": "rur",
+          "creditDate": "2016-06-03",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2046-06-22",
+          "creditEndDateFact": "2016-09-12",
+          "creditJoint": "1",
+          "creditMaxOverdue": "0",
+          "creditOwner": "0",
+          "creditSum": "0",
+          "creditSumDebt": "0",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2021-11-11",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbAnnuity": "14500",
+          "cbOverdueLine": "-",
+          "contractSource": "vki",
+          "creditActive": "1",
+          "creditCurrency": "rur",
+          "creditDate": "2022-12-01",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2100-01-01",
+          "creditJoint": "1",
+          "creditMaxOverdue": "0",
+          "creditOwner": "1",
+          "creditSum": "290000",
+          "creditSumDebt": "290000",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2022-01-15",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        },
+        {
+          "cbOverdueLine": "--------------------------------------------------------------------------",
+          "contractSource": "vki",
+          "creditActive": "1",
+          "creditCurrency": "rur",
+          "creditDate": "2013-06-08",
+          "creditDayOverdue": "0",
+          "creditEndDate": "2018-02-28",
+          "creditJoint": "1",
+          "creditOwner": "0",
+          "creditSum": "1000",
+          "creditSumDebt": "0",
+          "creditSumOverdue": "0",
+          "creditType": "4",
+          "creditTypeUni": "4",
+          "creditUpdate": "2015-05-02",
+          "cuid": "43498797",
+          "delay30": "0",
+          "delay60": "0",
+          "delay90": "0",
+          "delayMore": "0"
+        }
+      ],
+      "scoring": [
+        {
+          "cbId": "equ",
+          "cuid": "43498797",
+          "score": "710",
+          "scoreCardID": "23"
+        },
+        {
+          "cbId": "exp",
+          "cuid": "43498797",
+          "score": "1151",
+          "scoreCardID": "113"
+        }
+      ]
+    },
+    "afs": {
+      "mainRules": "19_2=1;103_2=1;"
+    },
+    "persons": [
+      {
+        "cuid": "43498797"
+      }
+    ]
+  },
+  "salesPoint": {
+    "addTerritories": "0",
+    "approvalScanCopy": "1",
+    "groupSellerplaceNumber": "101",
+    "insuranceDeferred": "1",
+    "multiProductSelection": "1",
+    "photoDeferred": "1",
+    "photoMandatory": "1",
+    "remotePoint": "1",
+    "scanDeferred": "0",
+    "sellerCode": "13758",
+    "sellerplaceCode": "751520",
+    "sellerplaceDateContact": "2016-10-14",
+    "sellerplaceLocalityType": "\u0433",
+    "sellerplacePosOnCard": "0",
+    "sellerplaceQualityRD": "NEW",
+    "sellerplaceQualitySC": "NEW",
+    "sellerplaceQualitySS": "NEW",
+    "sellerplaceRegion": "1",
+    "sellerplaceRegionCode": "77",
+    "sellerplaceRegionName": "\u041c\u043e\u0441\u043a\u0432\u0430",
+    "sellerplaceStreet": "\u041f\u0440\u0430\u0432\u0434\u044b",
+    "sellerplaceStreetNumber": "8",
+    "sellerplaceTown": "\u041c\u043e\u0441\u043a\u0432\u0430",
+    "sellerplaceTownType": "\u0433",
+    "sellerplaceZip": "101000",
+    "smsMobileCheckAvailable": "1",
+    "typeSalesroom": "0",
+    "products": [
+      {
+        "productFamily": "PF_CL_STND",
+        "productFamilyType": "SC"
+      },
+      {
+        "productFamily": "PF_CL_MICROCASH",
+        "productFamilyType": "SC"
+      },
+      {
+        "productFamily": "PF_CC_HOMER_CASHONCARD",
+        "productFamilyType": "RD"
+      },
+      {
+        "productFamily": "PF_CC_TW_LG",
+        "productFamilyType": "RD"
+      },
+      {
+        "productFamily": "PF_CC_HOMER_POLZA",
+        "productFamilyType": "RD"
+      },
+      {
+        "productFamily": "PF_CL_REFIN_HCFB",
+        "productFamilyType": "SC"
+      },
+      {
+        "productFamily": "PF_CC_TW_2L",
+        "productFamilyType": "RD"
+      },
+      {
+        "productFamily": "PF_CL_REFIN_ALL",
+        "productFamilyType": "SC"
+      }
+    ]
+  },
+  "sourceData": {
+    "hardCheckPredictors": {
+      "numContracts3months": "3",
+      "persons": [
+        {
+          "MaxDPD4unpaidPenaltiesContracts": "0",
+          "activeRu": "1",
+          "actualDpdTolerance": "0",
+          "annuityNextMonth": "24166.67",
+          "consolidatedPenalties": "0",
+          "cuid": "43498797",
+          "currentDebt": "1100000",
+          "currentDebtCar": "0",
+          "currentDebtCash": "0",
+          "currentDebtCashIC": "0",
+          "currentDebtIC": "1100000",
+          "currentDebtMFO": "0",
+          "currentDebtPos": "0",
+          "currentDebtPosIC": "0",
+          "currentDebtRevolving": "1100000",
+          "currentDebtRevolvingIC": "1100000",
+          "currentInsuranceDebt": "0",
+          "currentInsuranceDebtIC": "0",
+          "equalityDataAgreement": "1",
+          "equalityDataAgreementSpecial": "1",
+          "equalityEmpFrom": "1",
+          "maxDpdTol6m": "0",
+          "maxDpdTolNotRD": "0",
+          "maxDpdTolNotRD_12m": "0",
+          "maxDpdTolNotRD_24m": "0",
+          "maxDpdTolNotRD_36m": "0",
+          "maxDpdTolNotRD_48m": "0",
+          "maxDpdTolNotRD_60m": "0",
+          "maxDpdTolNotRD_6m": "0",
+          "maxDpdTolerance": "0",
+          "numGuarantedContracts": "0",
+          "salaryChange1DTol": "0",
+          "salaryChange7DTol": "0",
+          "sumDebtRevolvingHomer": "0",
+          "sumDebtRevolvingTW": "40024",
+          "sumDebtRevolvingTWInstalment": "0",
+          "sumLimitRevolvingHomer": "0",
+          "sumLimitRevolvingTW": "1100000",
+          "totalDebt": "0",
+          "totalSettled": "0",
+          "undesirablePhones": "1",
+          "maxDpdTol36m": "0",
+          "numRejects9m": "0"
+        }
+      ]
+    },
+    "behaviourData": {
+      "persons": [
+        {
+          "cuid": "43498797",
+          "FlagNoInstNoPmt36M": "0",
+          "amtBalance_RD": "19936",
+          "amtCreditStart": "700000",
+          "amtDpd": "0",
+          "amtDpd0_24m": "0",
+          "amtDpd0_36m": "0",
+          "amtDpd0_3m": "0",
+          "amtDpd0_9m": "0",
+          "amtDpd12m": "0",
+          "amtDpd30Ever": "0",
+          "amtDpd30_12m": "0",
+          "amtDpd30_24m": "0",
+          "amtDpd30_36m": "0",
+          "amtDpd30_3m": "0",
+          "amtDpd30_6m": "0",
+          "amtDpd30_9m": "0",
+          "amtDpd6m": "0",
+          "amtDrawAtm_12m": "0",
+          "amtDrawAtm_9m": "0",
+          "amtDrawPos_12m": "0",
+          "amtFeeAtm": "0",
+          "amtFeeAtma": "0",
+          "amtInstMinRegularity": "149",
+          "amtLimit_RD": "810000",
+          "amtReceivablePrincipal": "19936",
+          "amtSpd0": "0",
+          "amtSpd0_24m": "0",
+          "amtSpd0_36m": "0",
+          "amtTpd0": "0",
+          "amtTpd0_36m": "0",
+          "amtTrans_24m": "52875",
+          "avgAmtGrTrans_1": "20088",
+          "avgDaysBetweenApplications": "55",
+          "avgDaysBetweenApplications24m": "26.75",
+          "avgDpd03m": "0",
+          "avgDpd0_12m": "0",
+          "avgDpd0_24m": "0",
+          "avgDpd0_36m": "0",
+          "avgDpd0_6m": "0",
+          "avgDpd0_9m": "0",
+          "avgDpd0_ever": "0",
+          "avgDpd30": "0",
+          "avgDpd30_12m": "0",
+          "avgDpd30_24m": "0",
+          "avgDpd30_36m": "0",
+          "avgDpd30_3m": "0",
+          "avgDpd30_6m": "0",
+          "avgDpd30_9m": "0",
+          "avgDpdTol": "-29",
+          "avgUR_12m": "0.06248",
+          "avgUR_3m": "0.061",
+          "avgUR_6m": "0.062",
+          "behaviorTypeLast6M_RD": "Transactor",
+          "clientType": "Employee",
+          "cntApplication": "6",
+          "cntApplication24m": "5",
+          "cntApproved": "4",
+          "cntApproved24m": "3",
+          "cntAtmDrawingsFirst3M": "0",
+          "cntClosed": "0",
+          "cntContractActiveRevolvingLinked": "0",
+          "cntContractActiveRevolvingPOSonCard": "0",
+          "cntContractActiveRevolvingSTNDL": "0",
+          "cntDpd0": "0",
+          "cntDpd0_12m": "0",
+          "cntDpd0_24m": "0",
+          "cntDpd0_36m": "0",
+          "cntDpd0_9m": "0",
+          "cntDpd30Ever": "0",
+          "cntDpd30_3m": "0",
+          "cntDpd30_9m": "0",
+          "cntDpd3m": "0",
+          "cntDpd6m": "0",
+          "cntDrawAtm_12m": "0",
+          "cntDrawAtm_9m": "0",
+          "cntDrawPOS_12m": "0",
+          "cntDrawPOS_9m": "0",
+          "cntGoodPos": "0",
+          "cntInst12M": "1",
+          "cntInst24M": "1",
+          "cntInst6M": "1",
+          "cntPosDrawingsFirst3M": "10",
+          "cntRejected1m": "0",
+          "cntRejected24m": "0",
+          "cntTrCurrency": "0",
+          "cntTrans_24m": "11",
+          "cntUniquePhones": "0",
+          "cntUnsuccessfulWeeks24m": "0",
+          "cnt_valid_cards": "1",
+          "codeContractStatusRD": "a",
+          "codeOnTriggers_CB": "equ;exp;nbk",
+          "codePaidOffAfterDpd": "0",
+          "codeStatusPlasticRD": "active",
+          "crmSegment": "ACTIVE_CARD",
+          "currentDebtRevolvingActual": "201324",
+          "currentDebtRevolvingLinked": "0",
+          "currentDebtRevolvingPOSonCard": "0",
+          "currentDebtRevolvingSTNDL": "0",
+          "currentDualRDDebt": "0",
+          "currentDualRDLimit": "232000",
+          "currentDualRDPartnerLimit": "-149",
+          "dateFirstActTrans": "2021-10-10",
+          "dateIdPublish": "03.04.2010 04:00:00",
+          "dateLastActivationCard": "2022-12-01",
+          "dateLastFullApplication": "12.01.2022 10:32:34",
+          "dateLastTrans": "2022-12-01",
+          "dateLastTrasaction": "2022-12-01",
+          "difFinSituation": "0",
+          "do5amtAvailableCash": "2190000",
+          "do5amtInClastAppl": "450000",
+          "do5amtInsInContracts": "0",
+          "do5amtInterestPayEver": "0",
+          "do5amtLastApproveCash": "0",
+          "do5avgCashIr": "0",
+          "do5avgCashLimits": "0",
+          "do5cntDayLastMkVisit": "0.06",
+          "do5cntDaysLastOnlAppl": "4",
+          "do5cntMnthLastAppl": "0",
+          "do5cntPosAllEver": "0",
+          "do5cntSuccessCall12m": "3",
+          "do5cntTransacViaAtm3m": "0",
+          "do5cntVisitBo12m": "2",
+          "do5cntVisitBo6m": "2",
+          "do5lastApplStatus": "12",
+          "do5lastapprdate": "2022-12-01",
+          "do5nameLastAppChannel": "RD",
+          "do5nameLastAppEduLevel": "vysshee",
+          "do5nameLastAppRegion": "Moskva",
+          "do5nameLastIncomeType": "3",
+          "do5sumLastApproveCash": "0",
+          "dpdCurr_SC": "0",
+          "dpdCurr_SC_SS": "0",
+          "dpdCurr_SS": "0",
+          "education": "3",
+          "employeeCategory": "N",
+          "employeeExperience": "3",
+          "employeeGrade": "19",
+          "employment": {
+            "employedFrom": "2021-10-01"
+          },
+          "employmentAddress": {
+            "region": "77",
+            "town": "\u041c\u043e\u0441\u043a\u0432\u0430"
+          },
+          "familyState": "1",
+          "flagVipSalaryClient": "0",
+          "histDpd_1m": "0",
+          "histDpd_9m": "0",
+          "instalmentCntPaidInTime": "0",
+          "isDualRevLimitUsed": "1",
+          "lastOfflineDate": "2022-01-18",
+          "maxAmtPd24m": "0",
+          "maxAmtPd36m": "0",
+          "maxAmtPdEver": "0",
+          "maxBal_6m": "40024",
+          "maxDpdTol": "-29",
+          "maxDpdTol6M": "0",
+          "maxPaymentEver_RD": "11190",
+          "maxSpd": "0",
+          "maxSpd_24m": "0",
+          "maxSpd_36m": "0",
+          "maxTpd": "0",
+          "maxTpd_24m": "0",
+          "maxTpd_36m": "0",
+          "maxUR_12m": "0.36385",
+          "maxUR_1m": "0.36385",
+          "maxUR_3m": "0.363",
+          "maxannuity": "12642",
+          "maxdpd": "0",
+          "maxdpd12": "0",
+          "maxdpd24": "0",
+          "maxdpd36": "0",
+          "maxdpd48": "0",
+          "maxdpd6": "0",
+          "maxdpd60": "0",
+          "maxdpdLast4inst": "0",
+          "minAmtTrans_RD": "5",
+          "monthsannuity": "2",
+          "nameEmployerType": "\u0411\u0430\u043d\u043a",
+          "numInstPaid": "0",
+          "numInstPaidTol": "0",
+          "numInstToPayGr": "0",
+          "occupation": "\u043d\u0430\u0447\u0430\u043b\u044c\u043d\u0438\u043a \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
+          "percAmtGrTrans_1": "0.37991",
+          "percAmtGrTrans_2": "0.00264",
+          "percAmtGrTrans_3": "0.61743",
+          "percAmtGrTrans_4": "0",
+          "percCntGrTrans_1": "0.0909",
+          "percCntGrTrans_2": "0.18181",
+          "percCntGrTrans_3": "0.72727",
+          "percCntGrTrans_4": "0",
+          "registeredAddress": {
+            "dateRegistration": "1900-01-01",
+            "region": "77"
+          },
+          "sellerplaceLastPosSize": "\u0424\u0435\u0434\u0435\u0440\u0430\u043b\u044c\u043d\u044b\u0435",
+          "sumAtmDrawingsLast3M": "0",
+          "sumAtmTransactionFirst24M": "0",
+          "sumDpd24m": "0",
+          "sumDpd30Ever": "0",
+          "sumDpd30_12m": "0",
+          "sumDpd30_24m": "0",
+          "sumDpd30_36m": "0",
+          "sumDpd30_3m": "0",
+          "sumDpd30_6m": "0",
+          "sumDpd30_9m": "0",
+          "sumDpd6m": "0",
+          "sumDpdTol": "-29",
+          "sumDpd_12m": "0",
+          "sumDpd_36m": "0",
+          "sumDpd_3m": "0",
+          "sumDpd_9m": "0",
+          "sumPaidAmountEver": "12791",
+          "sumPaymentEver_RD": "13000",
+          "sumPaymentLast1M_RD": "0",
+          "sumPaymentLast3M_RD": "0",
+          "sumPosDrawingsLast3M": "40093",
+          "sumSpd": "0",
+          "sumSpd_24m": "0",
+          "sumSpd_36m": "0",
+          "sumTpd": "0",
+          "sumTpd_24m": "0",
+          "sumTpd_36m": "0",
+          "sumTrCurrency": "0",
+          "sumdpd": "-29",
+          "sumloan": "36.67",
+          "textLastRiskProdCombination": "Card Street",
+          "typeLastDrawing": "pos",
+          "typeLastFullApplication": "Revolving loans",
+          "uak3": "0.01",
+          "us3B": "0"
+        }
+      ]
+    },
+    "creditLimit": {
+      "persons": [
+        {
+          "cuid": "43498797",
+          "superGlobalLimit": "0"
+        }
+      ]
+    },
+    "crossClientChecks": {
+      "sameIdentCard": {
+        "applicationCnt": "6",
+        "contactAddressApartmentCnt": "1",
+        "contactAddressStreetNumCnt": "1",
+        "employerName": "2",
+        "eqGoodsBrandCnt": "0",
+        "homePhoneCnt": "2",
+        "mobilePhoneCnt": "1",
+        "prodCodeCnt": "3",
+        "sellerplaceAddressStreetNumCnt": "1",
+        "sellerplaceCnt": "2",
+        "webMobilePhoneCnt": "0"
+      },
+      "sameMobileCheck": {
+        "applicationCnt": "0",
+        "cntIdentCardCnt": "0",
+        "contactAddressApartmentCnt": "0",
+        "diffContactAddressStreetNum": "0",
+        "homePhoneCnt": "0",
+        "lastName3LettCnt": "0",
+        "sellerplaceCnt": "0",
+        "webIdentCardCnt": "0"
+      }
+    },
+    "extData": [
+      {
+        "code": "Source=>RISK;Score=>0.53409581413727679773;ModelName=>MC_AUTH_202007;ScoreGetDateTime=>16.01.2022"
+      },
+      {
+        "code": "Source=>CRM;Score=>25.;ModelName=>PTB_CL_102020;ScoreGetDateTime=>15.01.2022"
+      },
+      {
+        "code": "Source=>equ;Score=>730.;ModelName=>8;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>equ;Score=>710.;ModelName=>23;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>exp;Score=>1151.;ModelName=>113;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>equ;Score=>730.;ModelName=>8;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>Mailru;Score=>0.857857989;ModelName=>HMC_REG_GEO;ScoreGetDateTime=>03.12.2021"
+      },
+      {
+        "code": "Source=>Megafon;Score=>0.009248;ModelName=>MEG_HCFB_6_60_201906;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>Beeline;Score=>1.031138109;ModelName=>UNI_POS_V2;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>MTS;Score=>0.006342043;ModelName=>HCFB_MTS_CL_201808;ScoreGetDateTime=>12.01.2022"
+      },
+      {
+        "code": "Source=>Mailru;Score=>0.595243104;ModelName=>HMC_MAILRU_201906;ScoreGetDateTime=>10.01.2022;MatchingLevel=>4"
+      },
+      {
+        "code": "Source=>Mailru;Score=>0.396585;ModelName=>HMC_BOTH;ScoreGetDateTime=>02.12.2021;MatchingLevel=>4"
+      },
+      {
+        "code": "Source=>Megafon;Score=>0.012955;ModelName=>MEG_HCFB_MIX_201711;ScoreGetDateTime=>22.12.2021"
+      },
+      {
+        "code": "Source=>Mailru;Score=>0.585104011;ModelName=>HMC_WORK_GEO;ScoreGetDateTime=>23.10.2021"
+      }
+    ],
+    "nextWorkflows": [
+      {
+        "workflowCode": "CREDIT_REGISTRY;BIG_DATA"
+      },
+      {
+        "workflowCode": "BIG_DATA"
+      },
+      {
+        "workflowCode": "FPS_AFS"
+      }
+    ]
+  },
+  "calculateLinkedRDLimits": "1",
+  "empCode": "505922",
+  "evidSrv": "2391448079",
+  "featureControl": "1",
+  "idPerson": "36928672",
+  "idRequest": "301895201",
+  "isOuterLimit": "1",
+  "randomNumber3": "0.01439576",
+  "randomNumber4": "0.59428094",
+  "randomNumber5": "0.4100311",
+  "randomNumber6": "0.9423642",
+  "randomNumber7": "0.02503215",
+  "randomNumber8": "0.91333422",
+  "offlineCashFinalResult": {
+    "availableLimitCash": "1900000",
+    "eligibilityFlag": "1",
+    "scoreSet": "SETA",
+    "scoreSetURG": "alpha",
+    "specialSegment": ";EMPLOYEE TOP;MAXAGR_RELAX;FA;FA_ELIGIBILITY;FULL_APPROVE_CG;"
+  },
+  "offlinePosFinalResult": {
+    "eligibilityFlag": "1"
+  },
+  "offlineResult": {
+    "otherBankDebtWOBig": "0",
+    "score": {
+      "scoreEnd1": "0.993413101088329",
+      "scoreFunction": "ClientGM_4_Offline_202008"
+    }
+  },
+  "offlineRevClipResult": {
+    "eligibilityFlag": "0"
+  },
+  "offlineRevFinalResult": {
+    "availableLimitCard": "700000",
+    "eligibilityFlag": "1",
+    "specialSegment": ";EMPLOYEE TOP;"
+  },
+  "offlineShoppCardResult": {
+    "eligibilityFlag": "1"
+  },
+  "workflow": {
+    "stageCounters": [
+      {
+        "WFSTAGE_INDEX": "6194"
+      },
+      {
+        "WFSTAGE_INDEX": "7404"
+      },
+      {
+        "WFSTAGE_INDEX": "6094"
+      },
+      {
+        "WFSTAGE_INDEX": "6494"
+      },
+      {
+        "WFSTAGE_INDEX": "7123"
+      },
+      {
+        "WFSTAGE_INDEX": "8644"
+      },
+      {
+        "WFSTAGE_INDEX": "16439"
+      },
+      {
+        "WFSTAGE_INDEX": "6820"
+      },
+      {
+        "WFSTAGE_INDEX": "8312"
+      },
+      {
+        "WFSTAGE_INDEX": "5847"
+      },
+      {
+        "WFSTAGE_INDEX": "5849"
+      },
+      {
+        "WFSTAGE_INDEX": "7118"
+      },
+      {
+        "WFSTAGE_INDEX": "6946"
+      },
+      {
+        "WFSTAGE_INDEX": "6949"
+      },
+      {
+        "WFSTAGE_INDEX": "6947"
+      },
+      {
+        "WFSTAGE_INDEX": "6948"
+      },
+      {
+        "WFSTAGE_INDEX": "6950"
+      },
+      {
+        "WFSTAGE_INDEX": "6806"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "7394"
+      },
+      {
+        "WFSTAGE_INDEX": "1"
+      },
+      {
+        "WFSTAGE_INDEX": "7396"
+      },
+      {
+        "WFSTAGE_INDEX": "7397"
+      },
+      {
+        "WFSTAGE_INDEX": "7398"
+      },
+      {
+        "WFSTAGE_INDEX": "3234"
+      },
+      {
+        "WFSTAGE_INDEX": "3235"
+      },
+      {
+        "WFSTAGE_INDEX": "3236"
+      },
+      {
+        "WFSTAGE_INDEX": "3237"
+      },
+      {
+        "WFSTAGE_INDEX": "3238"
+      },
+      {
+        "WFSTAGE_INDEX": "3239"
+      },
+      {
+        "WFSTAGE_INDEX": "3240"
+      },
+      {
+        "WFSTAGE_INDEX": "6808"
+      },
+      {
+        "WFSTAGE_INDEX": "6807"
+      },
+      {
+        "WFSTAGE_INDEX": "6809"
+      }
+    ]
+  },
+  "CurrencyExchangeRate": "USD=76.3347;EUR=87.0216;CHF=83.4989;JPY=66.5429",
+  "calculateOnlineLimit": "0",
+  "outputData": {
+    "savedInfo": {
+      "annuityHCFB": "24166.67",
+      "annuityOther": "23050.841642228737",
+      "clientType": "n"
+    },
+    "checkPersons": [
+      {
+        "cuid": "43498797",
+        "workflowCode": "CREDIT_REGISTRY"
+      },
+      {
+        "cuid": "43498797",
+        "workflowCode": "SMART_DATA;CREDIT_REGISTRY;BIG_DATA"
+      },
+      {
+        "cuid": "43498797",
+        "workflowCode": "NAP_RESULT;FPS_AFS"
+      }
+    ],
+    "resultTrace": [
+      {
+        "cuid": "43498797",
+        "resultName": "prelimPreResult",
+        "trialContinued": "TR_CL_STND;TR_CL_MICROCASH"
+      },
+      {
+        "cuid": "43498797",
+        "resultName": "prelimCbResult",
+        "trialContinued": "TR_CL_STND;TR_CL_MICROCASH"
+      },
+      {
+        "cuid": "43498797",
+        "resultName": "bdResult",
+        "trialContinued": "TR_CL_STND;TR_CL_MICROCASH"
+      }
+    ]
+  },
+  "prelimPreResult": {
+    "finalRiskGroup": "1",
+    "nextStrategy": "Prelim-CB",
+    "strategyName": "MultiApproval_DM Current",
+    "strategyPassLog": "HIGH_PTI;OVERINDEBTED;EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME;REFIN_ALL_MERCEDES;CLIENT_XGB_4_1_201912",
+    "strategyType": "Champion",
+    "strategyVersion": "09.07.2018",
+    "strategyVersionDate": "1/18/22 5:58 PM",
+    "workflowCode": "CREDIT_REGISTRY",
+    "client": {
+      "availableForSale": "0",
+      "processLine": "EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME;REFIN_ALL_MERCEDES"
+    },
+    "derivedData": {
+      "persons": [
+        {
+          "cuid": "43498797",
+          "undesirablePeriod": "0"
+        }
+      ]
+    },
+    "score": {
+      "score21Function": "Greedy_XGB_201904",
+      "score22Function": "Bureau_XGB_4_201910",
+      "score9Function": "Client_XGB_4_1_201912",
+      "persons": [
+        {
+          "cuid": "43498797",
+          "scoreFunction": "Client_XGB_4_1_201912"
+        }
+      ]
+    },
+    "persons": [
+      {
+        "bkiList": "equ,nbk,exp",
+        "bkiSource": "BANK",
+        "bkiSubRequestCode": "exp=111;equ=101",
+        "cuid": "43498797"
+      }
+    ],
+    "trial": [
+      {
+        "name": "TR_CL_STND",
+        "rgDetails": {
+          "riskGroup": "1"
+        },
+        "strategyFlow": "CASH_DM_XSELL",
+        "strategyName": "CashDM Current",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      },
+      {
+        "name": "TR_CL_MICROCASH",
+        "rgDetails": {
+          "riskGroup": "1"
+        },
+        "strategyFlow": "CASH_DM_XSELL",
+        "strategyName": "CashDM Current",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      }
+    ]
+  },
+  "prelimCbResult": {
+    "durationLine": "HC_TR_CL_STND=0.01;HC_TR_CL_MICROCASH=0.0;FullTime=0.06",
+    "finalRiskGroup": "1",
+    "nextStrategy": "Big-Data_B",
+    "strategyName": "MultiApproval_DM Current",
+    "strategyPassLog": "HIGH_PTI;OVERINDEBTED;EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME;CLIENT_XGB_4_1_201912",
+    "strategyType": "Champion",
+    "strategyVersion": "09.07.2018",
+    "strategyVersionDate": "1/18/22 6:00 PM",
+    "workflowCode": "SMART_DATA;CREDIT_REGISTRY;BIG_DATA",
+    "client": {
+      "availableForSale": "0",
+      "processLine": "EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME"
+    },
+    "derivedData": {
+      "persons": [
+        {
+          "cuid": "43498797",
+          "undesirablePeriod": "0"
+        }
+      ]
+    },
+    "score": {
+      "score19Function": "Greedy_2_XGB_202010",
+      "score21Function": "Greedy_XGB_201904",
+      "score22Function": "Bureau_XGB_4_201910",
+      "score9Function": "Client_XGB_4_1_201912",
+      "persons": [
+        {
+          "cuid": "43498797",
+          "scoreFunction": "Client_XGB_4_1_201912"
+        }
+      ]
+    },
+    "persons": [
+      {
+        "bigDataList": "MAILRUSCORE;MEGAFON;MTSMULTISCORE;BEE;EQCLIENTMULTISCORE",
+        "bkiCacheUse": "30",
+        "bkiList": "equ,nbk,exp",
+        "bkiSource": "BANK",
+        "bkiSubRequestCode": "exp=113;exp=111;equ=101;equ=102",
+        "cuid": "43498797"
+      }
+    ],
+    "request": [
+      {
+        "reqCampaign": "EQCLIENTMULTISCORE",
+        "reqCode": "type",
+        "reqType": "string",
+        "reqValue": "8"
+      },
+      {
+        "reqCampaign": "EQCLIENTMULTISCORE",
+        "reqCode": "consentdate",
+        "reqType": "string",
+        "reqValue": "12.01.2022"
+      },
+      {
+        "reqCampaign": "EQCLIENTMULTISCORE",
+        "reqCode": "consentenddate",
+        "reqType": "string",
+        "reqValue": "12.01.2121"
+      },
+      {
+        "reqCampaign": "BEE",
+        "reqCode": "ModelName",
+        "reqType": "string",
+        "reqValue": "UNI_POS_V2"
+      },
+      {
+        "reqCampaign": "MAILRUSCORE",
+        "reqCode": "ModelName",
+        "reqType": "string",
+        "reqValue": "hmc_mailru_201906"
+      },
+      {
+        "reqCampaign": "MEGAFON",
+        "reqCode": "variables",
+        "reqType": "string",
+        "reqValue": "MEG_HCFB_6_60_201906"
+      },
+      {
+        "reqCampaign": "MTSMULTISCORE",
+        "reqCode": "features",
+        "reqType": "string",
+        "reqValue": "HCFB_MTS_CL_201808;HCFB_MTS_COMP_201711"
+      },
+      {
+        "reqCampaign": "MTSMULTISCORE",
+        "reqCode": "DOC_SEND_FLAG",
+        "reqType": "string",
+        "reqValue": "0"
+      },
+      {
+        "reqCampaign": "MTSMULTISCORE",
+        "reqCode": "FIO_SEND_FLAG",
+        "reqType": "string",
+        "reqValue": "0"
+      },
+      {
+        "reqCampaign": "MTSMULTISCORE",
+        "reqCode": "DR_SEND_FLAG",
+        "reqType": "string",
+        "reqValue": "1"
+      }
+    ],
+    "sdQuery": [
+      {
+        "attributes": "address_type_mts_geo,act_type_mts_geo,quarter_mts_geo,percent_mts_geo,act_date_calculation_mts_geo",
+        "context_ii": "ii_mts_geo_activity",
+        "entity": "geo_activity",
+        "filter": "evid_srv_mts_geo==2391448079,act_date_calculation_mts_geo > 2022-01-12 00:00:00,address_type_mts_geo==1",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "rowkey": "null",
+        "stale": "43200",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "score_value_mailru,score_date_calculation_mailru,score_method_name_mailru,score_model_code_mailru",
+        "context_ii": "ii_mailru_geoscore",
+        "entity": "client_score",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "rowkey": "hmc_reg_geo",
+        "stale": "43200",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "score_value_juicyscore,score_name_juicyscore,score_model_code_juicyscore,score_date_calculation_juicyscore,score_contract_number_juicyscore,score_sessionid_juicyscore,ip_mismatch,ip_country_code,num_hot_keys,real_ip,num_banking_credit_appl_ip_1day,num_banking_credit_appl_ip_7day,num_banking_credit_appl_ip_30day,ip_usage_type",
+        "context_ii": "ii_juicyscore_score",
+        "entity": "client_score",
+        "mode": "update",
+        "reqGroupId": "1",
+        "rowkey": "juicy_default",
+        "stale": "43200",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "days_servlen_current_calendar_year_pfr_account_advice,infdate_pfr_account_advice,average_monthly_income_last_12_months_pfr_account_advice,penssumval_pfr_account_advice,income_source,formdate_pfr_account_advice,name_last_employment_pfr_account_advice,formdate_income_reference_main_inc,name_employment_income_reference_main_inc,average_income_income_reference_main_inc",
+        "context_ii": "ii_pfr_account_advice",
+        "entity": "smuid_data",
+        "mode": "none",
+        "reqGroupId": "2",
+        "stale": "43200",
+        "timeoutBP": "0",
+        "timeoutSD": "10"
+      },
+      {
+        "attributes": "dtime_last_auth_back_mc,os_last_auth_back_mc",
+        "context_ii": "ii_my_credit_online_behaviour",
+        "entity": "smuid_data",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "dtime_calculated_web_backend_session_count_30_days_my_credit,web_backend_session_count_30_days_my_credit",
+        "context_ii": "ii_my_credit_online_behaviour",
+        "entity": "smuid_data",
+        "filter": "dtime_calculated_web_backend_session_count_30_days_my_credit>2022-01-19 11:43:06",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "dtime_calculated_mobile_back_session_count_30_days_my_credit,mobile_backend_session_count_30_days_my_credit",
+        "context_ii": "ii_my_credit_online_behaviour",
+        "entity": "smuid_data",
+        "filter": "dtime_calculated_mobile_back_session_count_30_days_my_credit>2022-01-19 11:43:06",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "bank_applications_my_credit,applications_count_my_credit",
+        "context_ii": "ii_my_credit_client_applications",
+        "entity": "smuid_data",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "min_distance_registration_address_30_days_my_credit,min_distance_registration_address_90_days_my_credit,min_distance_registration_address_180_days_my_credit,min_distance_registration_address_360_days_my_credit",
+        "context_ii": "ii_my_credit_gps_distance",
+        "entity": "online_behav_min_dist",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "rowkey": "null",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "9"
+      },
+      {
+        "attributes": "count_smuid_dfp_clickstream_dfp_cnt,dtime_actualization_clickstream_dfp_cnt",
+        "context_ii": "predictor_dfp_smuid_count",
+        "entity": "client_devices",
+        "filter": "dtime_actualization_clickstream_dfp_cnt>2022-01-19 11:43:06",
+        "mode": "update",
+        "reqGroupId": "1",
+        "rowkey": "null",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "10"
+      },
+      {
+        "attributes": "dtime_dfp_last_auth,dtime_dfp_first_auth,dfp_last_auth",
+        "context_ii": "predictor_dfp_last_auth",
+        "entity": "smuid_data",
+        "mode": "upsert",
+        "reqGroupId": "1",
+        "stale": "0",
+        "timeoutBP": "1",
+        "timeoutSD": "10"
+      },
+      {
+        "attributes": "dfp_set_pin_backend_my_credit,dtime_actualization_set_pin_backend_my_credit,enter_type_set_pin_backend_my_credit",
+        "context_ii": "ii_dummy",
+        "entity": "smuid_data",
+        "mode": "none",
+        "reqGroupId": "1",
+        "stale": "86400",
+        "timeoutBP": "1",
+        "timeoutSD": "10"
+      }
+    ],
+    "sdQueryContext": [
+      {
+        "params": "BlazeAddressType=1;stale_context=2022-01-12 00:00:00",
+        "topic": "ii_mts_geo_activity"
+      },
+      {
+        "topic": "ii_mailru_geoscore"
+      },
+      {
+        "params": "juicy_session_stale=90",
+        "topic": "ii_juicyscore_score"
+      },
+      {
+        "topic": "ii_pfr_account_advice"
+      },
+      {
+        "topic": "ii_my_credit_online_behaviour"
+      },
+      {
+        "topic": "ii_my_credit_client_applications"
+      },
+      {
+        "topic": "ii_my_credit_gps_distance"
+      },
+      {
+        "topic": "ii_dummy"
+      },
+      {
+        "topic": "predictor_dfp_last_auth"
+      },
+      {
+        "topic": "predictor_dfp_smuid_count"
+      }
+    ],
+    "trial": [
+      {
+        "name": "TR_CL_STND",
+        "rgDetails": {
+          "riskGroup": "1"
+        },
+        "strategyFlow": "CASH_DM_XSELL",
+        "strategyName": "CashDM Current",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      },
+      {
+        "name": "TR_CL_MICROCASH",
+        "rgDetails": {
+          "riskGroup": "1"
+        },
+        "strategyFlow": "CASH_DM_XSELL",
+        "strategyName": "CashDM Current",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      }
+    ]
+  },
+  "bdResult": {
+    "finalRiskGroup": "1",
+    "nextStrategy": "Prelim_B",
+    "strategyName": "MultiApproval_DM Current",
+    "strategyPassLog": "HIGH_PTI;OVERINDEBTED;EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME;SMDATA_MAILGEO_REG;SMDATA_MTSGEO_REG;SMDATA_MC_OBBACK_LASTAUTH;SMDATA_MC_OBBACK_SETPIN;SMDATA_CLDEVICES;CLIENT_XGB_4_1_201912;HITMEGAFON;HITMAILRU;HITMTS;HITBEELINE;HITEQUIFAX;HITBUREAU",
+    "strategyType": "Champion",
+    "strategyVersion": "09.07.2018",
+    "strategyVersionDate": "1/18/22 6:02 PM",
+    "workflowCode": "NAP_RESULT;FPS_AFS",
+    "client": {
+      "availableForSale": "0",
+      "processLine": "EMP;MAXAGR_RELAX;EST_CBRF_AVG_INCOME"
+    },
+    "derivedData": {
+      "persons": [
+        {
+          "cuid": "43498797",
+          "undesirablePeriod": "0"
+        }
+      ]
+    },
+    "score": {
+      "score21Function": "Greedy_XGB_201904",
+      "score22Function": "Bureau_XGB_4_201910",
+      "score9Function": "Client_XGB_4_1_201912",
+      "persons": [
+        {
+          "cuid": "43498797",
+          "scoreFunction": "Client_XGB_4_1_201912"
+        }
+      ]
+    },
+    "persons": [
+      {
+        "cuid": "43498797"
+      }
+    ],
+    "trial": [
+      {
+        "name": "TR_CL_STND",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      },
+      {
+        "name": "TR_CL_MICROCASH",
+        "wfDetails": {
+          "decision": "CONTINUE"
+        }
+      }
+    ]
+  },
+  "smData": {
+    "client_devices": {
+      "clickstream_dfp_cnt": [
+        {
+          "count_smuid_dfp_clickstream_dfp_cnt": "1",
+          "dtime_actualization_clickstream_dfp_cnt": "2022-01-19 11:43:22.206927"
+        }
+      ]
+    },
+    "client_score": {
+      "mailru_score": [
+        {
+          "score_date_calculation_mailru": "2021-12-03 18:10:07",
+          "score_method_name_mailru": "GetStreetClientScore",
+          "score_model_code_mailru": "hmc_reg_geo",
+          "score_value_mailru": "0.857857989"
+        }
+      ]
+    },
+    "geo_activity": {
+      "mts_geo_activity": [
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "data",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "49",
+          "quarter_mts_geo": "1"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "data",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "44",
+          "quarter_mts_geo": "2"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "data",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "35",
+          "quarter_mts_geo": "3"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "data",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "31",
+          "quarter_mts_geo": "4"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "sms",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "100",
+          "quarter_mts_geo": "1"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "voice",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "100",
+          "quarter_mts_geo": "1"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "voice",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "13",
+          "quarter_mts_geo": "2"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "voice",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "40",
+          "quarter_mts_geo": "3"
+        },
+        {
+          "act_date_calculation_mts_geo": "2022-01-19 11:43:23.711",
+          "act_type_mts_geo": "voice",
+          "address_type_mts_geo": "1",
+          "evid_srv_mts_geo": "2391448079",
+          "percent_mts_geo": "21",
+          "quarter_mts_geo": "4"
+        }
+      ]
+    },
+    "online_behav_min_dist": {
+      "my_credit_ob_min_distance_reg_addr": [
+        {
+          "min_distance_registration_address_180_days_my_credit": "no_data_back",
+          "min_distance_registration_address_30_days_my_credit": "no_data_back",
+          "min_distance_registration_address_360_days_my_credit": "no_data_back",
+          "min_distance_registration_address_90_days_my_credit": "no_data_back"
+        }
+      ]
+    },
+    "smuid_data": {
+      "dfp_last_auth": [
+        {
+          "dfp_last_auth": "no_service_data",
+          "dtime_dfp_first_auth": "no_service_data",
+          "dtime_dfp_last_auth": "no_service_data"
+        }
+      ],
+      "my_credit_ob_back_last_auth": [
+        {
+          "dtime_last_auth_back_mc": "no_data_back",
+          "os_last_auth_back_mc": "no_data_back"
+        }
+      ],
+      "my_credit_ob_back_mobile_cnt_180": [
+        {
+          "dtime_calculated_mobile_back_session_count_30_days_my_credit": "2022-01-19 11:43:26.858",
+          "mobile_backend_session_count_30_days_my_credit": "no_data_back"
+        }
+      ],
+      "my_credit_ob_back_set_pin": [
+        {
+          "dfp_set_pin_backend_my_credit": "97a6da892d5b0f06",
+          "dtime_actualization_set_pin_backend_my_credit": "2021-10-07 14:58:55.563",
+          "enter_type_set_pin_backend_my_credit": "1"
+        }
+      ],
+      "my_credit_ob_back_web_cnt_180": [
+        {
+          "dtime_calculated_web_backend_session_count_30_days_my_credit": "2022-01-19 11:43:26.858",
+          "web_backend_session_count_30_days_my_credit": "no_data_back"
+        }
+      ],
+      "my_credit_ob_bank_applications": [
+        {
+          "applications_count_my_credit": "no_data_front",
+          "bank_applications_my_credit": "no_data_front"
+        }
+      ]
+    }
+  },
+  "documents": [
+    {
+      "cardNumber": "4510123123",
+      "cardOrder": "1",
+      "cuid": "43498797",
+      "groupNumber": "1",
+      "identCardType": "pass",
+      "personType": "1",
+      "placeOfIssue": "\u041e\u0422\u0414\u0415\u041b\u0415\u041d\u0418\u0415\u041c \u041f\u041e \u0420\u0410\u0419\u041e\u041d\u0423 \u0411\u0410\u0421\u041c\u0410\u041d\u041d\u042b\u0419 \u041e\u0423\u0424\u041c\u0421 \u0420\u041e\u0421\u0421\u0418\u0418 \u041f\u041e \u0413\u041e\u0420. \u041c\u041e\u0421\u041a\u0412\u0415 \u0412 \u0426\u0410\u041e",
+      "published": "2010-04-03",
+      "specification": "770-004"
+    }
+  ],
+  "personContact": [
+    {
+      "contact": "9154711233",
+      "cuid": "43498797",
+      "order": "1",
+      "personType": "1",
+      "relationShipToClient": "itself",
+      "type": "2"
+    },
+    {
+      "contact": "grigorp@gmail.com",
+      "cuid": "43498797",
+      "order": "1",
+      "personType": "1",
+      "relationShipToClient": "itself",
+      "type": "4"
+    }
+  ],
+  "persons": [
+    {
+      "activeRdOffer": "1",
+      "activeSalaryClient": "0",
+      "activeScOffer": "1",
+      "birth": "1990-02-20",
+      "cuid": "43498797",
+      "email": "grigo@gmail.com",
+      "ident": "1212312123",
+      "isFakeCuid": "0",
+      "isHCFBEmployee": "1",
+      "isNewApplicant": "current",
+      "mainOccupationIncome": "50000",
+      "mobil": "9154712123123",
+      "name1": "Vasiliy",
+      "name2": "\u041f\u0435\u0442\u0440\u0443\u043d\u044c\u043a\u0438\u043d",
+      "nameMid": "\u0412\u0438\u043a\u0442\u043e\u0440\u043e\u0432\u0438\u0447",
+      "personType": "1",
+      "personUndesirable": "0",
+      "registeredAddress": {
+        "apartmentNumber": "32",
+        "blockNumber": "15",
+        "dateRegistration": "1900-01-01",
+        "districtCode": "000",
+        "localityCode": "000",
+        "region": "77",
+        "regionName": "\u041c\u043e\u0441\u043a\u0432\u0430",
+        "regionType": "\u0433",
+        "standard": "s",
+        "street": "\u0411\u043e\u043b\u044c\u0448\u0430\u044f \u041f\u043e\u0447\u0442\u043e\u0432\u0430\u044f",
+        "streetCode": "2356",
+        "streetNumber": "18/20",
+        "streetType": "\u0443\u043b",
+        "taxCode": "105082",
+        "townCode": "000",
+        "zipCode": "105082"
+      },
+      "sex": "m",
+      "mobileOperator": "\u041f\u0410\u041e \"\u041c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0435 \u0422\u0435\u043b\u0435\u0421\u0438\u0441\u0442\u0435\u043c\u044b\"",
+      "snilsCheck": "DOC_NFOUND"
+    }
+  ],
+  "offlineData": [
+    {
+      "code": "flagActionBand",
+      "nvalue": "0"
+    },
+    {
+      "code": "offlineIncome",
+      "nvalue": "450000"
+    },
+    {
+      "code": "clientIncomeAnnualized",
+      "nvalue": "450000"
+    },
+    {
+      "code": "familyIncomeAnnualized",
+      "nvalue": "450000"
+    }
+  ],
+  "consent": [
+    {
+      "consentDate": "2022-12-01",
+      "consentFlag": "1",
+      "consentOwner": "HCFB",
+      "consentSubjectType": "FREEATLAST;MEGAFON;FINMEDIA;BEELINE_CL;MDATA;MTS_CL;PERSONAL_DATA;MAILRU;TELE2_CL;ID_SOLUTIONS"
+    },
+    {
+      "consentDate": "2022-12-01",
+      "consentEndDate": "2121-01-12",
+      "consentFlag": "1",
+      "consentOwner": "HCFB",
+      "consentSubjectType": "BKI"
+    }
+  ],
+  "agregatorResult": [
+    {
+      "agregatorCode": "BEE",
+      "agregatorParamCode": "Score",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "1.031138109664122",
+      "agregatorSegment": "BEE"
+    },
+    {
+      "agregatorCode": "BEE",
+      "agregatorParamCode": "ModelName",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "UNI_POS_V2",
+      "agregatorSegment": "BEE"
+    },
+    {
+      "agregatorCode": "BEE",
+      "agregatorParamCode": "CacheUse",
+      "agregatorParamType": "NUM_VALUE",
+      "agregatorParamValue": "1",
+      "agregatorSegment": "BEE"
+    },
+    {
+      "agregatorCode": "MAILRUSCORE",
+      "agregatorParamCode": "Score",
+      "agregatorParamType": "NUM_VALUE",
+      "agregatorParamValue": "0.6052225796",
+      "agregatorSegment": "MAILRUSCORE"
+    },
+    {
+      "agregatorCode": "MAILRUSCORE",
+      "agregatorParamCode": "ScoreGetDateTime",
+      "agregatorParamType": "DTIME_VALUE",
+      "agregatorParamValue": "2022-01-19T00:00:00",
+      "agregatorSegment": "MAILRUSCORE"
+    },
+    {
+      "agregatorCode": "MAILRUSCORE",
+      "agregatorParamCode": "MatchingLevel",
+      "agregatorParamType": "NUM_VALUE",
+      "agregatorParamValue": "4",
+      "agregatorSegment": "MAILRUSCORE"
+    },
+    {
+      "agregatorCode": "MAILRUSCORE",
+      "agregatorParamCode": "ModelName",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "hmc_mailru_201906",
+      "agregatorSegment": "MAILRUSCORE"
+    },
+    {
+      "agregatorCode": "MAILRUSCORE",
+      "agregatorParamCode": "Method",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "GetStreetClientScore",
+      "agregatorSegment": "MAILRUSCORE"
+    },
+    {
+      "agregatorCode": "MEGAFON",
+      "agregatorParamCode": "MEG_HCFB_6_60_201906",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "0.009121;SUCCESS",
+      "agregatorSegment": "MFSCORE"
+    },
+    {
+      "agregatorCode": "MTSMULTISCORE",
+      "agregatorParamCode": "alien",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "false",
+      "agregatorSegment": "MTSMULTISCORE"
+    },
+    {
+      "agregatorCode": "MTSMULTISCORE",
+      "agregatorParamCode": "HCFB_MTS_CL_201808",
+      "agregatorParamType": "NUM_VALUE",
+      "agregatorParamValue": "0.0063420432",
+      "agregatorSegment": "MTSMULTISCORE"
+    },
+    {
+      "agregatorCode": "MTSMULTISCORE",
+      "agregatorParamCode": "HCFB_MTS_COMP_201711",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "ERR:There is no data available for feature [HCFB_MTS_COMP_201711]",
+      "agregatorSegment": "MTSMULTISCORE"
+    },
+    {
+      "agregatorCode": "MTSMULTISCORE",
+      "agregatorParamCode": "CacheUse",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "HCFB_MTS_CL_201808:1;HCFB_MTS_COMP_201711:0;",
+      "agregatorSegment": "MTSMULTISCORE"
+    },
+    {
+      "agregatorCode": "EQCLIENTMULTISCORE",
+      "agregatorParamCode": "8",
+      "agregatorParamType": "NUM_VALUE",
+      "agregatorParamValue": "730",
+      "agregatorSegment": "EQCLIENTMULTISCORE"
+    },
+    {
+      "agregatorCode": "EQCLIENTMULTISCORE",
+      "agregatorParamCode": "CacheUse",
+      "agregatorParamType": "CHAR_VALUE",
+      "agregatorParamValue": "8:1;",
+      "agregatorSegment": "EQCLIENTMULTISCORE"
+    }
+  ]
+}

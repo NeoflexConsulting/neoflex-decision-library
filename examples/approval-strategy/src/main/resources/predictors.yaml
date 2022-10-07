@@ -1,7 +1,7 @@
 table:
   isNewClient:
     versions:
-      "1": "application.applicantData.previousApplications.firstaDate = null or abs(years and months duration(application.sysdate, application.applicantData.previousApplications.firstaDate)) < duration(\"P1M\")"
+      "1": "application.applicantData.previousApplications.person.firstaDate = null or abs(years and months duration(application.sysdate, application.applicantData.previousApplications.preson.firstaDate)) < duration(\"P1M\")"
   age:
     versions:
-      "1": "abs(years and months duration(application.applicantData.person.birthDate, application.sysdate)).years"
+      "1": "abs(years and months duration(application.person.birth, application.sysdate)).years"
