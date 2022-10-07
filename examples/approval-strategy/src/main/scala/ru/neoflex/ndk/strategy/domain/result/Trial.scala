@@ -12,6 +12,6 @@ final case class Trial(
 
 final case class HCDetails(var list: String = "", var lineId: String = "")
 final case class ScoringDetails(var scoreFunction: String = "", var scoreValue: Double = 0)
-final case class LimitDetails(hit: Boolean = true)
+final case class LimitDetails(hit: Boolean = false)
 final case class RGDetails(var riskGroup: Int = 0, var cutOffValue: Double = 0, var lineId: String = "")
 final case class WFDetails(var decision: String, var rejectReason: String = "", var lineId: String = "")

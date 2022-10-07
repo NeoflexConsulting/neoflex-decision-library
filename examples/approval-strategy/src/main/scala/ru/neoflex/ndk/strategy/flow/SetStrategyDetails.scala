@@ -22,21 +22,21 @@ final case class SetStrategyDetails(application: Application, result: ScoringRes
           result.strategyName = "MultiApproval_Street New"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
-          result.strategyVersionDate = Instant.now()
+          result.strategyVersionDate = Instant.ofEpochMilli(1665127430002L)
           result.strategyFlow = "STREET_NEW"
         },
         row(contains(false), eqv(true)).apply("DM Current") {
           result.strategyName = "MultiApproval_DM Current"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
-          result.strategyVersionDate = Instant.now()
+          result.strategyVersionDate = Instant.ofEpochMilli(1665127430002L)
           result.strategyFlow = "XSELL"
         },
         row(contains(false), eqv(false)).apply("Street Current") {
           result.strategyName = "MultiApproval_Street Current"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
-          result.strategyVersionDate = Instant.now()
+          result.strategyVersionDate = Instant.ofEpochMilli(1665127430002L)
           result.strategyFlow = "STREET_EXISTING"
         }
       )

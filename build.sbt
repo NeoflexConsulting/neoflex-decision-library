@@ -153,7 +153,7 @@ lazy val approvalStrategyExample = (project in file("examples/approval-strategy"
       options.filterNot(Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard))
     }
   )
-  .dependsOn(core, ndkRenderer, ndkTrackerKafka)
+  .dependsOn(core, testKit, ndkRenderer, ndkTrackerKafka)
 
 lazy val restModelExample = (project in file("examples/rest-model"))
   .settings(

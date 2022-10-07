@@ -242,12 +242,6 @@ class FuncTestDslSpec extends NdkFuncSpec with SqlDbBinders with EitherValues wi
       .unsafeRunSync()
   }
 
-  implicit class StringAsPath(s: String) {
-    def resourcePath: String = getClass.getResource(s"/$s").getFile
-
-    def inTmpDir: String = s"${scala.util.Properties.tmpDir}/$s"
-  }
-
   private implicit val filePathExistence: Existence[String] = (thing: String) => Files.exists(Paths.get(thing))
 }
 
