@@ -14,7 +14,9 @@ object JsonFileFlowTracker {
     new FlowTrackingObserver[F](flowTracker, saveEvent[F](filename))
 
   def saveEvent[F[_]](fileName: String)(event: OperatorTrackedEventRoot)(implicit monad: Monad[F]): F[Unit] = {
-    Using(Files.newBufferedWriter(Paths.get(fileName))) { w =>
+    val currentTime = System.currentTimeMillis()
+    val targetFilename = s"$fileName-$currentTime.json"
+    Using(Files.newBufferedWriter(Paths.get(targetFilename))) { w =>
       val json = Encoder[OperatorTrackedEventRoot].apply(event).printWith(Printer.spaces2)
       w.write(json)
       w.newLine()

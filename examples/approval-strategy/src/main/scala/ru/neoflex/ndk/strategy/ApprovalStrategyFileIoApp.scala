@@ -10,5 +10,5 @@ object ApprovalStrategyFileIoApp extends JsonFileTrackingRunner with JsonIo with
   val flow        = ApprovalStrategyFlow(application, result)
 
   run(flow)
-  writeResult(result, "result.json")
+  writeResult(result, "examples/approval-strategy/runs/result.json")
 }

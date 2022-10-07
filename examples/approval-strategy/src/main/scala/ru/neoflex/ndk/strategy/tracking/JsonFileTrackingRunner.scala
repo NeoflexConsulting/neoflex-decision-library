@@ -12,7 +12,7 @@ trait JsonFileTrackingRunner extends FlowRunner {
   override val engine: syntax.EitherError[FlowExecutionEngine[syntax.EitherError, syntax.EitherError]] =
     executionConfig.map { c =>
       new FlowExecutionEngine[EitherError, EitherError](
-        JsonFileFlowTracker(new FlowTracker(), "flow_trace.json"),
+        JsonFileFlowTracker(new FlowTracker(), "examples/approval-strategy/runs/flow_trace"),
         c,
         ProcessPoolFactory.create(c.processPool),
         FunctionK.id
