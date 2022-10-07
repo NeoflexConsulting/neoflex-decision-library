@@ -59,7 +59,7 @@ class TableExecutor[F[_], G[_]](
         .flatMap {
           case dv: DictionaryValue[_] =>
             val dictValue   = dv.get
-            val resultValue = dictValue.liftTo[F].map(_.map(_.asInstanceOf[AnyRef])).map(_.orNull)
+            val resultValue = dictValue.liftTo[F].asInstanceOf[F[Any]]
             val stringValue = dictValue.toOption.flatten.map(_.toString).getOrElse("")
             resultValue.map { v =>
               ExecutedExprValue(

@@ -18,21 +18,21 @@ final case class SetStrategyDetails(application: Application, result: ScoringRes
         "isNewClient" expr Predictors("isNewClient", "1", "application" -> application),
         "activeOffer" expr (application.person.activeRdOffer == 1 || application.person.activeScOffer == 1)
       ) andConditions (
-        row(eqv(true), any()).apply("Street New") {
+        row(contains(true), any()).apply("Street New") {
           result.strategyName = "MultiApproval_Street New"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
           result.strategyVersionDate = Instant.now()
           result.strategyFlow = "STREET_NEW"
         },
-        row(eqv(false), eqv(true)).apply("DM Current") {
+        row(contains(false), eqv(true)).apply("DM Current") {
           result.strategyName = "MultiApproval_DM Current"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
           result.strategyVersionDate = Instant.now()
           result.strategyFlow = "XSELL"
         },
-        row(eqv(false), eqv(false)).apply("Street Current") {
+        row(contains(false), eqv(false)).apply("Street Current") {
           result.strategyName = "MultiApproval_Street Current"
           result.strategyType = "Champion"
           result.strategyVersion = "01.10.2018"
