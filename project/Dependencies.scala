@@ -27,7 +27,7 @@ object Dependencies {
   }
 
   object Internal {
-    lazy val Core = "ru.neoflex.ndk" %% "neoflex-decision-kit" % "2.0.0-SNAPSHOT"
+    lazy val Core = "ru.neoflex.ndk" %% "neoflex-decision-kit" % "2.0.0"
   }
 
   object Doobie {

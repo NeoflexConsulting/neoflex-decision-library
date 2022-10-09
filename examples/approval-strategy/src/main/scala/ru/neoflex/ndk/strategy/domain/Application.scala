@@ -8,7 +8,7 @@ final case class Application(
   salesPoint: SalesPoint,
   sysdate: LocalDateTime,
   credit: Credit) {
-  def person: Person = persons.head
+  def person: Option[Person] = persons.headOption
 }
 
 final case class ApplicantData(previousApplications: PreviousApplications)

@@ -20,13 +20,13 @@ object Functions {
   }
 
   def hasEducation(application: Application, education: Char): Boolean = {
-    application.person.education.contains(education)
+    application.person.flatMap(_.education).contains(education)
   }
 
   def applicantRegion(application: Application): String = {
-    val address = application.person.registeredAddress
-    address.region.map(_.toString).orElse(address.regionName).getOrElse("N/A")
+    val address = application.person.map(_.registeredAddress)
+    address.flatMap(_.region.map(_.toString)).orElse(address.flatMap(_.regionName)).getOrElse("N/A")
   }
 
-  def applicantCity(application: Application): String = application.person.registeredAddress.townCode
+  def applicantCity(application: Application): String = application.person.map(_.registeredAddress.townCode).getOrElse("")
 }

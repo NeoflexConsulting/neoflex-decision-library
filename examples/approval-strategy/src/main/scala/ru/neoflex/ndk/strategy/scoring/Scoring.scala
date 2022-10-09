@@ -24,7 +24,7 @@ final case class Scoring(application: Application, result: ScoringResult)
         action("sc-a-1", "setPrimaryScore") {
           val maxScore = result.score.details.maxBy(_.scoreValue)
           result.score.personScore =
-            PersonScore(maxScore.scoreFunction, maxScore.scoreValue, application.person.cuid)
+            PersonScore(maxScore.scoreFunction, maxScore.scoreValue, application.person.map(_.cuid).get)
         },
 
         Trial2ScoreDistributionFlow(result)

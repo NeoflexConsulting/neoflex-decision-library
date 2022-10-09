@@ -11,7 +11,7 @@ final case class ApprovalStrategyFlow(application: Application, result: ScoringR
     extends Flow(
       "ap-f-1",
       "Approval strategy",
-      application.person.cuid.toString,
+      application.person.map(_.cuid.toString),
       flowOps(
         SetStrategyDetails(application, result),
         TrialSelectorSCRD(application, result),
